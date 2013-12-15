@@ -1,0 +1,17 @@
+Drepturi de autor © 2013, developers@finflow.org
+Toate drepturile rezervate
+
+Redistribuþia ºi utilizarea în formã de sursã sau binarã, cu sau fãrã modificãri, este permisã dacã sunt îndeplinite urmãtoarele condiþii:
+* Redistribuþii ale codului sursã trebuie sã pãstreze nota pentru drepturi de autor de mai sus, aceastã listã de condiþii ºi declaraþia de neasumare a responsabilitãþii de mai jos.
+* Redistribuþii în formã binarã trebuie sã reproducã nota pentru drepturi de autor de mai sus, aceastã listã de condiþii ºi declaraþia de neasumare a responsabilitãþii de mai jos în documentaþie ºi/sau alte materiale furnizate cu distribuþia.
+* Nici numele ORGANIZAÞIEI ºi nici numele contribuitorilor sãi nu pot fi folosite pentru a gira, aproba, susþine sau promova produse derivate din acest software fãrã aprobare prealabilã în scris. 
+
+ACEST SOFTWARE ESTE FURNIZAT DE CÃTRE DEÞINÃTORII DREPTURILOR DE AUTOR "CA ATARE" ªI NU SE OFERÃ NICI UN 
+FEL DE GARANÞIE EXPLICITÃ SAU IMPLICITÃ, INCLUSIV, DAR FÃRÃ A SE LIMITA LA, GARANÞIA IMPUSÃ DE 
+VANDABILITATE SAU ADECVARE PENTRU UN ANUMIT SCOP. ÎN NICIUN CAZ DEÞINÃTORII DREPTURILOR DE AUTOR SAU 
+CONTRIBUITORII NU POT FI TRAªI LA RÃSPUNDERE PENTRU NICIUN FEL DE DAUNE DIRECTE, INDIRECTE, INCIDENTALE, 
+SPECIALE, CARACTERISTICE SAU SECUNDARE (INCLUSIV, DAR FÃRÃ A FI LIMITAT LA, PROCURAREA DE BUNURI SAU 
+SERVICII ÎNLOCUITOARE; PIERDERE DE ÎNTREBUINÞARE, DATE SAU PROFITURI; SAU ÎNTRERUPERE DE ACTIVITATE) 
+INDIFERENT DE CUM AU FOST CAUZATE ªI ÎN ORICE TEORIE DE RESPONSABILITATE, CHIAR DACÃ ÎN CONTRACT, 
+RESPONSABILITATE STRICTÃ SAU PREJUDICIU (INCLUSIV NEGLIJENÞÃ SAU ALTE CAZURI) CA URMARE A UTILIZÃRII DE 
+ORICE FEL A ACESTUI SOFTWARE, CHIAR DACÃ S-A MENÞIONAT POSIBILITATEA UNOR ASEMENEA DAUNE.

@@ -1,0 +1,32 @@
+/**
+ * FinFlow Configuration File
+ * @version 1.2
+ * @since 0.5
+ */
+
+
+/** Setari pentru conexiuna la baza de date, le poti obtine de la furnizorul tau de servicii de gazduire web */
+define('FN_DB_HOST'		, '{dbhost}');
+define('FN_DB_USER'		, '{dbuser}');
+define('FN_DB_PASS'		, '{dbpassword}');
+define('FN_DB_NAME'	    , '{dbname}');
+
+/** String folosit ca salt pentru criptarea parolelor, poti genera unul la http://tinyurl.com/RandomString7 */
+define('FN_PW_SALT'	, '{secret}');
+
+
+/** Setari de pentru formatul datelor afisate, vezi http://php.net/manual/en/function.date.php */
+define('FN_DATETIME_FORMAT', 'l, jS F Y h:i:s A');
+
+define('FN_DAY_FORMAT'		, 'jS \of F Y');
+define('FN_MONTH_FORMAT'	, 'F Y');
+define('FN_YEAR_FORMAT'		, 'Y');
+
+
+/** Numarul de rezultate de afisat pe pagina */
+define('FN_RESULTS_PER_PAGE', 15);
+
+
+/** Setari pentru actualizarea cursului valutar, acestea sunt singurele valori compatibile cu aceasta versiune */
+define('FN_EXCHANGERATES_XML_URL'	, 'http://www.bnr.ro/nbrfxrates.xml');
+define('FN_EXCHANGERATES_XML_PARSER', 'bnr');

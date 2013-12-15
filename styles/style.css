@@ -1,0 +1,379 @@
+@CHARSET "UTF-8";
+
+@import url(//fonts.googleapis.com/css?family=Ubuntu:400,700&subset=latin,latin-ext);
+
+/*Global Styles*/
+body{
+	margin: 0px;
+	padding: 0px;
+	color: #000;
+	font-family: 'Ubuntu', Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1.1em;
+	background-color: #e0e0e0;
+	
+	background-image: linear-gradient(top, #FFFFFF 0%, #E3E5E6 67%, #E0E0E0 94%);
+	background-image: -o-linear-gradient(top, #FFFFFF 0%, #E3E5E6 67%, #E0E0E0 94%);
+	background-image: -moz-linear-gradient(top, #FFFFFF 0%, #E3E5E6 67%, #E0E0E0 94%);
+	background-image: -webkit-linear-gradient(top, #FFFFFF 0%, #E3E5E6 67%, #E0E0E0 94%);
+	background-image: -ms-linear-gradient(top, #FFFFFF 0%, #E3E5E6 67%, #E0E0E0 94%);
+	
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #FFFFFF),
+		color-stop(0.67, #E3E5E6),
+		color-stop(0.94, #E0E0E0)
+	);
+	
+	background-repeat:no-repeat;
+
+    overflow-y: scroll;
+}
+
+body.error{
+	padding: 20px;
+}
+
+.clear{
+	clear: both;
+}
+
+.form-label-normal{
+    font-weight: normal;
+    border-bottom: 1px #ddd solid;
+    line-height: 2em;
+}
+
+p.msg{
+	border: 1px solid;
+	margin: 10px 0px;
+	padding:10px;
+	color: #333;
+	background-color: #BDE5F8;
+}
+
+p.msg.error{
+	background-color: #FFBABA;
+}
+
+p.msg.warning{
+	background-color: #FEEFB3;
+}
+
+p.msg.note, p.msg.info{
+	background-color: #BDE5F8;
+}
+
+p.msg a{
+	text-decoration:underline;
+}
+
+.unsafe-file-warn, .toobig-file-warn{
+    padding: 5px;
+    font-size: 90%;
+    display: none;
+}
+
+.container{
+	padding: 10px 20px 10px 20px;
+}
+
+.navbar-inner{
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+	
+	webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+}
+
+.navbar .brand, h2.brand{
+	color: #08C;
+	letter-spacing: .1em;
+	font-weight:bold;
+}
+
+.navbar .brand{
+   width: 20px;
+    background: transparent url("../images/finflow-logo-mono.png") no-repeat center;
+    background-size: auto 83%;
+}
+
+.navbar .brand:hover, .navbar .brand.active{
+    background-image: url("../images/finflow-logo.png");
+}
+
+label, input[type=checkbox], input[type=radio]{
+	float:left;
+	font-size: 1em;
+	line-height: 30px;
+	margin:0;
+	margin-right: 10px;
+	width:15%;
+}
+
+label.wrap-input{
+	width:auto;
+	margin-right:20px;
+}
+
+input[type=checkbox], input[type=radio]{
+	padding: 4px 6px;
+	width:auto;
+	height: 30px;
+	margin-right: 0px;
+	float: none;
+}
+
+input[type=checkbox] + label, input[type=radio] + label{
+	display:inline-block;
+	width:90%;
+}
+
+.required{
+	color: #FF6186;
+	font-size:85%;
+}
+
+form .details{
+	font-size:85%;
+	color: #A1A1A1;
+}
+
+table{
+	width:100%;
+	border-color:#FFF;
+}
+
+table td, table th{
+	padding: .5em;
+	border-color:#ECECEC;
+}
+
+tr.even{
+	background-color: #FAFAFA;
+}
+
+tr.highlight{
+	background-color: #DEEDFF;
+	font-size:110%;
+}
+
+table.list.transactions tr td:last-child, table.list.transactions tr th:last-child{
+    min-width: 5.8em;
+}
+
+.align-center{
+	text-align:center;
+}
+
+.align-right{
+	text-align: right;
+}
+
+.filter .btn, .btn-top{
+	vertical-align: top;
+}
+
+ul.nav li.dropdown:hover ul.dropdown-menu{
+	display:block;
+}
+
+ul.nav ul.dropdown-menu{
+	margin-top:0px;
+}
+
+a.logout:hover{
+	color: #000;
+	border-color: #FF7A7A;
+}
+
+a.default:hover{
+	color: #000;
+	border-color: #005580;
+}
+
+.navbar-inner a.default{
+	margin-right: 10px
+}
+
+.logged-in .container{
+	background: #FFF;
+    box-shadow: 3px 3px 6px #CCC;
+    border-bottom-left-radius: .3em;
+    border-bottom-right-radius: .3em;
+}
+
+.inner-container{
+	background: #FFF;
+	border-radius:5px;
+	width:55%;
+	padding:20px;
+	margin:25px auto;
+	box-shadow: 3px 3px 6px #CCC;
+}
+
+.cronjob{
+    color: #444;
+    font-size: 90%;
+    line-height: 30px;
+    padding: 5px;
+}
+
+.sidebar .widget{
+	color: #333;
+	margin-bottom: 10px;
+	background: #FCFCFC;
+	clear:both;
+	padding: 9px;
+	border:1px #CACACA solid;
+	border-radius: 4px;
+}
+
+.sidebar .widget a{
+	color: #333 !important;
+}
+
+.widget input, .widget textarea, .widget select{
+	width:90px;
+	padding: 2px 4px;
+	width:52%;
+}
+
+.widget input{
+	height: 18px;
+}
+
+.widget select{
+	height: 24px;
+}
+
+.widget label{
+	width:30%;
+	line-height: 24px;
+}
+
+#widgetCurrencyConverterResult{
+	width:93%;
+	text-align:center;
+	font-weight:bold;
+	background: #EDEDED;
+}
+
+.well.requirement{
+	line-height: 18px;
+	padding:8px;
+}
+
+.well.requirement span{
+	margin-top:4px;
+}
+
+.requirement.missing{
+	border-color: #FF1239;
+}
+
+.requirement.loaded{
+	border-color: #51DE10;
+}
+
+.widget .widget-input-fullwidth{
+	width:93%;
+}
+
+.widget .widget-inline-blockclear{
+	display: inline-block;
+	text-align:center;
+	clear:both;
+	color: #222;
+	width:93%;
+}
+
+#displayWClock{
+	background: #FFF;
+	padding: 4px 0px;
+	border:1px #CCC solid;
+}
+
+.balance{
+    background: #ACD0FC;
+    padding: .4em;
+    border:1px #CCC solid;
+    font-size: 1.3em;
+    font-weight: normal;
+}
+
+.balance .value{
+    display: inline-block;
+    float: right;
+}
+
+.trans-readable-filter{
+    font-weight: normal;
+    padding: .3em;
+    background: #EDEDED;
+    border:1px #CCC solid;
+}
+
+.trans-readable-filter span:first-child{
+    text-transform: capitalize;
+}
+
+#captchaImg:hover{
+    cursor: pointer;
+}
+
+.credits{
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Small desktop */
+@media (max-width: 1280px) {
+	table tr td:last-child, table tr th:last-child{
+		min-width: 5.8em;
+	}
+}
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 801px){
+	
+	table tr td:last-child, table tr th:last-child{
+		min-width: 6em;
+	}
+	
+	.navbar .btn.pull-right{
+		padding: .4em;
+	}
+	
+	.row.content .span10{
+		width: 724px;
+		clear:both;
+	}
+	
+	.row.content .span2{
+		margin-top: 10px;
+		padding-top:15px;
+		width: 724px;
+		border-top: 1px solid #DDD;
+	}
+	
+	label{
+		width: 20%;
+	}
+	
+	.navbar .btn, .navbar .btn-group{
+		margin-top: 3px;
+	}
+	
+	.navbar-inner a.default{
+		margin-right:5px;
+	}
+}
+
+/* Landscape phones and down */
+@media (max-width: 600px) {
+    /*TODO */
+}

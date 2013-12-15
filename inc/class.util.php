@@ -1,0 +1,771 @@
+<?php
+
+
+class fn_Util{
+
+    /**
+     * A list of translitaration(s) for generating slugs
+     * @var array
+     */
+    protected static $_transliteration = array(
+        '/ä|æ|ǽ/' => 'ae',
+        '/ö|œ/' => 'oe',
+        '/ü/' => 'ue',
+        '/Ä/' => 'Ae',
+        '/Ü/' => 'Ue',
+        '/Ö/' => 'Oe',
+        '/À|Á|Â|Ã|Å|Ǻ|Ā|Ă|Ą|Ǎ/' => 'A',
+        '/à|á|â|ã|å|ǻ|ā|ă|ą|ǎ|ª/' => 'a',
+        '/Ç|Ć|Ĉ|Ċ|Č/' => 'C',
+        '/ç|ć|ĉ|ċ|č/' => 'c',
+        '/Ð|Ď|Đ/' => 'D',
+        '/ð|ď|đ/' => 'd',
+        '/È|É|Ê|Ë|Ē|Ĕ|Ė|Ę|Ě/' => 'E',
+        '/è|é|ê|ë|ē|ĕ|ė|ę|ě/' => 'e',
+        '/Ĝ|Ğ|Ġ|Ģ/' => 'G',
+        '/ĝ|ğ|ġ|ģ/' => 'g',
+        '/Ĥ|Ħ/' => 'H',
+        '/ĥ|ħ/' => 'h',
+        '/Ì|Í|Î|Ï|Ĩ|Ī|Ĭ|Ǐ|Į|İ/' => 'I',
+        '/ì|í|î|ï|ĩ|ī|ĭ|ǐ|į|ı/' => 'i',
+        '/Ĵ/' => 'J',
+        '/ĵ/' => 'j',
+        '/Ķ/' => 'K',
+        '/ķ/' => 'k',
+        '/Ĺ|Ļ|Ľ|Ŀ|Ł/' => 'L',
+        '/ĺ|ļ|ľ|ŀ|ł/' => 'l',
+        '/Ñ|Ń|Ņ|Ň/' => 'N',
+        '/ñ|ń|ņ|ň|ŉ/' => 'n',
+        '/Ò|Ó|Ô|Õ|Ō|Ŏ|Ǒ|Ő|Ơ|Ø|Ǿ/' => 'O',
+        '/ò|ó|ô|õ|ō|ŏ|ǒ|ő|ơ|ø|ǿ|º/' => 'o',
+        '/Ŕ|Ŗ|Ř/' => 'R',
+        '/ŕ|ŗ|ř/' => 'r',
+        '/Ś|Ŝ|Ş|Š|Ș/' => 'S',
+        '/ś|ŝ|ş|ș|š|ſ/' => 's',
+        '/Ţ|Ț|Ť|Ŧ/' => 'T',
+        '/ţ|ť|ț|ŧ/' => 't',
+        '/Ù|Ú|Û|Ũ|Ū|Ŭ|Ů|Ű|Ų|Ư|Ǔ|Ǖ|Ǘ|Ǚ|Ǜ/' => 'U',
+        '/ù|ú|û|ũ|ū|ŭ|ů|ű|ų|ư|ǔ|ǖ|ǘ|ǚ|ǜ/' => 'u',
+        '/Ý|Ÿ|Ŷ/' => 'Y',
+        '/ý|ÿ|ŷ/' => 'y',
+        '/Ŵ/' => 'W',
+        '/ŵ/' => 'w',
+        '/Ź|Ż|Ž/' => 'Z',
+        '/ź|ż|ž/' => 'z',
+        '/Æ|Ǽ/' => 'AE',
+        '/ß/' => 'ss',
+        '/Ĳ/' => 'IJ',
+        '/ĳ/' => 'ij',
+        '/Œ/' => 'OE',
+        '/ƒ/' => 'f'
+    );
+
+    /**
+     * A list of extensions allowed for files upload
+     * @var array
+     */
+    public static $allowedExtensions = array(
+        'pdf', 'png', 'jpg', 'gif', 'doc', 'xls', 'docx', 'xlsx', 'psd', 'odt', 'ods', 'odf', 'txt', 'rtf', 'ppt', 'pptx', 'mp3', 'ogg', 'mp4', 'avi', 'mkv', 'zip', 'gz', 'tar', 'swf', 'fla', 'aac'
+    );
+
+    /**
+     * Given a date, will return the time passed from as xx &lt;time&gt; ago
+     * @param $date
+     * @param string $custom_tense
+     * @param array $before_singulars
+     * @param array $before_plurals
+     * @param bool $is_unix_date
+     * @return string
+     */
+    public static function nicetime($date, $custom_tense="", $before_singulars=array(), $before_plurals=array(), $is_unix_date=FALSE){
+
+        if( empty($date) ) {
+            return "No date provided";
+        }
+
+        $periods         	= array("secund&#259;", "minut", "or&#259;", "zi", "s&#259;pt&#259;m&#226;n&#259;", "lun&#259;", "an", "decad&#259;");
+        $periods_plural  	= array("secunde", "minute", "ore", "zile", "s&#259;pm&#259;m&#226;ni", "luni", "ani", "decade");
+        $lengths         	= array("60", "60", "24", "7", "4.35", "12", "10");
+
+        $singulars = array(
+            'f'     =>array($periods[0], $periods[2], $periods[3], $periods[4], $periods[5], $periods[7]),
+            'm'   => array($periods[1], $periods[6])
+        );
+
+        $plurals  = array(
+            'f'     =>array($periods_plural[0], $periods_plural[1], $periods_plural[2], $periods_plural[3], $periods_plural[4], $periods_plural[5], $periods_plural[7]),
+            'm'   => array($periods_plural[6])
+        );
+
+        $now = time();
+
+        if ($is_unix_date)
+            $unix_date  = $date;
+        else
+            $unix_date  = @strtotime($date);
+
+        // check validity of date
+        if( empty($unix_date) ) {
+            return "Bad date";
+        }
+
+        // is it future date or past date
+        if($now > $unix_date) {
+            $difference = $now - $unix_date;
+            $tense        = "acum";
+
+        } else {
+            $difference     = $unix_date - $now;
+            $tense         = "peste";
+        }
+
+        if( strlen($custom_tense) ) $tense = $custom_tense; $genre_prefix = "";
+
+        for($j = 0; $difference >= $lengths[$j] && $j < count($lengths)-1; $j++) {
+            $difference /= $lengths[$j];
+        }
+
+        $difference = round($difference);
+
+        if($difference != 1) {
+            $period = $periods_plural[$j];
+
+            if( count($before_plurals) )
+                $genre_prefix  = ( array_search($period, $plurals['f']) === FALSE ) ? $before_plurals['m'] : $before_plurals['f'];
+
+            if ($difference >= 20) $period = ("de ".$period);
+
+        }
+        else{
+            $period = $periods[$j];
+
+            if( count($before_singulars) )
+                $genre_prefix  = ( array_search($period, $singulars['f']) === FALSE ) ? $before_singulars['m'] : $before_singulars['f'];
+        }
+
+        return "{$tense} {$genre_prefix} $difference $period";
+    }
+	
+	public static function set_date($year=NULL, $month=FALSE, $day=NULL, $format='Y-m-d H:i:s'){
+		
+		$date = "";
+		
+		if ( $year )
+			$year = intval($year);
+		else 
+			$year = "1970"; // year 0 (see http://en.wikipedia.org/wiki/Unix_time)
+		
+		if ( $month )
+			$month = self::add_leading_zeros(intval($month));
+		else 
+			$month = "01";
+		
+		if ( $day )
+			$day	= self::add_leading_zeros(intval($day));
+		else
+			$day = "01";
+		
+		return date($format, strtotime("{$year}-{$month}-{$day}"));
+		
+	}
+	
+	
+	public static function add_leading_zeros($input, $stdlen=2, $ignore_empty=FALSE){
+
+        if( $ignore_empty and ( strlen($input) == 0 ) ) return "";
+
+		if ( strlen($input) < $stdlen ) for ($i=0; $i<($stdlen - strlen($input)); $i++){
+			$input = "0{$input}";
+		}
+		
+		return $input;
+		
+	}
+	
+	
+	public static function get_relative_time($days="", $months="", $years="", $relative=NULL, $past=TRUE, $format='Y-m-d'){
+		
+		if ( empty($relative) )
+			$relative = time();
+		else 
+			$relative = @strtotime($relative);
+		
+		if( $relative > 0 ){
+			
+			
+			if ( intval($days) > 0 ) 		
+				$days = ( intval($days) . " days");
+			else 
+				$days = "";
+			
+			if ( intval($months) > 0 ) 	
+				$months = ( intval($months) . " months");
+			else 
+				$months = "";
+			
+			if ( intval($years) > 0 ) 		
+				$years = ( intval($years) . " years");
+			else 
+				$years = "";
+			
+			$diff = trim("{$days} {$months} {$years}");
+			
+			if ( $past ) //calculate a date in the past			
+				return date($format, strtotime("-{$diff}", $relative));
+			else
+				return date($format, strtotime("+{$diff}", $relative));
+			
+		}
+		
+		return NULL;
+		
+	}
+	
+	public static function date_diff($from, $to, $output="days"){ //ANSI-formatted dates
+		
+		$date1 = new DateTime($from);
+		$date2 = new DateTime($to);
+		
+		$interval = $date1->diff($date2);
+		
+		if ( is_object($interval) ){
+			
+			if ( $output == 'days' )
+				return $interval->days;
+			
+			if ( $output == 'months' )
+				return $interval->months;
+		}
+
+		return NULL;
+		
+	}
+	
+	public static function clean_array($array){
+		
+		if ( is_array($array) and count($array)) foreach ($array as $key=>$value){
+			if ( empty($value) ) unset($array[$key]);
+		}
+			
+		return $array;
+	}
+	
+	public static function cronjob($script, $minute="*", $hour="*", $day="*", $month="*", $days_of_week='*', $executable="php -q", $apply_server_offset=TRUE){
+		
+		if ( $apply_server_offset and ( $hour != '*' ) ) {
+			
+			$offset = self::get_server_timezone_offset(FN_TIMEZONE);
+				
+			$hour+= $offset;
+			
+			if ( $hour >= 24 ) $hour = $hour-24;
+			
+		}
+		
+		return "{$minute} {$hour} {$day} {$month} {$days_of_week} {$executable} {$script}";
+	}
+
+    public static function s_encrypt($input, $salt="salt"){
+        return trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $salt, $input, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+    }
+
+    public static function s_decrypt($input, $salt="salt"){
+        return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($input), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+    }
+
+    /**
+     * Simple encrypt/decrypt function
+     * @param $input
+     * @param bool $encrypt
+     * @return string
+     * @deprecated
+     */
+    public static function passcrypt($input, $encrypt=TRUE){
+		
+			$hashtable = array(	
+						'a'=>'x', 'b'=>'d', 'c'=>'s', 'd'=>'n', 'e'=>'u', 'f'=>'l', 'g'=>'t', 'h'=>'p',
+						'i'=>'a', 'j'=>'i', 'k'=>'c', 'l'=>'z', 'm'=>'r', 'n'=>'w', 'o'=>'e', 'p'=>'j',
+						'q'=>'y', 'r'=>'f', 's'=>'h', 't'=>'g', 'u'=>'m', 'v'=>'q', 'w'=>'b', 'x'=>'v', 
+						'y'=>'o', 'z'=>'k', '1'=>'8', '2'=>'5', '3'=>'9', '4'=>'6', '5'=>'7', '6'=>'0', 
+						'7'=>'1', '8'=>'4', '9'=>'3', '0'=>'2', '.'=>',', '~'=>'&', '&'=>')', '*'=>'%',
+                        '^'=>'~', '+'=>'*', ' '=>'@'
+			);
+			
+			if ( !$encrypt ) $input = str_rot13(base64_decode($input));
+			
+			$input_array = str_split($input);
+			$output 	  	  = "";
+			
+			$k = 0;
+			
+			foreach ($input_array as $in){
+			
+				$found = FALSE; $in = (string) $in;
+				
+				foreach ($hashtable as $letter=>$replace){
+					
+					if ( $encrypt and ( $in == $letter ) ) {
+						$found=1; $output.= $replace;  break; 
+					}
+					
+					if ( !$encrypt and ($in == $replace) ) { 
+						$found=1; $output.= $letter; break; 
+					}
+					
+					if ( $encrypt and ( strtoupper($in) == strtoupper($letter) ) ) {
+						$found=1; $output.= strtoupper($replace);  break;
+					}
+						
+					if ( !$encrypt and (strtoupper($in) == strtoupper($replace)) ) {
+						$found=1; $output.= strtoupper($letter); break;
+					}
+					
+				}
+				
+				if ( !$found ) $output.= $in;
+				
+			}
+			
+			return $encrypt ? base64_encode(str_rot13( $output )) : $output;
+			
+	}
+
+
+    public static function highchart_prepare_data($Sums, $series_color=FALSE, $negative_color=FALSE){
+
+        $chartdtspan  	= "";
+        $categories 		= array();
+        $seriesdata 		= array();
+        $series				= array();
+
+        $k=0; $sumscount = count($Sums);
+
+        foreach ($Sums as $sum){
+
+            $k++;
+
+            $ld 	= ( $sum['year'] . "-01-01");
+            $fm	= FN_YEAR_FORMAT;
+
+            if ( isset($sum['month']) ){
+                $ld = ( $sum['year'] . "-" . $sum['month'] . "-01" );
+                $fm	= FN_MONTH_FORMAT;
+            }
+
+            if ( isset( $sum['day'] ) ){
+                $ld = ( $sum['year'] . "-" . $sum['month'] . "-" . $sum['day'] );
+                $fm	= FN_DAY_FORMAT;
+            }
+
+            $fmdate = fn_UI::translate_date(date($fm, strtotime($ld)));
+
+            //--- better illustrate the title ---//
+            if ( $k == 1 ) 				 $chartdtspan.= " {$fmdate} -";
+            if ( $k == $sumscount ) $chartdtspan.= " {$fmdate}";
+
+            $categories[] = $fmdate;
+            $seriesdata[] = round($sum['sum'], 2, PHP_ROUND_HALF_EVEN);
+
+        }
+
+        $series[] = array('name'=>"RON", 'data' =>$seriesdata, 'threshold'=>0, 'negativeColor'=>'#F2637B');
+
+        return array('series'=>$series, 'chartdtspan'=>$chartdtspan, 'categories'=>$categories);
+    }
+
+	
+	public static function highchart($renderTo, $type, $title="Chart", $categories=array(), $yAxisTitle=FALSE, $series=array(), $disableLegend=FALSE){
+		
+		if ( class_exists('Highchart') ){
+		
+			$Chart = new Highchart();
+
+            $Chart->series = array();
+
+			$Chart->chart->renderTo 	= $renderTo;
+			$Chart->chart->type 		= $type;
+			
+			$Chart->title->text = $title ;
+			
+			if ( $yAxisTitle )
+				$Chart->yAxis->title->text = $yAxisTitle;
+			
+			if ( $disableLegend )
+				$Chart->legend->enabled = FALSE;
+				
+			
+			$Chart->credits->enabled = FALSE;
+
+            $Chart->plotOptions->series->shadow = TRUE;
+
+			$Chart->xAxis->labels->style->font = "normal 14px Verdana, sans-serif";
+			
+			$Chart->xAxis->categories = $categories;
+			
+			if ( count($series) ) foreach ($series as $s) $Chart->series[] = $s;
+			
+			return $Chart;
+			
+		}
+		else die("Class Highchart not loaded!");
+		
+	}
+	
+	public static function get_timezone_offset($timezone_from, $timezone_to){
+
+		$defaultTz= new DateTimeZone($timezone_from);
+		$offsetTz = new DateTimeZone($timezone_to);
+		
+		$serverTime = new DateTime("now", $defaultTz);
+		$offsetTime = new DateTime("now", $offsetTz);
+		
+		$serverOffset 	= $serverTime->getOffset(); //relative offset to GMT
+		$localOffset       = $offsetTime->getOffset(); //relative offset to GMT
+		
+		$offset = 0; $back = FALSE;
+			
+		if ( $localOffset > $serverOffset ) {
+			$back	   = TRUE;
+			$offset = $localOffset - $serverOffset;
+		}
+		elseif ( $localOffset < $serverOffset ){
+			$offset = $serverOffset - $localOffset;
+		}
+		
+		$offset = round( $offset/3600, 0, PHP_ROUND_HALF_UP );
+		
+		if ( $back ) $offset = 0 - $offset;
+		
+		return intval($offset);
+		
+	}
+	
+	public static function get_server_timezone_offset($timezone="Europe/Bucharest"){
+		return self::get_timezone_offset(FN_SERVER_TIMEZONE, $timezone);
+	}
+
+    public static function transliterate($string, $replacement = '_') {
+
+        $quotedReplacement = preg_quote($replacement, '/');
+
+        $merge = array(
+            '/[^\s\p{Ll}\p{Lm}\p{Lo}\p{Lt}\p{Lu}\p{Nd}]/mu' => ' ',
+            '/\\s+/' => $replacement,
+            sprintf('/^[%s]+|[%s]+$/', $quotedReplacement, $quotedReplacement) => '',
+        );
+
+        $map = self::$_transliteration + $merge;
+
+        return preg_replace( array_keys($map), array_values($map), $string );
+
+    }
+
+    public static function make_slug($string){
+        return strtolower( self::transliterate($string, "-") );
+    }
+
+    public static function get_rand_string($length=12){
+        return substr(md5( time() + rand(1, 9999) ), 0, $length);
+    }
+
+    /**
+     * Sends a single email message
+     */
+    public static function send_email($subject, $message, $to, $from=FALSE, $reply_to=FALSE){
+
+        $phpversion = phpversion();
+
+        if( empty($from) ){
+            $fn_domain = @parse_url( FN_URL ); $fn_domain = $fn_domain['host']; $from = "no-reply@{$fn_domain}";
+        }
+
+        $headers = "";
+
+        if( is_array($from) )
+            $headers.= "From: {$from[0]} <{$from[1]}> \r\n";
+        else
+            $headers.= "From: {$from} \r\n";
+
+        if( $reply_to ){
+            if( is_array($reply_to) )
+                $headers.= "Reply-To: {$reply_to[0]} <{$reply_to[1]}> \r\n";
+            else
+                $headers.= "Reply-To: {$reply_to} \r\n";
+        }
+
+        $headers.= "Content-type: text/html\r\n";
+        $headers.= "X-Mailer: PHP {$phpversion}\r\n";
+
+        if( @mail($to, $subject, $message, $headers) ) return TRUE;
+
+        return FALSE;
+
+    }
+
+
+    public static function is_https($force=FALSE){
+
+        if( $force )
+            return TRUE;
+        else
+            if( isset($_SERVER['HTTPS']) and $_SERVER['HTTPS'] and ( $_SERVER['HTTPS'] != 'off' ) ) return TRUE;
+
+        return FALSE;
+
+    }
+
+    public static function get_base_url($static=FALSE, $force_https=FALSE){
+
+        if( $static and ( strlen($static) > 11 ) ) return $static;
+
+        if( defined('FN_URL') ) return FN_URL;
+
+        $url = $_SERVER['SERVER_NAME'];
+        $url = self::is_https($force_https) ? ( 'https://' . $url ) : ( 'http://' . $url );
+
+        if( ( $_SERVER['SERVER_PORT'] != '80' ) and ( $_SERVER['SERVER_PORT'] != '443' ) ) //not standard http(s) ports
+            $url.= (':' . $_SERVER['SERVER_PORT']);
+
+        $docroot   = rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
+
+        $url  = str_replace($docroot, $url, FNPATH);
+
+        if( !self::is_https() and $force_https and !headers_sent() ) @header("Location: " . $url); //redirect to the https url right away
+
+        return $url;
+
+    }
+
+    public static function get_file_path($url){
+        if( strpos(self::get_base_url(), $url) === FALSE )
+            return ( rtrim(FNPATH, "/") . "/" . ltrim($url, "/") );
+        else
+            return str_replace(self::get_base_url(), FN_URL, $url);
+    }
+
+    public static function format_nr($number, $decimals=2, $precision=FALSE){
+        $rmode     = PHP_ROUND_HALF_EVEN; if( !defined('PHP_ROUND_HALF_EVEN') ) $rmode = PHP_ROUND_HALF_UP;
+        $precision = $precision > 0 ? $precision : $decimals;  $number = round(floatval($number), $precision, $rmode);  return number_format($number, $decimals, ",", ".");
+    }
+
+    /**
+     * Formats a file size to a human-readable format
+     * @param number $size in bytes
+     * @return string
+     */
+    public static function fmt_filesize( $size ){
+        if ($size >= 1073741824) return ( round(($size / 1073741824), 2) . " GB" );
+        if ($size >= 1048576) return ( round(($size / 1048576), 2) . " MB" );
+        if ($size >= 1024) return ( round(($size / 1024), 2) . " KB" );
+
+        return ($size . ' bytes');
+    }
+
+    /**
+     * Finds the value of a PHP configuration directive
+     * @param $var name of the directive
+     * @param bool $parseint (optional), set it to 1 or true in case that directive represents a file size in K (KB), M (MB) or G (GB) and you want the value in bytes
+     * @return bool|int|string
+     */
+    public static function env_get_cfg($var, $parseint=FALSE){
+
+        $value = @ini_get($var);
+
+        if($value){
+
+            if ($parseint){
+                $last 	= substr($value, -1, 1);
+
+                if ( in_array($last, array('K', 'M', 'G')) ){
+
+                    $value = intval( substr($value, 0, strlen($value)-1) );
+
+                    if ( $last == 'K' ) return ($value * 1024);
+                    if ( $last == 'M' ) return ($value * 1024 * 1024);
+                    if ( $last == 'G' ) return ($value * 1024 * 1024 * 1024);
+                }
+
+            }
+
+            return $value;
+
+        }
+
+        return FALSE;
+
+    }
+
+    public static function get_max_upload_filesize(){
+        $upload_max_size= self::env_get_cfg('upload_max_filesize', TRUE);
+        $post_max_size   = self::env_get_cfg('post_max_size', TRUE);
+
+        return min($upload_max_size, $post_max_size);
+    }
+
+    public static function get_file_extension($filename){
+        return strtolower( substr($filename, strrpos($filename, ".")+1) );
+    }
+
+    public static function file_upload($file, $folder, $filename=NULL, $prefix="", $suffix="", $allowExtensions=array()){
+
+        if( is_array($file) and empty($file['error']) ){
+
+            $ofilename = $file['name']; $allowedExts = array_merge(self::$allowedExtensions, $allowExtensions);
+
+            $filename  = isset($filename) ? $filename : basename($ofilename);
+            $extension = self::get_file_extension($ofilename);
+
+            $filename = str_replace($extension, "", $filename);
+            $filename = str_replace(strtoupper($extension), "", $filename);
+            $filename = trim($filename, ".");
+
+            if( !in_array($extension, $allowedExts) ){
+                $allowed = self::$allowedExtensions; $last = array_pop($allowed); $allowed = @implode(", ", $allowed); $allowed.= " sau {$last}";
+                $Error =  "Fisierul {$file['name']} nu este acceptat din cauza restrictiilor privind extensia fisierelor. Sunt acceptate doar fisiere {$allowed} . ";
+
+                return array('success'=>0, 'msg'=>$Error);
+            }
+
+            //upload path
+            $uploaded = ( rtrim($folder, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $prefix . $filename . $suffix . "." . $extension );
+
+            if( @move_uploaded_file($file['tmp_name'], $uploaded ) )
+                return array('success'=>1, 'msg'=>$uploaded);
+            else
+                array('success'=>0, 'msg'=>"Directorul {$folder} nu este accesibil pentru salvarea fisierului incarcat. Verifica permisiunile asupra directorului si incearca din nou.");
+
+
+        }
+        else if($file['error']){
+
+            if( $file['error'] == UPLOAD_ERR_INI_SIZE ){
+                $sysmaxsize  = self::fmt_filesize(  self::env_get_cfg('upload_max_filesize', TRUE) );
+                $Error          = "Fisierul {$file['name']} este prea mare. Sunt acceptate doar fisiere mai mici de {$sysmaxsize}";
+            }
+
+            if( $file['error'] == UPLOAD_ERR_CANT_WRITE )
+                $Error = "Fatal error: can't write to the temporary folder, set for file uploads. Please review your server's php.ini settings and try again.";
+
+            if( $file['error'] == UPLOAD_ERR_EXTENSION )
+                $Error = "The {$file['name']} cound not be uploaded due to file extension restrictions.";
+
+            if( empty($Error) )
+                $Error = "Oups! Unknown error. Maybe " . urldecode($_GET['upload']) . " is not writable by the current php process.";
+
+            return array('success'=>0, 'msg'=>$Error);
+
+        }
+
+        return FALSE;
+
+    }
+
+
+    public static function unzip($path, $dir=FALSE, $entries=array()){
+
+        if( empty($dir) ) $dir = dirname($path);
+
+        if( !class_exists('ZipArchive') ) return FALSE;
+
+        $zip = new ZipArchive;
+
+        if ($zip->open($path) === TRUE) {
+
+            if( count($entries) )
+                $zip->extractTo($dir, $entries);
+            else
+                $zip->extractTo($dir);
+
+            $zip->close();
+
+            return $dir;
+        }
+
+        return FALSE;
+
+    }
+
+    /**
+     * Recursively removes a directory
+     * @param $path
+     * @return bool
+     */
+    public static function remove_dir($path){
+
+        if( !is_dir($path) ) return FALSE;
+
+        $it     = new RecursiveDirectoryIterator($path);
+        $files = new RecursiveIteratorIterator($it,  RecursiveIteratorIterator::CHILD_FIRST);
+
+        foreach($files as $file) {
+
+            if ( ( $file->getFilename() === '.' ) or ( $file->getFilename() === '..' ) )
+                continue;
+
+            if ($file->isDir())
+                @rmdir($file->getRealPath());
+            else
+                @unlink($file->getRealPath());
+
+        }
+
+        return @rmdir($path);
+    }
+
+    /**
+     * Recursively copies directory or file
+     * @param $spath
+     * @param $dstpath
+     * @param bool $clean_dst
+     * @param int $rlevel internal variable used to determine directory level
+     */
+    public static function fcopy($spath, $dstpath, $clean_dst=FALSE, $rlevel=0) {
+
+        //echo ('copying: ' . $spath . ' -> ' . $dstpath . '<br/>'); //TODO
+
+        $spath    = rtrim($spath, DIRECTORY_SEPARATOR);
+        $dstpath = rtrim($dstpath, DIRECTORY_SEPARATOR);
+
+        if( $clean_dst and file_exists ( $dstpath ) ){
+            if( is_file($dstpath) ) @unlink($dstpath); else self::remove_dir($dstpath);
+        }
+
+        if ( is_dir ( $spath ) ) {
+
+            if( $clean_dst or $rlevel) @mkdir($dstpath);
+
+            $files = scandir ( $spath );
+
+            if( count($files) ) foreach ( $files as $file )
+                if ($file != "." && $file != "..")
+                    self::fcopy( $spath . DIRECTORY_SEPARATOR . $file, $dstpath . DIRECTORY_SEPARATOR . $file, FALSE, ++$rlevel );
+
+        } else if ( file_exists ( $spath ) )
+            @copy ( $spath, $dstpath );
+    }
+
+
+    public static function escape_xml($value){
+
+        $value = str_replace('&', '&amp;', $value);
+        $value = str_replace('<', '&lt;', $value);
+        $value = str_replace('>', '&gt;', $value);
+        $value = str_replace('\'', '&apos;', $value);
+        $value = str_replace('"', '&quot;', $value);
+
+        return $value;
+    }
+
+    public static function unescape_xml($value){
+
+        $value = str_replace('&amp;', '&', $value);
+        $value = str_replace('&lt;', '<', $value);
+        $value = str_replace('&gt;', '>', $value);
+        $value = str_replace('&apos;', '\'', $value);
+        $value = str_replace('&quot;', '"', $value);
+
+        return $value;
+
+    }
+	
+}
