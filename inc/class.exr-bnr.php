@@ -1,7 +1,12 @@
 <?php
 
-class exchangeRatesBNR{
-	
+class BNR_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_ExchangeRatesParser{
+
+    const name                      = 'Curs valutar BNR';
+    const EndpointURL          = 'http://www.bnr.ro/nbrfxrates.xml';
+    const websiteURL            = 'http://www.bnr.ro/';
+    const defaultCurrency     = 'RON';
+
 	/**
 	 * xml document
 	 * @var string
@@ -28,10 +33,9 @@ class exchangeRatesBNR{
 
     /**
      * Constructor
-     * @param $url
      */
-    function __construct($url){
-		$this->xmlDocument = @file_get_contents($url); if( strlen($this->xmlDocument) ) $this->parseXMLDocument();
+    function __construct(){
+		$this->xmlDocument = @file_get_contents( self::EndpointURL ); if( strlen($this->xmlDocument) ) $this->parseXMLDocument();
 	}
 	 
 	/**
@@ -64,8 +68,8 @@ class exchangeRatesBNR{
 
         $xml = new SimpleXMLElement($this->xmlDocument);
 
-        $this->date 			= $xml->Header->PublishingDate;
-        $this->timestamp 	= @strtotime($this->date);
+        $this->date 			    = $xml->Header->PublishingDate;
+        $this->timestamp 	    = @strtotime($this->date);
         $this->origCurrency	= strtoupper($xml->Body->OrigCurrency);
 
         $Currencies = array();
@@ -83,10 +87,36 @@ class exchangeRatesBNR{
 	 * @return float
 	 */
     public function getCurs($currency){
-		foreach($this->currency as $line){
-			if( $line["name"] == $currency ) return $line["value"];
+		if( count($this->currency) ) foreach($this->currency as $line){
+			if( $line['name'] == $currency ) return $line['value'];
 		}
 
 		return 0; //Cod incorect
 	}
+
+
+    public function isServiceAvailable(){
+        return $this->timestamp > 0;
+    }
+
+    public function getTimestamp(){
+         return $this->timestamp;
+    }
+
+    public function setBaseCurrency( $ccode ){
+        trigger_error(__CLASS__ . ' Eroare: Cursul valutar BNR este disponibil doar pentru RON, asadar schimbarea monedei de baza nu este permisa.', E_USER_WARNING); return false;//operatiunea nu este suportata
+    }
+
+    public function getBaseCurrency(){
+        return $this->origCurrency;
+    }
+
+    public function getAvailableCurrencies(){
+        return $this->getCurrenciesList();
+    }
+
+    public function getExchangeRate($ccode){
+        return ($ccode == $this->origCurrency) ? 1 : $this->getCurs( $ccode );
+    }
+
 }

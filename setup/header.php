@@ -1,4 +1,9 @@
 <?php
+/**
+ * FinFlow 1.0 - Setup header file
+ * @author Adrian S. (https://www.amsquared.co.uk/)
+ * @version 1.0
+ */
 
 define('FN_IS_INSTALLING', true);
 

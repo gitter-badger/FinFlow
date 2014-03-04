@@ -1,4 +1,9 @@
 <?php
+/**
+ * FinFlow 1.0 - Database connection/install file
+ * @author Adrian S. (https://www.amsquared.co.uk/)
+ * @version 1.0
+ */
 
 include_once 'header.php';
 
@@ -38,41 +43,41 @@ if( count($_POST) ){
     <?php fn_UI::show_errors($errors); ?>
 
     <?php if( !$success ): ?>
-    <form name="setup-create-cfg" id="setupCreateCfg" method="post" target="_self">
-        <p>
-            <label for="dbhost">Gazda (Host):</label>
-                <input type="text" name="dbhost" id="dbhost" value="<?php echo fn_UI::extract_post_val('dbhost', 'localhost'); ?>"/>
-        </p>
-        <p>
-            <label for="dbuser">Utilizator:</label>
-            <input type="text" name="dbuser" id="dbuser" value="<?php echo fn_UI::extract_post_val('dbuser'); ?>"/>
-        </p>
-        <p>
-            <label for="dbpassword">Parol&#259;:</label>
-            <input type="password" name="dbpassword" id="dbpassword" value=""/>
-        </p>
-        <p>
-            <label for="dbname">Baza de date:</label>
-            <input type="text" name="dbname" id="dbname" value="<?php echo fn_UI::extract_post_val('dbname'); ?>"/>
-        </p>
+        <form name="setup-create-cfg" id="setupCreateCfg" method="post" target="_self">
+            <p>
+                <label for="dbhost">Gazda (Host):</label>
+                    <input type="text" name="dbhost" id="dbhost" value="<?php echo fn_UI::extract_post_val('dbhost', 'localhost'); ?>"/>
+            </p>
+            <p>
+                <label for="dbuser">Utilizator:</label>
+                <input type="text" name="dbuser" id="dbuser" value="<?php echo fn_UI::extract_post_val('dbuser'); ?>"/>
+            </p>
+            <p>
+                <label for="dbpassword">Parol&#259;:</label>
+                <input type="password" name="dbpassword" id="dbpassword" value=""/>
+            </p>
+            <p>
+                <label for="dbname">Baza de date:</label>
+                <input type="text" name="dbname" id="dbname" value="<?php echo fn_UI::extract_post_val('dbname'); ?>"/>
+            </p>
 
-        <p style="text-align: center;">
-            <button class="btn" type="button" onclick="window.location.href='requirements.php';"> <span class="icon-arrow-left"></span> &#206;napoi</button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button class="btn btn-success" type="submit">
-                Continu&#259; <span class="icon-arrow-right"></span>
-            </button>
-        </p>
+            <p style="text-align: center;">
+                <button class="btn" type="button" onclick="window.location.href='requirements.php';"> <span class="icon-arrow-left"></span> &#206;napoi</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="btn btn-success" type="submit">
+                    Continu&#259; <span class="icon-arrow-right"></span>
+                </button>
+            </p>
 
-    </form>
+        </form>
     <?php else: ?>
 
-    <p class="msg note">
-        Fisierul de configurare a fost creat cu succes.
-    </p>
-    <script type="text/javascript">
-        window.location.href = '<?php echo FN_URL; ?>/setup/setup-user.php';
-    </script>
+        <p class="msg note">
+            Fi&#351;ierul de configurare a fost creat cu succes.
+        </p>
+        <script type="text/javascript">
+            window.location.href = '<?php echo FN_URL; ?>/setup/setup-currency.php';
+        </script>
 
     <?php endif; ?>
 

@@ -84,5 +84,3 @@ CREATE TABLE IF NOT EXISTS `cash_users` (
   `pw_reset_key` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
-INSERT INTO `cash_currency` (`currency_id`, `csymbol`, `cname`, `ccode`, `cexchange`) VALUES  (1, 'lei', 'Leul rom&#226;nesc', 'RON', 1);
