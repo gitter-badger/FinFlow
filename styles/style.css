@@ -330,6 +330,20 @@ a.default:hover{
     text-align: center;
 }
 
+p.installer-mchoice{
+    padding: 10px;
+    background: #FDFDFD;
+    border: 1px #CACACA solid;
+    margin-top: 20px;
+    border-radius: .4em;
+    display: inline-block;
+    width: 93%;
+}
+
+p.installer-mchoice input[type="radio"]:checked + span{
+    font-weight: bold;
+}
+
 /* Small desktop */
 @media (max-width: 1280px) {
 	table tr td:last-child, table tr th:last-child{

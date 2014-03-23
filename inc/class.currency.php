@@ -307,6 +307,20 @@ class fn_Currency{
 
     }
 
+    /**
+     * Finds details about a given currency code, based on a given JSON file. Sample JSON file: https://gist.github.com/adrian7/5841262/b0d1722b04b0a737aade2ce6e055263625a0b435
+     * @param $ccode
+     * @param string $json_data_file
+     * @return array|bool
+     */
+    public static function get_currency_details( $ccode, $json_data_file='currencies.json' ){
+        $contents = @file_get_contents($json_data_file); if( $contents ){
+            $all = @json_decode($contents, true); if( isset($all[$ccode]) ) return $all[$ccode];
+        }
+
+        return false;
+    }
+
     public static function get_currencies_export_array(){
 
         global $fndb, $fnsql;

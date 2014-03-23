@@ -33,7 +33,7 @@ if( !fn_Installer::is_valid_session_ip() )
     <script type="text/javascript" src="<?php echo FN_URL; ?>/js/fn.js"></script>
     <style type="text/css" media="all">label{ width: 28%; } .inner-container{ width: 70%; }</style>
 </head>
-<body id="page-requirements">
+<body id="page-setup" class="finflow-setup">
 <div class="container">
 
     <div class="row content">

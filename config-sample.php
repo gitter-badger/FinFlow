@@ -12,7 +12,7 @@ define('FN_DB_USER'		, 'UTILIZATOR_BD');
 define('FN_DB_PASS'		, 'PAROLA_BD');
 define('FN_DB_NAME'	    , 'NUME_BD');
 
-/** String folosit ca salt pentru criptarea parolelor, poti genera unul la http://tinyurl.com/RandomString7 */
+/** String folosit ca salt pentru criptarea parolelor, poti genera unul la http://tinyurl.com/SecureRandomString7 */
 define('FN_PW_SALT'	, 'CUVANT_SECRET');
 
 
@@ -26,8 +26,3 @@ define('FN_YEAR_FORMAT'		, 'Y');
 
 /** Numarul de rezultate de afisat pe pagina */
 define('FN_RESULTS_PER_PAGE', 15);
-
-
-/** Setari pentru actualizarea cursului valutar, acestea sunt singurele valori compatibile cu aceasta versiune */
-define('FN_EXCHANGERATES_XML_URL'		 , 'http://www.bnr.ro/nbrfxrates.xml');
-define('FN_EXCHANGERATES_XML_PARSER', 'bnr');

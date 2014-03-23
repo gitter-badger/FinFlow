@@ -60,6 +60,20 @@ class fn_Installer{
 
     }
 
+    public static function setup_default_currency($ccode){
+
+        global $fndb, $fnsql; $ccode = strtoupper($ccode); $details = fn_Currency::get_currency_details( $ccode, ( FNPATH . '/setup/assets/currencies.json' ) );
+
+        if( $ccode ){
+
+            $fnsql->insert(fn_Currency::$table, array('csymbol'=>$details['symbol'], 'cname'=>$details['name'], 'ccode'=>$ccode, 'cexchange'=>1));
+
+            return $fndb->execute_query( $fnsql->get_query() );
+        }
+
+        return false;
+    }
+
     /**
      * Cleans the /setup folder, except for the upgrade.php, header.php, footer.php and the index.html
      * @return bool

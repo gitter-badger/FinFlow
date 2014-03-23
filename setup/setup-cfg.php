@@ -76,7 +76,7 @@ if( count($_POST) ){
             Fi&#351;ierul de configurare a fost creat cu succes.
         </p>
         <script type="text/javascript">
-            window.location.href = '<?php echo FN_URL; ?>/setup/setup-currency.php';
+            window.location.href = '<?php echo FN_URL; ?>/setup/setup-exchangerate-parser.php';
         </script>
 
     <?php endif; ?>

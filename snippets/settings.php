@@ -36,12 +36,16 @@ if ( $tab == 'emailupdate' ){
 }
 
 if ($tab == 'mainccs'){
-	
+
 	$Currencies = fn_Currency::get_all(TRUE);
 	$defaultCC  = fn_Currency::get_default();
 	
 	$accepted = fn_Settings::get('op_currencies_in');
 	$accepted = @explode(",", $accepted);
+}
+
+if( $tab == 'exrparser' ) {
+    include_once ( FNPATH . '/inc/exr-init.php' ); global $fnexr;
 }
 
 ?>
@@ -56,7 +60,7 @@ if ($tab == 'mainccs'){
             <li class="<?php echo $activetab['myaccount']; ?>"><a href="index.php?p=settings&t=myaccount"> Set&#259;ri acces  </a></li>
 		</ul>
 		
-		<?php if ($tab == 'mainccs'): ?>
+		<?php if ( $tab == 'mainccs' ): ?>
 			
 			<form target="_self" method="post" name="settings-form" id="settingsForm">
 				<p>
@@ -103,8 +107,8 @@ if ($tab == 'mainccs'){
 					<legend>Set&#259;ri cron</legend>
 					<p>
 						<label for="exchange_rates_cron_url">URL:</label>
-						<input type="text" id="exchange_rates_cron_url" readonly="readonly" size="45" maxlength="255" value="<?php echo FN_EXCHANGERATES_XML_URL; ?>" />
-						<a class="btn btn-top" href="<?php echo FN_EXCHANGERATES_XML_URL; ?>" target="_blak"> verific&#259; </a>
+						<input type="text" id="exchange_rates_cron_url" readonly="readonly" size="45" maxlength="255" value="<?php echo $fnexr::EndpointURL; ?>" />
+						<a class="btn btn-top" href="<?php echo $fnexr::websiteURL; ?>" target="_blak"> verific&#259; </a>
 						<span class="details"></span>
 					</p>
 					<p>

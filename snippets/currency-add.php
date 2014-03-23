@@ -1,10 +1,9 @@
 <?php if( !defined('FNPATH') ) exit;
 
 //--- get the list of available currencies ---//
-include_once (FNPATH . '/inc/class.exrbnr.php');
+include_once ( FNPATH . '/inc/exr-init.php' ); global $fnexr;
 
-$Exchange   = new exchangeRatesBNR(FN_EXCHANGERATES_XML_URL);
-$Currencies = $Exchange->currency;
+$Currencies = $fnexr->getAvailableCurrencies(); print_r($Currencies); die();
 
 fn_UI::show_errors($errors); fn_UI::show_notes($notices);
 

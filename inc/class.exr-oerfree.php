@@ -7,7 +7,8 @@
 class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_ExchangeRatesParser{
 
     const name                                   = 'openexchangerates.appspot.com';
-    const website                               = 'http://openexchangerates.appspot.com';
+    const id                                        = 'finflowoer';
+    const websiteURL                          = 'http://openexchangerates.appspot.com';
 
     const EndpointURL                       = 'http://openexchangerates.appspot.com/currency';
     const CurrenciesEndpointURL       = 'http://openexchangerates.appspot.com/currencies-en_US.json';
@@ -39,7 +40,7 @@ class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements f
 	}
 
     public function getEndpointURL($ccode){
-        return ( self::EndpointURL . '?from='. $this->origCurrency .'&to=' . $ccode . '&q=1' );
+        return ( self::EndpointURL . '?from='. $ccode .'&to=' . $this->origCurrency . '&q=1' );
     }
 
 	/**

@@ -3,6 +3,7 @@
 class BNR_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_ExchangeRatesParser{
 
     const name                      = 'Curs valutar BNR';
+    const id                           = 'bnr';
     const EndpointURL          = 'http://www.bnr.ro/nbrfxrates.xml';
     const websiteURL            = 'http://www.bnr.ro/';
     const defaultCurrency     = 'RON';
@@ -88,7 +89,7 @@ class BNR_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_Ex
 	 */
     public function getCurs($currency){
 		if( count($this->currency) ) foreach($this->currency as $line){
-			if( $line['name'] == $currency ) return $line['value'];
+			if( $line['name'] == $currency ) return ( $line['value'] / ( $line['multiplier'] > 0 ? $line['multiplier'] : 1  ) ) ;
 		}
 
 		return 0; //Cod incorect
@@ -104,7 +105,9 @@ class BNR_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_Ex
     }
 
     public function setBaseCurrency( $ccode ){
-        trigger_error(__CLASS__ . ' Eroare: Cursul valutar BNR este disponibil doar pentru RON, asadar schimbarea monedei de baza nu este permisa.', E_USER_WARNING); return false;//operatiunea nu este suportata
+        if( $ccode != self::defaultCurrency ){
+            trigger_error(__CLASS__ . ' Eroare: Cursul valutar BNR este disponibil doar pentru RON, asadar schimbarea monedei de baza nu este permisa.', E_USER_WARNING); return false;//operatiunea nu este suportata
+        }
     }
 
     public function getBaseCurrency(){

@@ -23,7 +23,8 @@ interface fn_ExchangeRatesParser{
 
 class fn_ExchangeRatesParserBase{
 
-    const name                      = 'Generic Exchange Rate Parser ';
+    const name                      = 'Generic Exchange Rate Parser';
+    const id                           = 'EXR';
     const EndpointURL          = 'http://example.com';
     const websiteURL            = 'http://example.com';
     const defaultCurrency     = 'EUR';
@@ -31,5 +32,9 @@ class fn_ExchangeRatesParserBase{
 }
 
 class fn_ExchangeRatesParserFactory{
-    //TODO implement using factory
+
+    public static function getAvailableImplementations(){
+        return array('bnr', 'oer', 'finflowoer');  //TODO keep up to date with available parsers IDs
+    }
+
 }

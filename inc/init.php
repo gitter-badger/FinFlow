@@ -55,7 +55,7 @@ if( !defined('FN_DB_HOST') and ( strpos($_SERVER['REQUEST_URI'], '/setup') === f
 $fnsql= new SQLStatement();
 $fndb = new MySQLiDB(FN_DB_HOST, FN_DB_USER, FN_DB_PASS, FN_DB_NAME);
 
-if ( !$fndb->connected and !defined('FN_IS_INSTALLING') )
+if ( !$fndb->connected and defined('FN_DB_HOST') )
     fn_UI::fatal_error("Nu se poate realiza conexiunea cu baza de date pe " . FN_DB_HOST);
 
 //--- setup timezone ---//
