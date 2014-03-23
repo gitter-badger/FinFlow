@@ -170,9 +170,9 @@ else
 						<?php endforeach;?>
 					</td>
 					<td>
-						<button class="btn" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>')">
+						<a class="btn" href="#nwhr" title="<?php echo fn_UI::esc_attr( $transaction->comments ); ?>" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>')">
 							<span class="icon-info-sign"></span>
-						</button>
+						</a>
 						&nbsp;&nbsp;
 						<button class="btn" onclick="confirm_delete('<?php fn_UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
 							<span class="icon-remove"></span>

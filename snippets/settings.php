@@ -57,7 +57,9 @@ if( $tab == 'exrparser' ) {
 			<li class="<?php echo $activetab['mainccs']; ?>"><a href="index.php?p=settings&t=mainccs"> Conversii automate </a></li>
 			<li class="<?php echo $activetab['exrparser']; ?>"><a href="index.php?p=settings&t=exrparser"> Actualizare curs </a></li>
 			<li class="<?php echo $activetab['emailupdate']; ?>"><a href="index.php?p=settings&t=emailupdate"> Actualizare prin email </a></li>
-            <li class="<?php echo $activetab['myaccount']; ?>"><a href="index.php?p=settings&t=myaccount"> Set&#259;ri acces  </a></li>
+            <li class="<?php echo $activetab['thresholds']; ?>"><a href="index.php?p=settings&t=thresholds"> Praguri  </a></li>
+            <li class="<?php echo $activetab['timezone']; ?>"><a href="index.php?p=settings&t=timezone"> Fus orar  </a></li>
+            <li class="<?php echo $activetab['myaccount']; ?>"><a href="index.php?p=settings&t=myaccount"> Acces  </a></li>
 		</ul>
 		
 		<?php if ( $tab == 'mainccs' ): ?>
@@ -214,8 +216,40 @@ if( $tab == 'exrparser' ) {
 		
 		<?php endif;?>
 
+        <?php if ($tab == 'timezone'): ?>
+
+            <?php $timezone_identifiers = DateTimeZone::listIdentifiers(); ?>
+
+            <form target="_self" method="post" name="settings-form" id="settingsForm">
+                <fieldset>
+                    <legend>Set&#259;ri pentru fusul orar</legend>
+                    <p>
+                        <label for="timezone">Alege fus orar</label>
+                        <label class="wrap-input">
+                            <select name="timezone" id="timezone">
+                                <?php foreach($timezone_identifiers as $id=>$name): ?>
+                                    <option value="<?php echo $name ?>" <?php echo fn_UI::selected_or_not($name, FN_TIMEZONE); ?>>
+                                        <?php echo str_replace('_', ' ',$name); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </label>
+                    </p>
+
+                    <p>
+                        <button class="btn btn-primary" type="submit">Salveaz&#259;</button>
+                    </p>
+
+                </fieldset>
+
+            </form>
+
+        <?php endif; ?>
+
+        <?php if ($tab == 'thresholds') include_once 'settings-thresholds.php'; ?>
+
         <?php if ($tab == 'myaccount') include_once 'settings-access.php'; ?>
-		
+
 	</div>
 
 	<?php include_once ( FNPATH . '/snippets/sidebar.php' ); ?>

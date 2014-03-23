@@ -140,7 +140,7 @@ class OER_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_Ex
 			if( $line['name'] == $ccode ) return floatval( $line['value'] );
 		}
 
-		return 0; //Cod incorect
+		return 0; //Incorrect Currency Code
 	}
 
     public function isServiceAvailable(){

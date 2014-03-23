@@ -12,6 +12,9 @@ define('FN_DB_USER'		, 'UTILIZATOR_BD');
 define('FN_DB_PASS'		, 'PAROLA_BD');
 define('FN_DB_NAME'	    , 'NUME_BD');
 
+/** prefixul pentru tabelele din baza de date */
+define('FN_DB_PREFIX'	, 'PREFIX_DB');
+
 /** String folosit ca salt pentru criptarea parolelor, poti genera unul la http://tinyurl.com/SecureRandomString7 */
 define('FN_PW_SALT'	, 'CUVANT_SECRET');
 
@@ -26,3 +29,7 @@ define('FN_YEAR_FORMAT'		, 'Y');
 
 /** Numarul de rezultate de afisat pe pagina */
 define('FN_RESULTS_PER_PAGE', 15);
+
+/**Numele directorului cache*/
+define('FN_CACHE_FOLDER', '.cache');
+define('FN_CACHE_EXPIRE', 7200);

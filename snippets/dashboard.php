@@ -4,6 +4,7 @@ if( !defined('FNPATH') ) exit;
 
 include_once ( FNPATH . '/inc/class.cronassistant.php' );
 
+//---- calculate balance ---//
 $sdate = (date('Y-m') . "-01");
 $filters = array('startdate'=>$sdate);
 
@@ -13,27 +14,43 @@ $Outcome	= fn_OP::get_sum(array_merge($filters, array('type'=>FN_OP_OUT)));
 
 $Balance = fn_OP::get_balance();
 
+$Thresholds = array(
+    'red' => fn_Settings::get('balance_tsh_red', 0),
+    'yellow' => fn_Settings::get('balance_tsh_yellow', 0),
+    'blue' => fn_Settings::get('balance_tsh_blue', 0),
+    'green' => fn_Settings::get('balance_tsh_green', 0)
+);
+
+$threshold_color = fn_Util::get_array_key_by_value_thresholds($Thresholds, $Balance);
+$threshold_color = $threshold_color ? $threshold_color : '';
+
+//---- calculate balance ---//
+
+//---- get latest transactions ---//
 $start = 0;
 $count= FN_RESULTS_PER_PAGE;
 
 $Transactions = fn_OP::get_operations($filters, $start, $count);
 
 $Currency = fn_Currency::get_default();
+//---- get latest transactions ---//
 
+//---- get cron jobs statuses ---//
 $Cronjobs 		= array('/inc/cron/cron.exchangerates.php', '/inc/cron/cron.readmail.php');
 $Cronupdates	= array();
 
 foreach ($Cronjobs as $job){
 	$timestamp = fn_CronAssistant::get_lastrun( FNPATH . $job ); if( $timestamp ) $Cronupdates[] = fn_UI::translate_date(date(FN_DATETIME_FORMAT, $timestamp));
 }
+//---- get cron jobs statuses ---//
 
 ?>
 
 <div class="row content">
 	<div class="span10">
 
-        <h4 class="balance">
-            Balan&#355;&#259;: <span class="value"> <?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Balance); ?> </span>
+        <h4 class="balance treshold <?php echo $threshold_color; ?>">
+            Balan&#355;&#259;: <span class="value"> <?php echo $Currency->csymbol; ?> <?php echo fn_Util::format_nr($Balance); ?> </span>
         </h4>
 
 		<h4 class="page-heading">Raport pentru <?php echo fn_UI::translate_date(date(FN_MONTH_FORMAT)); ?></h4>

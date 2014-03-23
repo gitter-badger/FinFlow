@@ -1,15 +1,29 @@
 <?php if ( !defined('FNPATH') ) include_once '../inc/init.php'; ?>
-<?php if ( !fn_User::is_authenticated() ) exit(); ?>
+<?php if ( !fn_User::is_authenticated() ) exit();
+
+$dtimezones = array(
+    'Europe/Bucharest'      => 'Bucure&#351;ti',
+    'Europe/London'         => 'Londra',
+    'America/New_York'   => 'New York',
+    'Asia/Tokyo'               => 'Tokyo',
+    'Asia/Hong_Kong'        => 'Hong Kong',
+    'Europe/Moscow'        => 'Moscova',
+    'America/Los_Angeles' => 'Los Angeles',
+    'America/Sao_Paulo'    => 'Sao Paulo'
+);
+
+if( array_key_exists(FN_TIMEZONE, $dtimezones) ); else {
+    $city = @explode('/', FN_TIMEZONE); $city = $city[1]; $city = str_replace('_', ' ', $city); $dtimezones[FN_TIMEZONE] = $city;
+}
+
+?>
 <p>
 	<select name="clock_tz" id="clock_tz" class="widget-input-fullwidth">
-		<option value="<?php echo fn_Util::get_timezone_offset('Europe/Bucharest', FN_TIMEZONE); ?>">Bucure&#351;ti</option>
-		<option value="<?php echo fn_Util::get_timezone_offset('Europe/London', FN_TIMEZONE); ?>">Londra</option>
-		<option value="<?php echo fn_Util::get_timezone_offset('America/New_York', FN_TIMEZONE); ?>">New York</option>
-		<option value="<?php echo fn_Util::get_timezone_offset('Asia/Tokyo', FN_TIMEZONE); ?>">Tokyo</option>
-		<option value="<?php echo fn_Util::get_timezone_offset('Asia/Hong_Kong', FN_TIMEZONE); ?>">Hong Kong</option>
-		<option value="<?php echo fn_Util::get_timezone_offset('Europe/Moscow', FN_TIMEZONE); ?>">Moscova</option>
-		<option value="<?php echo fn_Util::get_timezone_offset('America/Los_Angeles', FN_TIMEZONE); ?>">Los Angeles</option>
-		<option value="<?php echo fn_Util::get_timezone_offset('America/Sao_Paulo', FN_TIMEZONE); ?>">Sao Paulo</option>
+        <?php foreach($dtimezones as $tz=>$city): ?>
+		<option value="<?php echo fn_Util::get_timezone_offset($tz, FN_TIMEZONE); ?>" <?php echo fn_UI::selected_or_not($tz, FN_TIMEZONE); ?>>
+            <?php echo $city; ?>
+        </option>
+        <?php endforeach; ?>
 	</select>
 	<strong id="displayWClock" class="widget-inline-blockclear"><?php echo date('H:i:s'); ?></strong>
 </p>

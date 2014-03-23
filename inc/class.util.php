@@ -468,6 +468,26 @@ class fn_Util{
         return substr(md5( time() + rand(1, 9999) ), 0, $length);
     }
 
+    public static function get_array_key_by_value_thresholds($input_array, $input_value){
+
+        $pass = false; $i=0; $max = ( count($input_array) -1 ); $prevkey = false;  foreach($input_array as $key=>$value){
+
+            if( $value == 0 ) continue;
+
+            if(  ( $i <  $max  ) and ( $input_value <= $value ) ) {
+                $pass = $key; break;
+            }
+            elseif( ( $i ==  $max  ) and empty($pass) ){
+                if( $input_value > $value ) $pass = $key; else $pass = $prevkey;
+            }
+
+            $i++; $prevkey = $key;
+
+        }
+
+        return $pass;
+    }
+
     /**
      * Sends a single email message
      */
@@ -743,7 +763,6 @@ class fn_Util{
         } else if ( file_exists ( $spath ) )
             @copy ( $spath, $dstpath );
     }
-
 
     public static function escape_xml($value){
 

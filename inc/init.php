@@ -59,7 +59,7 @@ if ( !$fndb->connected and defined('FN_DB_HOST') )
     fn_UI::fatal_error("Nu se poate realiza conexiunea cu baza de date pe " . FN_DB_HOST);
 
 //--- setup timezone ---//
-define('FN_TIMEZONE', 'Europe/Bucharest'); date_default_timezone_set(FN_TIMEZONE); //TODO get setting from db
+define('FN_TIMEZONE', fn_Settings::get('timezone', 'Europe/London')); date_default_timezone_set(FN_TIMEZONE);
 //--- setup timezone ---//
 
 if( !defined('FN_IS_CRON') ) @session_start();

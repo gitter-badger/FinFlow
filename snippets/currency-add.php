@@ -3,7 +3,17 @@
 //--- get the list of available currencies ---//
 include_once ( FNPATH . '/inc/exr-init.php' ); global $fnexr;
 
-$Currencies = $fnexr->getAvailableCurrencies(); print_r($Currencies); die();
+$Currencies = array();
+
+$ExrCurrencies = $fnexr->getAvailableCurrencies(); if( count($ExrCurrencies) ) foreach($ExrCurrencies as $ccode){
+
+    $rate     = $fnexr->getExchangeRate($ccode);
+    $details = fn_Currency::get_currency_details($ccode, ( FNPATH . '/setup/assets/currencies.json' ));
+    $details = is_array($details) ? $details : array();
+
+    $Currencies[] = array_merge($details, array('rate'=>$rate));
+
+}
 
 fn_UI::show_errors($errors); fn_UI::show_notes($notices);
 
@@ -11,21 +21,23 @@ fn_UI::show_errors($errors); fn_UI::show_notes($notices);
 
 <form action="<?php fn_UI::page_url('currencies', array('t'=>'add'))?>" method="post" name="add-currency-form" id="addCurrencyForm">
     <p>
-        <label for="cname">Nume:</label>
-        <input type="text" size="45" maxlength="255" name="cname" id="cname" value="<?php echo fn_UI::extract_post_val('cname', "", TRUE); ?>" />
-        <span class="required">*</span>
-    </p>
-    <p>
         <label for="ccode">Cod:</label>
         <?php if( count($Currencies) ): ?>
             <select name="ccode" id="ccode">
-                <?php foreach($Currencies as $currency): $ccode = strtoupper($currency['name']); $rate = $currency['value'];  ?>
-                    <option value="<?php echo $ccode; ?>" data-rate="<?php echo $rate; ?>"><?php echo $ccode; ?></option>
+                <?php foreach($Currencies as $currency):  ?>
+                    <option value="<?php echo $currency['code']; ?>" data-cname="<?php echo $currency['name']; ?>" data-symbol="<?php echo $currency['symbol']; ?>" data-rate="<?php echo $currency['rate']; ?>">
+                        <?php echo $currency['code']; ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         <?php else: ?>
             <input type="text" size="45" maxlength="255" name="ccode" id="ccode" value="<?php echo fn_UI::extract_post_val('ccode'); ?>" />
         <?php endif; ?>
+        <span class="required">*</span>
+    </p>
+    <p>
+        <label for="cname">Nume:</label>
+        <input type="text" size="45" maxlength="255" name="cname" id="cname" value="<?php echo fn_UI::extract_post_val('cname', "", TRUE); ?>" />
         <span class="required">*</span>
     </p>
     <p>
@@ -46,7 +58,18 @@ fn_UI::show_errors($errors); fn_UI::show_notes($notices);
 
 <script type="text/javascript">
     $(document).ready(function(){
-        $('#ccode').change(function(){ var rate = $(this).find('option:selected').data('rate'); if( rate > 0 ) $('#cexchange').val(rate); console.log(rate); });
+        $('#ccode').change(function(){
+
+            var rate     = $(this).find('option:selected').data('rate');
+            var symbol = $(this).find('option:selected').data('symbol');
+            var cname   = $(this).find('option:selected').data('cname');
+
+            if( symbol.length > 0 )$('#csymbol').val(symbol);
+            if( cname.length > 0 )$('#cname').val(cname);
+            if( rate > 0 ) $('#cexchange').val(rate);
+
+        });
+
         $('#ccode').trigger('change');
     });
 </script>

@@ -321,6 +321,23 @@ a.default:hover{
     text-transform: capitalize;
 }
 
+.treshold.red{
+    background: #FF738A;
+}
+
+.treshold.yellow{
+    background: #FCED44;
+}
+
+.treshold.blue{
+    background: #5EAFFF;
+}
+
+.treshold.green{
+    background: #93FC8D;
+}
+
+
 #captchaImg:hover{
     cursor: pointer;
 }
@@ -352,7 +369,7 @@ p.installer-mchoice input[type="radio"]:checked + span{
 }
 
 /* Landscape phone to portrait tablet */
-@media (max-width: 801px){
+@media (max-width: 800px){
 	
 	table tr td:last-child, table tr th:last-child{
 		min-width: 6em;
@@ -385,6 +402,16 @@ p.installer-mchoice input[type="radio"]:checked + span{
 	.navbar-inner a.default{
 		margin-right:5px;
 	}
+}
+
+@media screen and (max-width: 768px){
+    .navbar .nav>li>a{
+        padding: 10px 10px 10px;
+    }
+
+    .navbar .navbar-inner > a.pull-right{
+        display: none;
+    }
 }
 
 /* Landscape phones and down */
