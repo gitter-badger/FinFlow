@@ -174,6 +174,20 @@ function fn_cconvert(ajaxURL, inputResult){
 	else alert("Specifica suma.");
 }
 
+function fn_round_nr(number, decimals, decimal_sep){
+    number = new String(number); if( decimal_sep === undefined ) decimal_sep = '.';
+
+    //do not round the number if it is already rounded to the number of decimals
+    if( number.indexOf(decimal_sep) > 0 ) { decimalscount = number.split(decimal_sep); decimalscount = decimalscount[1].length; if(decimalscount == decimals) return number; }
+
+    var x = Math.pow(10, decimals); number = parseFloat(number); var rounded = Math.round(number*x)/x; var maxZeros = decimals;
+    rounded = new String(rounded); if(rounded.indexOf(decimal_sep) < 0 ) rounded+=decimal_sep; var nrdecimals = rounded.split("."); nrdecimals = nrdecimals[1].length; while( nrdecimals < maxZeros ){
+        rounded = new String(rounded); rounded+= "0"; nrdecimals++;
+    }
+
+    return rounded;
+}
+
 function fn_prepend_zeros(inputnr){
 	inputnr = parseInt(inputnr);
 	

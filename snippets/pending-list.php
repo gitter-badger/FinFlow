@@ -56,7 +56,7 @@ if( count($Transactions) ): ?>
                     <?php endforeach; ?>
                 </td>
                 <td>
-                    <a class="btn" href="#nwhr" title="confirma">
+                    <a class="btn" href="#nwhr"  onclick="fn_popup('<?php echo (FN_URL . "/snippets/pending-confirm.php?id={$transaction->trans_id}"); ?>');" title="confirma">
                         <span class="icon-ok"></span>
                     </a>
                     &nbsp;&nbsp;

@@ -208,14 +208,13 @@ else
                     &#206;n a&#351;teptare <b class="caret"></b>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending')); ?>">Toate</a></li>
-                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'overdue')); ?>">Overdue</a></li>
-                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'30 days')); ?>">In 30 days</a></li>
-                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'3 months')); ?>">In 3 months</a></li>
-                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'6 months')); ?>">In 6 months</a></li>
-                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'12 months')); ?>">In 12 months</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'overdue')); ?>">&#206;n &#238;ntarziere</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'30 days')); ?>">&#206;n urm&#259;toarele 30 de zile</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'3 months')); ?>">&#206;n urm&#259;toarele 3 luni</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'6 months')); ?>">&#206;n urm&#259;toarele 6 luni</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'12 months')); ?>">&#206;n urm&#259;toarele 12 luni</a></li>
                     <li class="divider"></li>
-                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'viewroots'=>'1')); ?>">Modifica</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'roots'=>'1')); ?>">Modific&#259;</a></li>
                 </ul>
             </li>
 			<li class="<?php echo $activetab['add']; ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'add'))?>"> Adaug&#259; </a></li>

@@ -621,7 +621,7 @@ class fn_OP{
 		global $fndb, $fnsql; 
 		
 		$trans_id = intval($trans_id);
-		$label_id	 = intval($label_id);
+		$label_id = intval($label_id);
 		
 		if ( $label_id and $trans_id ){
 		

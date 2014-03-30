@@ -107,12 +107,72 @@ class fn_OP_Pending{
         return NULL;
     }
 
-    public static function confirm($trans_id){ //TODO confirm a pending transaction
+    public static function confirm( $transaction, $instances=1 ){
 
-        $trans = self::get($trans_id);
+        global $fndb, $fnsql; $trans = self::get($transaction);
 
-        if( $trans and isset($trans->value) )
-            return fn_OP::add($trans->optype, $trans->value, $trans->currency_id, $trans->comments);
+        if( $trans and isset($trans->value) ){
+
+            if( $trans->recurring != 'no' ){
+
+                $t_units = self::get_recurring_time_unit( $trans->recurring, $instances );
+
+                $fr_timestamp = @strtotime("+{$instances} {$t_units}", @strtotime($trans->fdate));
+                $fdate            = date(FN_MYSQL_DATE, $fr_timestamp); //calculate next future date of transaction
+
+                if( self::update($trans->trans_id, array('fdate'=>$fdate)) ); else return false;
+
+            }
+            else{
+                //--- remove the pending transaction ---//
+                $fnsql->delete(self::$table, array('trans_id'=>$trans->trans_id)); $fndb->execute_query( $fnsql->get_query() );
+                //--- remove the pending transaction ---//
+            }
+
+            //----- remove all children/instances up until the date ---//
+            $fnsql->delete(self::$table);
+
+            $fnsql->condition('root_id', '=', $trans->trans_id);
+            //$fnsql->condition('recurring', '=', 'no'); //We don't need this
+            $fnsql->condition('fdate', '<', $fdate);
+
+            $fnsql->conditions_ready();
+
+            $fndb->execute_query( $fnsql->get_query() );
+
+            //----- remove all children/instances up until the date ---//
+
+            //--- add the transaction to live transactions ---//
+
+            $comments     = self::get_metdata($trans, 'comments', null);
+            $labels           = self::get_metdata($trans, 'labels', array());
+            $account_id    = self::get_metdata($trans, 'account_id', 0);
+
+            $attachments= fn_OP_Pending::get_metdata($trans, 'attachments');
+
+            if( $op_trans_id = fn_OP::add($trans->optype, $trans->value, $trans->currency_id, $comments) ){
+
+                if( count($labels) ) foreach($labels as $label_id)
+                    if( fn_Label::get_by($label_id, 'id') ) fn_OP::associate_label($op_trans_id, $label_id);
+
+                if( $account_id and fn_Accounts::get($account_id))
+                    fn_Accounts::add_trans($account_id, $op_trans_id);
+
+                if( is_array($attachments) and count($attachments) ){
+
+                    $attachmentsNames = self::get_metdata($trans, 'attachments_names', $attachments);
+
+                    fn_OP::save_metadata($op_trans_id, 'attachments', @serialize($attachments));
+                    fn_OP::save_metadata($op_trans_id, 'attachments_names', @serialize($attachmentsNames));
+
+                }
+
+                return $op_trans_id;
+
+            }
+
+            //--- add the transaction to live transactions ---//
+        }
 
         return false;
 
@@ -131,10 +191,65 @@ class fn_OP_Pending{
         return FALSE;
     }
 
-    public static function remove($trans_id){
+    /**
+     * Clears children/instances of a transaction
+     * @param $transaction
+     * @param int $instances
+     * @return bool|void
+     */
+    public static function clear($transaction, $instances=1){
 
-        //TODO if it is a parent, also remove all existing children
+        global $fndb, $fnsql; $trans = self::get($transaction);
 
+        if( $trans and isset($trans->value) ){
+
+            if( $trans->recurring != 'no' ){
+
+                $t_units = self::get_recurring_time_unit( $trans->recurring, $instances );
+
+                $fr_timestamp = @strtotime("+{$instances} {$t_units}", @strtotime($trans->fdate));
+                $fdate            = date(FN_MYSQL_DATE, $fr_timestamp); //calculate next future date of transaction
+
+                if( self::update($trans->trans_id, array('fdate'=>$fdate)) ); else return false;
+
+            }
+            else return self::remove($trans);
+
+            //----- remove all children/instances up until the date ---//
+            $fnsql->delete(self::$table);
+
+            $fnsql->condition('root_id', '=', $trans->trans_id);
+            //$fnsql->condition('recurring', '=', 'no'); //Don't depend on recurring or not
+            $fnsql->condition('fdate', '<', $fdate);
+
+            $fnsql->conditions_ready();
+
+            return $fndb->execute_query( $fnsql->get_query() );
+
+            //----- remove all children/instances up until the date ---//
+        }
+
+        return false;
+
+    }
+
+    public static function remove($transaction){
+
+        global $fndb, $fnsql; $trans = self::get($transaction);
+
+        if( $trans and isset($trans->value) ){
+
+            //--- remove all children ---//
+            $fnsql->delete(self::$table, array('root_id'=>$trans->trans_id)); $fndb->execute_query( $fnsql->get_query() );
+            //--- remove all children ---//
+
+            $fnsql->delete(self::$table, array('trans_id'=>$trans->trans_id));
+
+            return $fndb->execute_query( $fnsql->get_query() );
+
+        }
+
+        return false;
     }
 
     public static function get_labels( $transaction ){
@@ -574,6 +689,17 @@ class fn_OP_Pending{
 
         return intval( $recs[$recurring] );
 
+    }
+
+    public static function get_recurring_time_unit($recurring, $instances=1){
+        switch($recurring){
+            case 'daily': return ( $instances != 1 ? 'days' : 'day' ); break;
+            case 'weekly': return ( $instances != 1 ? 'weeks' : 'week' ); break;
+            case 'monthly': return ( $instances != 1 ? 'months' : 'month' ); break;
+            case 'yearly': return ( $instances != 1 ? 'years' : 'year' ); break;
+
+            default: $recurring;
+        }
     }
 
     public static function recurring_multiplier_display($recurring, $value, $days=1, $months=1, $years=1){

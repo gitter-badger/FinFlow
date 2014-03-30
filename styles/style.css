@@ -360,6 +360,14 @@ p.installer-mchoice{
     width: 93%;
 }
 
+p.popup-btn-group{
+    text-align: center;
+}
+
+p.popup-btn-group .btn{
+    margin-right: 20px;
+}
+
 p.installer-mchoice input[type="radio"]:checked + span{
     font-weight: bold;
 }
