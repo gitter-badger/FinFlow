@@ -3,13 +3,22 @@
 
 class fn_OP{
 	
-	public static $table 			= 'cash_op';
-	public static $table_meta 	= 'cash_op_meta';
+	public static $table 			   = 'cash_op';
+	public static $table_meta 	   = 'cash_op_meta';
 
     public static $uploads_dir = "/uploads";
     public static $attached    = 'attached';
 
 
+    /**
+     * Adds a single operation
+     * @param $type
+     * @param int $value
+     * @param int $currency_id
+     * @param string $comments
+     * @param null $date
+     * @return bool
+     */
     public static function add($type, $value=1, $currency_id=1, $comments="", $date=NULL){
         global $fndb, $fnsql;
 

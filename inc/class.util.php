@@ -168,8 +168,7 @@ class fn_Util{
 		return date($format, strtotime("{$year}-{$month}-{$day}"));
 		
 	}
-	
-	
+
 	public static function add_leading_zeros($input, $stdlen=2, $ignore_empty=FALSE){
 
         if( $ignore_empty and ( strlen($input) == 0 ) ) return "";
@@ -226,15 +225,30 @@ class fn_Util{
 		$date1 = new DateTime($from);
 		$date2 = new DateTime($to);
 		
-		$interval = $date1->diff($date2);
+		$interval = $date1->diff($date2); //print_r($interval); //die();
 		
 		if ( is_object($interval) ){
-			
-			if ( $output == 'days' )
-				return $interval->days;
-			
+
+            $days = intval( $interval->format('%a') );
+
+            if ( $output == 'years' ) //TODO fix bug if there is 1 year, month and day will be 0
+                return $interval->format('%y');
+
 			if ( $output == 'months' )
-				return $interval->months;
+				return ( ( $interval->format('%y') * 12 ) + $interval->format('%m') );
+
+            if ( $output == 'days' )
+                return $days;
+
+            if ( $output == 'hours' )
+                return ( $days * 24 ) +  $interval->h;
+
+            if ( $output == 'minutes' )
+                return ( $days * 24  * 60 ) + $interval->m;
+
+            if ( $output == 'seconds' )
+                return ( $days * 24 * 60 * 60 ) + $interval->s;
+
 		}
 
 		return NULL;
@@ -646,11 +660,14 @@ class fn_Util{
                 return array('success'=>0, 'msg'=>$Error);
             }
 
+            //set filename
+            $upload_filename = ( $prefix . $filename . $suffix . '.' . $extension );
+
             //upload path
-            $uploaded = ( rtrim($folder, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $prefix . $filename . $suffix . "." . $extension );
+            $uploaded = ( rtrim($folder, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR .  $upload_filename );
 
             if( @move_uploaded_file($file['tmp_name'], $uploaded ) )
-                return array('success'=>1, 'msg'=>$uploaded);
+                return array('success'=>1, 'msg'=>$uploaded, 'filename'=>$upload_filename, 'path'=>$uploaded);
             else
                 array('success'=>0, 'msg'=>"Directorul {$folder} nu este accesibil pentru salvarea fisierului incarcat. Verifica permisiunile asupra directorului si incearca din nou.");
 

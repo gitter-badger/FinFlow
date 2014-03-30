@@ -3,7 +3,7 @@
 /**
  * SQLStatement is an SQL statement builder made mainly for MySQL, but also compatible with any other *SQL databases
  * @author Adrian7 (http://adrian.silimon.eu/)
- * @version 1.3
+ * @version 1.3.1
  */
 class SQLStatement{
 	
@@ -325,8 +325,8 @@ class SQLStatement{
 		else 
 			if ( strrpos($this->query, "(") > strrpos($this->query, ")") ) $this->query.=")";
 	}
-	
-	
+
+
 	public function orderby($fields, $table="", $order="ASC"){
 		
 		if ( empty($table) ) $table = "";
@@ -439,7 +439,25 @@ class SQLStatement{
 		if ( strlen($as) ) $this->fieldas("", $as);
 		
 	}
-	
+
+    public function min($field, $as=""){
+        //add a comma if needed
+        if ( strlen($this->query) > (strrpos($this->query, "SELECT") + 8) ) $this->query.=",";
+
+        $this->query.=" MIN(`{$field}`)";
+
+        if ( strlen($as) ) $this->fieldas("", $as);
+    }
+
+    public function max($field, $as=""){
+        //add a comma if needed
+        if ( strlen($this->query) > (strrpos($this->query, "SELECT") + 8) ) $this->query.=",";
+
+        $this->query.=" MAX(`{$field}`)";
+
+        if ( strlen($as) ) $this->fieldas("", $as);
+    }
+
 	public function datepart($field, $part="YEAR", $as=FALSE, $table=NULL){
 		
 		if ( empty($table) ) $table = $this->table;
@@ -453,8 +471,7 @@ class SQLStatement{
 		
 		if ($as) $this->fieldas(FALSE, $as);
 	}
-	
-	
+
 	public function extract_datepart($field, $part="YEAR", $as=FALSE, $table=NULL){
 		 $this->datepart($field, $part, $as, $table);
 	}

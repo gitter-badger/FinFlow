@@ -2,7 +2,7 @@
 
 <?php fn_UI::show_errors($errors); fn_UI::show_notes($notices); fn_UI::show_warnings($warnings); ?>
 
-<form action="<?php fn_UI::page_url('transactions', array('t'=>'add'))?>" method="post" name="add-transaction-form" id="addTransactionForm" enctype="multipart/form-data">
+<form action="<?php fn_UI::page_url('transactions', array('t'=>'add')); ?>" method="post" name="add-transaction-form" id="addTransactionForm" enctype="multipart/form-data">
 
     <p>
         <label for="date">Data:</label>
@@ -11,9 +11,23 @@
 
     <p>
         <label for="optype">Tip:</label>
-        <select name="optype" id="optype">
+        <select name="optype" id="optype" style="float: left;">
             <option value="<?php echo FN_OP_IN; ?>" <?php echo fn_UI::selected_or_not(FN_OP_IN, $_POST['optype']); ?>>venit</option>
             <option value="<?php echo FN_OP_OUT; ?>" <?php echo fn_UI::selected_or_not(FN_OP_OUT, $_POST['optype']); ?>>cheltuial&#259;</option>
+        </select>
+        <label for="add_pending" class="wrap-input wrap-last" style="margin-left: 20px;">
+            <input type="checkbox" name="add_pending" id="add_pending" /> &#238;n a&#351;teptare
+        </label>
+        <br class="clear"/>
+    </p>
+
+    <p class="recurring-choices">
+        <label for="value">Se repet&#259;:</label>
+        <select name="recurring" id="recurring">
+            <option value="no">nu</option>
+            <option value="daily">zilnic</option>
+            <option value="monthly">lunar</option>
+            <option value="yearly">anual</option>
         </select>
     </p>
 
@@ -104,6 +118,14 @@
 <script type="text/javascript" src="<?php echo FN_URL; ?>/js/moment-ro.js"></script>
 <script type="text/javascript" src="<?php echo FN_URL; ?>/js/pikaday.js"></script>
 <script type="text/javascript">
+
     max_filesize = parseInt('<?php echo fn_Util::get_max_upload_filesize(); ?>');
     var picker = new Pikaday({ field: document.getElementById('date'), firstDay: 1, i18n: PikadayRO,  format: 'YYYY-MM-DD', maxDate: new Date("<?php echo date('Y-m-d'); ?>") });
+
+    $(document).ready(function($){
+       $('#add_pending').click(function(){
+           if( $(this).is(':checked') ) $('.recurring-choices').slideDown('fast'); else $('.recurring-choices').slideUp('fast');
+       });
+    });
+
 </script>

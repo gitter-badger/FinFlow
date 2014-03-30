@@ -6,7 +6,15 @@ if ( isset($_GET['del']) ){
 	//--- remove a transaction ---//
 }
 
+if ( isset($_GET['pdel']) ){
+    //--- remove a pending transaction ---//
+    fn_OP_Pending::remove($_GET['del']);
+    //--- remove a pending transaction ---//
+}
+
 if ( isset($_POST['add']) ){
+
+    //--- add a transaction ---//
 	
 	$errors 		= array();
 	$notices  	= array();
@@ -24,44 +32,131 @@ if ( isset($_POST['add']) ){
 
 	if ( empty($errors) ){
 
-        $trans_id = fn_OP::add($_POST['optype'], $value, $_POST['currency_id'], $_POST['comments'], $date);
-		
-		if ( $trans_id ){
+        if( isset($_POST['add_pending']) ){
 
-            //--- associate to an account (if any selected) ---//
-            if( $account_id ) fn_Accounts::add_trans($account_id, $trans_id);
-            //--- associate to an account (if any selected) ---//
+            //--- add a pending transaction ---//
 
-			if ( count($_POST['labels']) ) foreach ($_POST['labels'] as $label_id){
-				fn_OP::associate_label($trans_id, $label_id);
-			}
-			else $warnings[] = "Nu s-a asociat nici o etichet&#259; pentru aceast&#259; tranzac&#355;ie.";
+            $trans_id = fn_OP_Pending::add($_POST['optype'], $value, $_POST['currency_id'], $_POST['recurring'], array(), $date);
 
-            //--- upload files if any ---//
-            if( count( $_FILES ) ) {
+            if( $trans_id ){
 
-                if( strlen($_FILES['attachment_1']['name']) ){
-                    $attached = fn_OP::add_attachment($trans_id, $_FILES['attachment_1']); if($attached != fn_OP::$attached ) $errors[] = $attached;
+                $metadata = array('labels'=>array(), 'files'=>array(), 'account_id'=>0);
+
+                //--- add the metadata ---//
+                if ( count($_POST['labels']) ) foreach ($_POST['labels'] as $label_id) $metadata['labels'][] = $label_id;
+
+                if( $account_id ) $metadata['account_id'] = $account_id;
+
+                //--- upload files if any ---//
+                if( count( $_FILES ) ) {
+
+                    if( strlen($_FILES['attachment_1']['name']) ){
+
+                        $attached = fn_OP_Pending::add_file($trans_id, $_FILES['attachment_1']);
+
+                        if( strpos($attached, '@') === false )
+                            $errors[] = $attached;
+                        else {
+                            $filename = $_FILES['attachment_1']['name']; $metadata['files'][$filename] = trim($attached, '@');
+                        }
+
+                    }
+
+                    if( strlen($_FILES['attachment_2']['name']) ){
+
+                        $attached = fn_OP_Pending::add_file($trans_id, $_FILES['attachment_2']);
+
+                        if( strpos($attached, '@') === false )
+                            $errors[] = $attached;
+                        else{
+                            $filename = $_FILES['attachment_2']['name']; $metadata['files'][$filename] = trim($attached, '@');
+                        }
+                    }
+
+                    if( strlen($_FILES['attachment_3']['name']) ){
+
+                        $attached = fn_OP_Pending::add_file($trans_id, $_FILES['attachment_3']);
+
+                        if( strpos($attached, '@') === false )
+                            $errors[] = $attached;
+                        else {
+                            $filename = $_FILES['attachment_3']['name']; $metadata['files'][$filename] = trim($attached, '@');
+                        }
+                    }
+
                 }
+                //--- upload files if any ---//
 
-                if( strlen($_FILES['attachment_2']['name']) ){
-                    $attached = fn_OP::add_attachment($trans_id, $_FILES['attachment_2']); if($attached != fn_OP::$attached ) $errors[] = $attached;
-                }
+                $metadata = @serialize($metadata); fn_OP_Pending::update($trans_id, array('metadata'=>$metadata));
 
-                if( strlen($_FILES['attachment_3']['name']) ){
-                    $attached = fn_OP::add_attachment($trans_id, $_FILES['attachment_3']); if($attached != fn_OP::$attached ) $errors[] = $attached;
-                }
+                if( $_POST['recurring'] != 'no' )
+                    $children = fn_OP_Pending::add_children($trans_id); //Add a children as instance of the recurring transaction
+                else
+                    $children = $trans_id;
+
+                //--- add the metadata ---//
+
+                //--- create first child transaction ---//
+                if( $children )
+                    $notices[] = "Tranzac&#355;ia a fost adaugat&#259;.";
+                else
+                    $errors[] =  "Eroare SQL: {$fndb->error} .";
+                //--- create first child transaction ---//
 
             }
-            //--- upload files if any ---//
-			
-			$notices[] = "Tranzac&#355;ia a fost adaugat&#259;.";
+            else $errors[] = "Eroare SQL: {$fndb->error} .";
 
-		}
-		else 
-			$errors[] = "Eroare SQL: {$fndb->error} .";
+            //--- add a pending transaction ---//
+
+        }
+        else{
+
+            //--- add a normal transaction ---//
+
+            $trans_id = fn_OP::add($_POST['optype'], $value, $_POST['currency_id'], $_POST['comments'], $date);
+
+            if ( $trans_id ){
+
+                //--- associate to an account (if any selected) ---//
+                if( $account_id ) fn_Accounts::add_trans($account_id, $trans_id);
+                //--- associate to an account (if any selected) ---//
+
+                if ( count($_POST['labels']) ) foreach ($_POST['labels'] as $label_id){
+                    fn_OP::associate_label($trans_id, $label_id);
+                }
+                else $warnings[] = "Nu s-a asociat nici o etichet&#259; pentru aceast&#259; tranzac&#355;ie.";
+
+                //--- upload files if any ---//
+                if( count( $_FILES ) ) {
+
+                    if( strlen($_FILES['attachment_1']['name']) ){
+                        $attached = fn_OP::add_attachment($trans_id, $_FILES['attachment_1']); if($attached != fn_OP::$attached ) $errors[] = $attached;
+                    }
+
+                    if( strlen($_FILES['attachment_2']['name']) ){
+                        $attached = fn_OP::add_attachment($trans_id, $_FILES['attachment_2']); if($attached != fn_OP::$attached ) $errors[] = $attached;
+                    }
+
+                    if( strlen($_FILES['attachment_3']['name']) ){
+                        $attached = fn_OP::add_attachment($trans_id, $_FILES['attachment_3']); if($attached != fn_OP::$attached ) $errors[] = $attached;
+                    }
+
+                }
+                //--- upload files if any ---//
+
+                $notices[] = "Tranzac&#355;ia a fost adaugat&#259;.";
+
+            }
+            else
+                $errors[] = "Eroare SQL: {$fndb->error} .";
+
+            //--- add a normal transaction ---//
+        }
+
+
 	}
-	
+
+    //--- add a transaction ---//
 }
 
 include_once ( FNPATH . '/inc/transfilter-vars.php');
@@ -71,11 +166,13 @@ global $filters, $start, $count, $pagevars;
 $tab = isset($_GET['t']) ? urldecode($_GET['t']) : 'list'; $activetab = array(); $activetab[$tab] = 'active';
 
 if (  $tab == 'list' ){
+
 	$Total 		= fn_OP::get_sum($filters);
 	$Income		= fn_OP::get_sum(array_merge($filters, array('type'=>FN_OP_IN)));
 	$Outcome	= fn_OP::get_sum(array_merge($filters, array('type'=>FN_OP_OUT)));
 	
 	$Transactions = fn_OP::get_operations($filters, $start, $count);
+
 }
 
 //--- add the current report period to the Report menu label ---//
@@ -106,101 +203,29 @@ else
                 </ul>
 			</li>
 			<li class="<?php echo $activetab['generator']; ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'generator'))?>"> Generator raport  </a></li>
-			<!--- <li class="<?php echo $activetab['waiting']; ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'waiting'))?>"> &#206;n a&#351;teptare </a></li> --->
+			<li class="dropdown <?php echo $activetab['pending']; ?>">
+                <a href="<?php fn_UI::page_url('transactions', array('t'=>'pending'))?>"  class="dropdown-toggle" data-toggle="dropdown">
+                    &#206;n a&#351;teptare <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending')); ?>">Toate</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'overdue')); ?>">Overdue</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'30 days')); ?>">In 30 days</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'3 months')); ?>">In 3 months</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'6 months')); ?>">In 6 months</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'12 months')); ?>">In 12 months</a></li>
+                    <li class="divider"></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'viewroots'=>'1')); ?>">Modifica</a></li>
+                </ul>
+            </li>
 			<li class="<?php echo $activetab['add']; ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'add'))?>"> Adaug&#259; </a></li>
 		</ul>
 		
-		<?php if ( $tab == 'list' ): ?>
-		
-			<?php if ( count($Transactions) ): ?>
+		<?php if ( $tab == 'list' ) include_once ( FNPATH . '/snippets/transactions-list.php' ); ?>
 
-            <?php echo fn_OP::get_filter_readable_string($filters); ?>
+		<?php if ( $tab == 'pending' ) include_once ( FNPATH . '/snippets/pending.php' ); ?>
 
-			<table class="list report" border="1">
-				<tr>
-					<td>Rulaj: </td>
-					<td class="align-right"><?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Total); ?></td>
-				</tr>
-				<?php if ( !isset($filters['type']) or $filters['type'] == FN_OP_IN): ?>
-				<tr>
-					<td>Venit: </td>
-					<td class="align-right"><?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Income); ?></td>
-				</tr>
-				<?php endif;?>
-				<?php if ( !isset($filters['type']) or $filters['type'] == FN_OP_OUT): ?>
-				<tr>
-					<td>Cheltuieli: </td>
-					<td class="align-right"><?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Outcome); ?></td>
-				</tr>
-				<?php endif; ?>
-				<?php if ( !isset($filters['type']) ): ?>
-				<tr class="highlight">
-					<td>Balan&#355;a: </td>
-					<td class="align-right">
-						<strong> <?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Income - $Outcome); ?> </strong>
-					</td>
-				</tr>
-				<?php endif; ?>
-			</table>
-			
-			<br class="clear"/>
-			
-			<table class="list transactions" border="1">
-				<tr>
-                    <th>ID</th>
-					<th>Tip</th>
-					<th>Suma</th>
-					<th>Moneda</th>
-					<th>Data</th>
-					<th>Etichete</th>
-					<th>&nbsp;</th>
-				</tr>
-				<?php foreach ($Transactions as $transaction):  $k++; $trclass= ( $k%2 == 0) ? 'even' : 'odd'; $currency = fn_Currency::get($transaction->currency_id); ?>
-				<tr class="<?php echo $trclass; ?>">
-                    <td>#<?php echo $transaction->trans_id; ?></td>
-                    <td>
-                        <img src="images/<?php echo $transaction->optype; ?>.png" title="<?php echo ($transaction->optype == FN_OP_IN) ? 'venit' : 'cheltuiala'; ?>" align="middle" alt="<?php echo $transaction->optype; ?>"/>
-                    </td>
-					<td><?php echo fn_Util::format_nr( $transaction->value ); ?></td>
-					<td><?php echo $currency->ccode; ?></td>
-					<td><?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, strtotime($transaction->sdate)) ); ?></td>
-					<td>
-						<?php $labels = fn_OP::get_labels($transaction->trans_id); $lc=0; if (count($labels))  foreach ($labels as $label): $lc++; ?>
-							<?php echo fn_UI::esc_html($label->title); ?><?php if ( $lc < count($labels) ) echo ", "; ?>
-						<?php endforeach;?>
-					</td>
-					<td>
-						<a class="btn" href="#nwhr" title="<?php echo fn_UI::esc_attr( $transaction->comments ); ?>" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>')">
-							<span class="icon-info-sign"></span>
-						</a>
-						&nbsp;&nbsp;
-						<button class="btn" onclick="confirm_delete('<?php fn_UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
-							<span class="icon-remove"></span>
-						</button>
-					</td>
-				</tr>
-				<?php endforeach; ?>
-			</table>
-
-            <div class="pagination">
-                <?php $total = fn_OP::get_total($filters); if ( $total > $count ):?>
-                <ul><?php fn_UI::pagination($total, $count, $_GET['pag'], fn_UI::page_url('transactions', $pagevars, FALSE)); ?></ul>
-                <?php endif;?>
-            </div>
-
-			<?php else: $month = fn_UI::get_translated_month($month); if ($day > 0) $month = ($day . " {$month}"); ?>
-			
-				<p class="msg note">
-                    Nu am gasit tranzac&#355;ii pentru <?php echo $month; ?> <?php echo $year; ?>. <a href="<?php fn_UI::page_url('transactions', array('t'=>'add')); ?>">Adaug&#259; &rarr;</a>
-                </p>
-
-			<?php endif; ?>
-			
-		<?php endif;?>
-		
-		<?php if ( $tab == 'generator' ) : ?>
-			<?php include_once ( FNPATH . '/snippets/transactions-filter.php' );?>
-		<?php endif;?>
+		<?php if ( $tab == 'generator' ) include_once ( FNPATH . '/snippets/transactions-filter.php' ); ?>
 		
 		<?php if ( $tab == 'add' ) include_once ( FNPATH . '/snippets/transactions-add.php' ); ?>
 		

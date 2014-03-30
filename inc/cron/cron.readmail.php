@@ -62,6 +62,8 @@ if ( !fn_CheckValidityOf::hostname($Settings['host']) ) fn_CronAssistant::cron_e
 
 try{
 
+    //TODO add IMAP protocol support
+
 	fn_CronAssistant::get_lock(__FILE__);
 	
 	$connectionTimeout = array( "sec" => 10, "usec" => 500 );
@@ -122,7 +124,7 @@ try{
 		
 	}
 	
-	$MailFetch->quit(); //disconect and delete marked messages
+	$MailFetch->quit(); //disconnect and delete marked messages
 	
 	fn_CronAssistant::release_lock(__FILE__);
 	

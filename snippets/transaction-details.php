@@ -2,24 +2,28 @@
 
 if ( !fn_User::is_authenticated() ) exit();
 
-$trans_id = intval($_GET['id']); 
+$trans_id = intval($_GET['id']); $is_pending = false;
 
-$Transaction = fn_OP::get($trans_id);
+if( $_GET['t'] == 'pending' ) {
+    $Transaction = fn_OP_Pending::get($trans_id); $is_pending= true;
+}else
+    $Transaction = fn_OP::get($trans_id);
 
 if( count($Transaction) and isset($Transaction->trans_id) ){
 
-    $labels		  = fn_OP::get_labels($trans_id);
-    $account      = fn_OP::get_account($trans_id);
-    $currency	  = fn_Currency::get($Transaction->currency_id);
+    $labels		 = $is_pending ? fn_OP_Pending::get_labels( $Transaction ) : fn_OP::get_labels($trans_id);
+    $account     = $is_pending ? fn_OP_Pending::get_account( $Transaction ) : fn_OP::get_account($trans_id);
+    $currency	  = fn_Currency::get( $Transaction->currency_id );
 
-    $details		   = fn_OP::get_metadata($trans_id, 'details');
-    $attachments= fn_OP::get_metadata($trans_id, 'attachments');
+    $details		   = $is_pending ? fn_OP_Pending::get_metdata($Transaction, 'details') : fn_OP::get_metadata($trans_id, 'details');
+    $attachments= $is_pending ?  fn_OP_Pending::get_metdata($Transaction, 'attachments') : fn_OP::get_metadata($trans_id, 'attachments');
 
-    if( strlen($attachments) ){
-        $attachmentsNames = fn_OP::get_metadata($trans_id, 'attachments_names', $attachments);
+    if( ( is_array($attachments) and count($attachments) ) or strlen($attachments) ){
 
-        $attachments           = @unserialize($attachments);
-        $attachmentsNames = @unserialize($attachmentsNames);
+        $attachmentsNames = $is_pending ? fn_OP_Pending::get_metdata($Transaction, 'attachments_names', $attachments) : fn_OP::get_metadata($trans_id, 'attachments_names', $attachments);
+
+        $attachments           = is_array($attachments) ? $attachments : @unserialize($attachments);
+        $attachmentsNames = is_array($attachmentsNames) ? $attachmentsNames : @unserialize($attachmentsNames);
 
         $a=0;
     }

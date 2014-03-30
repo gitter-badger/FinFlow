@@ -184,10 +184,11 @@ function fn_prepend_zeros(inputnr){
 
 function fn_calculate_tz(hour, offset){
 	
-	hour+= offset; 
+	hour+= offset;
 	
 	if(hour >= 24) hour = hour - 24;
-	
+	if(hour < 0) hour = 24 + hour;
+
 	return fn_prepend_zeros(hour);
 }
 

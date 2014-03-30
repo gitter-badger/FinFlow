@@ -71,6 +71,23 @@ class fn_Currency{
 		
 	}
 
+    public static function convert_to_default($value, $from){
+
+        if ( intval($from) )
+            $from = self::get($from);
+        else
+            $from = self::get_by_code($from);
+
+        $to = self::get_default();
+
+        if( $from->currency_id == $to->currency_id ) return $value;
+
+        if ( empty($from) or empty($to) ) return 0;
+
+        return  ( $value * floatval($from->cexchange) ) / floatval($to->cexchange);
+
+    }
+
     public static function historically_convert($value, $from, $to, $date=NULL, $field="code"){
 
         if ( empty($value) ) return 0;

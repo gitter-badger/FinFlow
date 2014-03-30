@@ -26,6 +26,7 @@ include_once ( FNPATH . '/inc/class.mysqlidb.php' );
 include_once ( FNPATH . '/inc/class.sqlstatement.php' );
 include_once ( FNPATH . '/inc/class.ui.php' );
 include_once ( FNPATH . '/inc/class.op.php' );
+include_once ( FNPATH . '/inc/class.op-pending.php' );
 include_once ( FNPATH . '/inc/class.settings.php' );
 include_once ( FNPATH . '/inc/class.validate.php' );
 include_once ( FNPATH . '/inc/class.currency.php' );
@@ -33,7 +34,6 @@ include_once ( FNPATH . '/inc/class.accounts.php' );
 include_once ( FNPATH . '/inc/class.label.php' );
 include_once ( FNPATH . '/inc/class.util.php' );
 include_once ( FNPATH . '/inc/class.user.php' );
-include_once ( FNPATH . '/inc/class.log.php' );
 include_once ( FNPATH . '/inc/class.log.php' );
 
 @include_once ( FNPATH . '/config.php' );
