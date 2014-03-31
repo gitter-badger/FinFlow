@@ -60,7 +60,7 @@ class fn_OP_Pending{
 
     public static function add_children($root_id, $data=null){
 
-        global $fndb, $fnsql;
+        global $fndb, $fnsql; $today = date('Y-m-d 00:00:01');
 
         if( empty($data) ) {
             $data = self::get($root_id); $data = @get_object_vars($data);
@@ -69,6 +69,26 @@ class fn_OP_Pending{
         if( is_array($data) and count($data) ){
 
             unset( $data['trans_id'] );
+
+            $trans_fdate = @strtotime($data['fdate']); if( $trans_fdate < $today ){
+
+                //--- shift the transaction's fdate to match today's time ---//
+
+                $instances = self::get_interval_instances($data['recurring'], $data['fdate'], $today);
+
+                if( $instances ){
+
+                    $data['value'] = floatval($instances * $data['value']);
+
+                    $t_unit     = self::get_recurring_time_unit($data['recurring'], $instances);
+                    $t_stamp  = @strtotime("+{$instances} {$t_unit}", $today);
+
+                    self::update( $root_id, array('fdate'=>self::get_future_recurring_time($t_stamp, $data['recurring'])) );
+
+                }
+
+                //--- shift the transaction's fdate to match today's time ---//
+            }
 
             //--- add recurring metadata ---//
             $metadata = @unserialize( $data['metadata'] );
@@ -512,7 +532,7 @@ class fn_OP_Pending{
 
     public static function get_compound_sum( $filters=array() ){
 
-        $total = 0; $today = date(FN_MYSQL_DATE);
+        $total = 0; $today = date(FN_MYSQL_DATE); global $fnsql, $fndb;
 
         //--- get sum of all daily transactions in the timespan ---//
 
@@ -555,7 +575,21 @@ class fn_OP_Pending{
             //--- only for a single root ---//
         }
 
+        //--- get different recurring types in the timespan ---//
+        /*
+        $fnsql->init(SQLStatement::$SELECT);
+        $fnsql->distinct('recurring');
+        $fnsql->from(self::$table);
+
+        self::apply_filters($filters);
+
+        die(  $fnsql->get_query() ); //TODO
+        */
+
+        //--- get different recurring types in the timespan ---//
+
         $once_sum = self::get_sum(array_merge($filters, array('recurring'=>'no'))); $total+= $once_sum;
+
 
         if( $days > 0 ){
             $daily_sum = self::get_sum( array_merge($filters, array('recurring'=>'daily')) ); $total+= ($daily_sum * $days);
@@ -683,11 +717,25 @@ class fn_OP_Pending{
         $recs = array(
             'no'             => $timestamp,
             'daily'         => strtotime('+1 day', strtotime( date("Y-m-$day 00:00:01", $timestamp) )),
-            'monthly'    => strtotime('+1 month', strtotime(date("Y-m-$day 00:00:01", $timestamp))),
-            'yearly'       => strtotime('+1 year', strtotime(date("Y-m-$day 00:00:01", $timestamp)))
+            'monthly'    => strtotime('+1 month', strtotime(date("Y-m-$day 00:00:01", $timestamp) )),
+            'yearly'       => strtotime('+1 year', strtotime(date("Y-m-$day 00:00:01", $timestamp) ))
         );
 
         return intval( $recs[$recurring] );
+
+    }
+
+    public static function get_interval_instances($recurring, $from, $to=null){
+
+        $to = empty($to) ? date(FN_MYSQL_DATE) : $to;
+
+        switch($recurring){
+            case 'daily': return fn_Util::date_diff($from, $to, 'days'); break;
+            case 'monthly': return fn_Util::date_diff($from, $to, 'months'); break;
+            case 'yearly': return fn_Util::date_diff($from, $to, 'years'); break;
+
+            default: return 0;
+        }
 
     }
 
@@ -703,6 +751,10 @@ class fn_OP_Pending{
     }
 
     public static function recurring_multiplier_display($recurring, $value, $days=1, $months=1, $years=1){
+
+        $days = empty($days) ? '1' : $days;
+        $months = empty($months) ? '1' : $months;
+        $years = empty($years) ? '1' : $years;
 
         switch($recurring){
             case 'daily': return ( $days . ' x ' . $value); break;

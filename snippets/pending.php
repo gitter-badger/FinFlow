@@ -12,15 +12,18 @@ else:
 
 
     if( $listmax == 'overdue' ){
-        $endtime = time();
+        $endtime = time(); $starttime = @strtotime( fn_OP_Pending::get_min_date($cfilters) );
     }
     else{
-        $timeplus = @explode(' ', $listmax); $tnumeric = intval( $timeplus[0] ); $tunit = trim(strtolower($timeplus[1])); $endtime = @strtotime("+$tnumeric $tunit");
+        $timeplus = @explode(' ', $listmax); $tnumeric = intval( $timeplus[0] ); $tunit = trim(strtolower($timeplus[1]));
+
+        $endtime  = @strtotime("+$tnumeric $tunit");
+        $starttime = time();
     }
 
     $cfilters = array();
 
-    $cfilters['startdate'] = date(FN_MYSQL_DATE, 0);
+    $cfilters['startdate'] = date(FN_MYSQL_DATE, $starttime);
     $cfilters['enddate'] = date(FN_MYSQL_DATE, $endtime);
 
     $cfilters['start']  = 0;
@@ -30,10 +33,6 @@ else:
 
     $cfilters['order']     = 'ASC';
     $cfilters['orderby'] = 'fdate';
-
-    $mindate = fn_OP_Pending::get_min_date($cfilters);
-
-    $cfilters['startdate'] = date(FN_MYSQL_DATE, @strtotime($mindate));
 
     $Transactions    = fn_OP_Pending::get_all($cfilters);
     $Total              = fn_OP_Pending::get_compound_sum($cfilters);

@@ -225,13 +225,13 @@ class fn_Util{
 		$date1 = new DateTime($from);
 		$date2 = new DateTime($to);
 		
-		$interval = $date1->diff($date2); //print_r($interval); //die();
+		$interval = $date1->diff($date2);
 		
 		if ( is_object($interval) ){
 
             $days = intval( $interval->format('%a') );
 
-            if ( $output == 'years' ) //TODO fix bug if there is 1 year, month and day will be 0
+            if ( $output == 'years' )
                 return $interval->format('%y');
 
 			if ( $output == 'months' )
