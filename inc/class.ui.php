@@ -438,9 +438,9 @@ class fn_UI{
         return ( FN_URL . "/snippets/file-preview.php?file=" . $file . $query );
     }
 
-	public static function html_embed_file($file_url, $display_filename=null){
+	public static function html_embed_file($file_url, $display_filename=null, $download_url=null){
 
-        $ext = fn_Util::get_file_extension($file_url);
+        $ext = fn_Util::get_file_extension($file_url); $download_url = empty($download_url) ? $file_url : $download_url;
 
         if( empty($display_filename) ) $display_filename = basename($file_url);
 
@@ -471,7 +471,9 @@ class fn_UI{
             /*all other files*/ ?>
             <div class="file-embed">
                 <p style="font-size: 3em; text-align: center; padding: 25px 0px; border: 1px #bbb solid; border-radius: .2em; margin: 20px;">
-                    <span class="icon-file"></span> <?php echo $display_filename; ?>
+                    <a href="<?php echo $download_url; ?>" style="text-decoration: none;">
+                        <span class="icon-file"></span> <?php echo $display_filename; ?>
+                    </a>
                 </p>
             </div>
         <?php return;

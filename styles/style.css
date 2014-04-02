@@ -365,7 +365,11 @@ p.popup-btn-group{
 }
 
 p.popup-btn-group .btn{
-    margin-right: 20px;
+    margin-right: 70px;
+}
+
+p.popup-btn-group .btn:last-child{
+    margin-right: 0px;
 }
 
 p.installer-mchoice input[type="radio"]:checked + span{

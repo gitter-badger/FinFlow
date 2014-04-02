@@ -562,7 +562,15 @@ class SQLStatement{
 		if ($autoready) $this->conditions_ready();
 		
 	}
-	
+
+    /**
+     * Appends the string to the current query string
+     * @param $string
+     */
+    public function query_append($string){
+        if( strlen($string) ) $this->query.= $string;
+    }
+
 	/**
 	 * Formats a query string based on args. Accepts variable number of arguments.
 	 * Example: 

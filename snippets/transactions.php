@@ -2,14 +2,8 @@
 
 if ( isset($_GET['del']) ){
 	//--- remove a transaction ---//
-	fn_OP::remove($_GET['del']);
+	$removed = ( isset($_GET['t']) and ( $_GET['t'] == 'pending' ) ) ? fn_OP_Pending::remove($_GET['del']) : fn_OP::remove($_GET['del']);
 	//--- remove a transaction ---//
-}
-
-if ( isset($_GET['pdel']) ){
-    //--- remove a pending transaction ---//
-    fn_OP_Pending::remove($_GET['del']);
-    //--- remove a pending transaction ---//
 }
 
 if ( isset($_POST['add']) ){
@@ -28,7 +22,11 @@ if ( isset($_POST['add']) ){
 	if ( $value <= 0 )                     $errors[] = "Valoare tranzac&#355;iei lipse&#351;te.";
     if( strtotime($date) === false) $errors[] = "Data specificat&#259; este invalida";
 	
-	if ( !in_array($_POST['optype'], array(FN_OP_IN, FN_OP_OUT)) ) $errors[] = "Tipul tranzac&#355;iei este invalid.";
+	if ( !in_array($_POST['optype'], array(FN_OP_IN, FN_OP_OUT)) )
+        $errors[] = "Tipul tranzac&#355;iei este invalid.";
+
+    if( !isset($_POST['add_pending']) and (strtotime($date) > time() ) )
+        $errors[] = "Data tranzactiei este in viitor. Foloseste caracteristica &quot;in asteptare&quot; pentru a adauga tranzactii in viitor.";
 
 	if ( empty($errors) ){
 

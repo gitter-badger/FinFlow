@@ -12,7 +12,7 @@ else:
 
 
     if( $listmax == 'overdue' ){
-        $endtime = time(); $starttime = @strtotime( fn_OP_Pending::get_min_date($cfilters) );
+        $endtime = time(); $starttime = time();
     }
     else{
         $timeplus = @explode(' ', $listmax); $tnumeric = intval( $timeplus[0] ); $tunit = trim(strtolower($timeplus[1]));
@@ -23,7 +23,6 @@ else:
 
     $cfilters = array();
 
-    $cfilters['startdate'] = date(FN_MYSQL_DATE, $starttime);
     $cfilters['enddate'] = date(FN_MYSQL_DATE, $endtime);
 
     $cfilters['start']  = 0;
@@ -31,20 +30,24 @@ else:
 
     $cfilters['root_id'] = '0';
 
+    //-- figure out the startdate ---//
+
+    $starttime = ( @strtotime( fn_OP_Pending::get_min_date($cfilters) ) - 86400 );
+
+    if( $starttime > time() ) $starttime = time();
+
+    $cfilters['startdate'] = date(FN_MYSQL_DATE, $starttime);
+
+    //-- figure out the startdate ---//
+
     $cfilters['order']     = 'ASC';
     $cfilters['orderby'] = 'fdate';
 
-    $Transactions    = fn_OP_Pending::get_all($cfilters);
-    $Total              = fn_OP_Pending::get_compound_sum($cfilters);
+    $Transactions    = fn_OP_Pending::get_period($cfilters);
+    $Total              = fn_OP_Pending::get_period_sum($cfilters);
 
-    $Income   = fn_OP_Pending::get_compound_sum( array_merge($cfilters, array('type'=>FN_OP_IN)) );
-    $Outcome = fn_OP_Pending::get_compound_sum( array_merge($cfilters, array('type'=>FN_OP_OUT)) );
-
-    $days     = fn_Util::date_diff($cfilters['startdate'], $cfilters['enddate'], 'days');      //number of days in the timespan
-    $months = fn_Util::date_diff($cfilters['startdate'], $cfilters['enddate'], 'months');  //number of months in the timespan
-    $years    = fn_Util::date_diff($cfilters['startdate'], $cfilters['enddate'], 'years');    //number of years in the timespan
-
-    ?>
+    $Income   = fn_OP_Pending::get_period_sum( array_merge($cfilters, array('type'=>FN_OP_IN)) );
+    $Outcome = fn_OP_Pending::get_period_sum( array_merge($cfilters, array('type'=>FN_OP_OUT)) ); ?>
 
     <?php if( count($Transactions) ): ?>
 
@@ -52,12 +55,14 @@ else:
             <em>P&#226;n&#259; la <?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, $endtime) ); ?></em>
         </h4>
 
-        <?php include 'pending-list.php'; ?>
+        <?php include 'pending-period-list.php'; ?>
 
-    <?php elseif( $listonly == '12months' ): ?>
-        <h4 class="form-label-normal" style="margin-top: 20px;"><em>6 months to 12 months</em></h4>
+    <?php else: ?>
+        <h4 class="form-label-normal" style="margin-top: 20px;">
+            <em>P&#226;n&#259; la <?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, $endtime) ); ?></em>
+        </h4>
         <p class="msg note">
-            Nu am gasit tranzac&#355;ii in asteptare. <a href="<?php fn_UI::page_url('transactions', array('t'=>'add')); ?>">Adaug&#259; &rarr;</a>
+            Nu am gasit tranzac&#355;ii &#238;n a&#351;teptare pentru perioada selectat&#259;.
         </p>
     <?php endif; ?>
 

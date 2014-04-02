@@ -10,6 +10,88 @@ class fn_OP_Pending{
     public static $table  = 'cash_op_pending';
 
     /**
+     * The SQL Query template used to build the compound sum select query
+     * @var string
+     */
+    public static $PeriodSelectSQL = "
+
+            SELECT
+
+            `trans_id`,
+            `root_id`,
+            `recurring`,
+            `value`,
+            `optype`,
+            `currency_id`,
+            `sdate`,
+            `fdate`,
+            `metadata`,
+
+            `c_days` AS `period_days`,
+
+            `instances` AS `period_instances`,
+
+            (`instances` * `value`) AS `period_total`
+
+            FROM (
+
+                SELECT
+
+                    *,
+
+                    ( `day_count_till_datepay` - ABS(`day_count_till_enable`) + `day_count_topay` ) AS `c_days`,
+
+                    (
+                      CASE
+                        WHEN `recurring` = 'no'      	THEN 1
+                        WHEN `recurring` = 'daily'      THEN ( FLOOR( ( `day_count_till_datepay` - ABS(`day_count_till_enable`) + `day_count_topay` ) / 1 ) )
+                        WHEN `recurring` = 'monthly' THEN ( FLOOR( ( `day_count_till_datepay` - ABS(`day_count_till_enable`) + `day_count_topay` ) / 30 ) )
+                        WHEN `recurring` = 'yearly'    THEN ( FLOOR( ( `day_count_till_datepay` - ABS(`day_count_till_enable`) + `day_count_topay` ) / 365 ) )
+                      END
+                    )
+
+                    AS `instances`
+
+                    FROM (
+
+                        SELECT
+
+                        `trans_id`,
+                        `root_id`,
+                        `value`,
+                        `optype`,
+                        `currency_id`,
+                        `sdate`,
+                        `fdate`,
+                        `metadata`,
+                        `recurring`,
+
+                        DATEDIFF( `fdate` , '{datestart}' ) AS `day_count_till_datepay` ,
+
+                        DATEDIFF( '{dateend}' , `fdate` ) AS `day_count_topay` ,
+
+                        (
+                            CASE
+                                WHEN `sdate` <= '{datestart}' THEN 0
+                                WHEN `sdate` >  '{datestart}' THEN DATEDIFF( `sdate` , '{datestart}' )
+                            END
+                        )
+
+                        AS `day_count_till_enable`
+
+                        FROM `cash_op_pending`
+
+                        {conditions}
+
+                        {ordering}
+
+                        {limit}
+
+                ) AS Q
+
+        ) AS R";
+
+    /**
      * Add a single pending operation
      * @param $type
      * @param int $value
@@ -26,17 +108,16 @@ class fn_OP_Pending{
         $type = $type == FN_OP_IN ? FN_OP_IN : FN_OP_OUT;
         $value= floatval( $value );
 
-        $timestamp = @strtotime($date);
-        $date          = empty($date) ? date(FN_MYSQL_DATE) : date(FN_MYSQL_DATE, $timestamp);
+        $timestamp = empty($date) ? time() : @strtotime($date);
+
+        $sdate         = date('Y-m-d 00:00:01', self::get_past_recurring_time($timestamp, $recurring));
+        $fdate         = date('Y-m-d 00:00:01', $timestamp);
 
         $metadata  = $fndb->escape( @serialize($metadata) );
         $recurring   = $fndb->escape( strtolower( $recurring ) );
 
-        //--- calculate forward date ---//
-        $fr_timestamp = self::get_future_recurring_time($timestamp, $recurring ); $fdate = date(FN_MYSQL_DATE, $fr_timestamp);
-        //--- calculate forward date ---//
 
-        $data = array('optype'=>$type, 'value'=>$value, 'currency_id'=>$currency_id, 'recurring'=>$recurring, 'metadata'=>$metadata, 'sdate'=>$date, 'fdate'=>$fdate);
+        $data = array('optype'=>$type, 'value'=>$value, 'currency_id'=>$currency_id, 'recurring'=>$recurring, 'metadata'=>$metadata, 'sdate'=>$sdate, 'fdate'=>$fdate);
 
         $fnsql->insert(self::$table,  $data);
 
@@ -69,26 +150,6 @@ class fn_OP_Pending{
         if( is_array($data) and count($data) ){
 
             unset( $data['trans_id'] );
-
-            $trans_fdate = @strtotime($data['fdate']); if( $trans_fdate < $today ){
-
-                //--- shift the transaction's fdate to match today's time ---//
-
-                $instances = self::get_interval_instances($data['recurring'], $data['fdate'], $today);
-
-                if( $instances ){
-
-                    $data['value'] = floatval($instances * $data['value']);
-
-                    $t_unit     = self::get_recurring_time_unit($data['recurring'], $instances);
-                    $t_stamp  = @strtotime("+{$instances} {$t_unit}", $today);
-
-                    self::update( $root_id, array('fdate'=>self::get_future_recurring_time($t_stamp, $data['recurring'])) );
-
-                }
-
-                //--- shift the transaction's fdate to match today's time ---//
-            }
 
             //--- add recurring metadata ---//
             $metadata = @unserialize( $data['metadata'] );
@@ -135,12 +196,16 @@ class fn_OP_Pending{
 
             if( $trans->recurring != 'no' ){
 
-                $t_units = self::get_recurring_time_unit( $trans->recurring, $instances );
+                $t_units    = self::get_recurring_time_unit( $trans->recurring, $instances );
+                $t_singular= self::get_recurring_time_unit($trans->recurring, 1);
 
                 $fr_timestamp = @strtotime("+{$instances} {$t_units}", @strtotime($trans->fdate));
-                $fdate            = date(FN_MYSQL_DATE, $fr_timestamp); //calculate next future date of transaction
+                $sr_timestamp = @strtotime("-1 {$t_singular}", $fr_timestamp);
 
-                if( self::update($trans->trans_id, array('fdate'=>$fdate)) ); else return false;
+                $fdate            = date(FN_MYSQL_DATE, $fr_timestamp); //next date of transaction instance overdue
+                $sdate            = date(FN_MYSQL_DATE, $sr_timestamp); //previous date of instance overdue
+
+                if( self::update($trans->trans_id, array('fdate'=>$fdate, 'sdate'=>$sdate)) ); else return false;
 
             }
             else{
@@ -164,13 +229,15 @@ class fn_OP_Pending{
 
             //--- add the transaction to live transactions ---//
 
+            $value = floatval($trans->value * $instances);
+
             $comments     = self::get_metdata($trans, 'comments', null);
             $labels           = self::get_metdata($trans, 'labels', array());
             $account_id    = self::get_metdata($trans, 'account_id', 0);
 
             $attachments= fn_OP_Pending::get_metdata($trans, 'attachments');
 
-            if( $op_trans_id = fn_OP::add($trans->optype, $trans->value, $trans->currency_id, $comments) ){
+            if( $op_trans_id = fn_OP::add($trans->optype, $value, $trans->currency_id, $comments) ){
 
                 if( count($labels) ) foreach($labels as $label_id)
                     if( fn_Label::get_by($label_id, 'id') ) fn_OP::associate_label($op_trans_id, $label_id);
@@ -187,11 +254,12 @@ class fn_OP_Pending{
 
                 }
 
+                //--- add the transaction to live transactions ---//
+
                 return $op_trans_id;
 
             }
 
-            //--- add the transaction to live transactions ---//
         }
 
         return false;
@@ -446,6 +514,86 @@ class fn_OP_Pending{
 
     }
 
+    public static function apply_period_filters($filters, $SQLTemplate=null){
+
+        global $fndb;
+
+        $SQLTemplate = empty($SQLTemplate) ? self::$PeriodSelectSQL : $SQLTemplate; $filters_sql = "";
+
+        if ( is_object($filters) ) $filters = @get_object_vars($filters);
+
+        //--- require start date and end date ---//
+        $filters['startdate'] = empty($filters['startdate']) ? date(FN_MYSQL_DATE) : $filters['startdate'];
+        $filters['enddate']  = empty($filters['enddate']) ? date(FN_MYSQL_DATE, @strtotime('+30 days')) : $filters['enddate'];
+
+        if ( count($filters) and is_array($filters)){
+
+            if ( $filters['type'] ){
+                if ( !in_array($filters['type'], array(FN_OP_IN, FN_OP_OUT), TRUE) ) return false; $filters['type'] = $fndb->escape($filters['type']); $filters_sql[] = " AND `optype` = '{$filters['type']}' ";
+            }
+
+            if( isset($filters['root_id']) )
+                $filters_sql[] = (" AND `root_id`= " .  intval($filters['root_id']) );
+
+            if( $filters['recurring'] ){
+
+                if( !is_array($filters['recurring'] ) ) $filters['recurring']  = array($filters['recurring'] );//force to array
+
+                $rlist = $fndb->escape( @implode("','", $filters['recurring']) );  $filters_sql[]= (" AND `recurring` IN ('{$rlist}') ");
+
+            }
+
+            if( $filters['currency_id'] ){
+                $filters_sql[] = (" AND `currency_id`= " .  intval($filters['currency_id']) );
+            }
+
+            if ( $filters['startdate'] ){
+                $filters['startdate'] = $fndb->escape($filters['startdate']); $filters_sql[] = (" AND `fdate`>= '{$filters['startdate']}'" );
+
+                $SQLTemplate = str_replace('{datestart}', $filters['startdate'], $SQLTemplate);
+            }
+
+            if ( $filters['enddate'] ){
+                $filters['enddate'] = $fndb->escape($filters['enddate']); $filters_sql[] = (" AND `fdate`<= '{$filters['enddate']}'"  );
+                $SQLTemplate = str_replace('{dateend}', $filters['enddate'], $SQLTemplate);
+            }
+
+            //--- replace conditions in template ---//
+
+            $conditions = ""; if( count($filters_sql) ) foreach($filters_sql as $filter){
+                $filter = trim($filter); $conditions.= ( " " . $filter );
+            }
+
+            $conditions = trim( preg_replace('/AND/', 'WHERE', $conditions, 1) );
+
+            $SQLTemplate = str_replace('{conditions}', $conditions, $SQLTemplate);
+            //--- replace conditions in template ---//
+
+            if( isset($filters['orderby']) ){ //order by field
+                $order    = isset($filters['order']) ? $fndb->escape( strtoupper($filters['order']) ) :  'DESC' ;
+                $orderby = $fndb->escape($filters['orderby']);
+
+                $order = "ORDER BY `{$orderby}` {$order}";
+            }
+
+            if ( isset($filters['start']) and isset($filters['count'])){
+                $start  = intval($filters['start']);
+                $count = intval($filters['count']);
+
+                $limit = " LIMIT {$start}, {$count}";
+            }
+
+            $SQLTemplate = str_replace('{ordering}', $order, $SQLTemplate);
+            $SQLTemplate = str_replace('{limit}', $limit, $SQLTemplate);
+
+            return $SQLTemplate;
+
+        }
+
+        return false;
+
+    }
+
     public static function get_overdue($filters=array(), $offset=0, $limit=125){
 
         global $fndb, $fnsql; $today = date(FN_MYSQL_DATE);
@@ -526,15 +674,35 @@ class fn_OP_Pending{
 
     }
 
+    public static function get_period($filters){
+
+        global $fnsql, $fndb; $today = date(FN_MYSQL_DATE);
+
+        if( empty($filters['startdate']) ) $filters['startdate'] = $today;
+        if( empty($filters['enddate']) )  $filters['enddate']  = date(FN_MYSQL_DATE, @strtotime('+30 days'));
+
+        $filters['root_id'] = intval( $filters['root_id'] );
+
+        if( empty( $filters['root_id'] ) ) $filters['root_id'] = '0'; //get only roots
+
+        $PeriodSQL = self::apply_period_filters($filters);
+
+        return $fndb->get_rows( $PeriodSQL );
+
+    }
+
     public static function get_all($filters=array()){
         global $fndb, $fnsql; $fnsql->select('*', self::$table); self::apply_filters($filters); return $fndb->get_rows( $fnsql->get_query() );
     }
 
-    public static function get_compound_sum( $filters=array() ){
+    /**
+     * Gets compound sum for the period converted to the default currency
+     * @param array $filters
+     * @return float|int
+     */
+    public static function get_period_sum( $filters=array() ){
 
         $total = 0; $today = date(FN_MYSQL_DATE); global $fnsql, $fndb;
-
-        //--- get sum of all daily transactions in the timespan ---//
 
         if( isset($filters['start']) ) unset($filters['start']);
         if( isset($filters['count']) ) unset($filters['count']);
@@ -542,8 +710,8 @@ class fn_OP_Pending{
         if( isset($filters['order']) ) unset($filters['order']);
         if( isset($filters['orderby']) ) unset($filters['orderby']);
 
-        if( empty($filters['startdate']) ) $filters['startdate'] = date(FN_MYSQL_DATE, 0);
-        if( empty($filters['enddate']) )  $filters['enddate'] = $today;
+        if( empty($filters['startdate']) ) $filters['startdate'] = $today;
+        if( empty($filters['enddate']) )  $filters['enddate']  = date(FN_MYSQL_DATE, @strtotime('+30 days'));
 
         $filters['root_id'] = intval( $filters['root_id'] );
 
@@ -575,32 +743,30 @@ class fn_OP_Pending{
             //--- only for a single root ---//
         }
 
-        //--- get different recurring types in the timespan ---//
-        /*
-        $fnsql->init(SQLStatement::$SELECT);
-        $fnsql->distinct('recurring');
-        $fnsql->from(self::$table);
-
-        self::apply_filters($filters);
-
-        die(  $fnsql->get_query() ); //TODO
-        */
-
-        //--- get different recurring types in the timespan ---//
-
         $once_sum = self::get_sum(array_merge($filters, array('recurring'=>'no'))); $total+= $once_sum;
 
+        //--- now move forward to calculate compound sum for recurring transactions ---//
+        $CompoundSQL = self::apply_period_filters($filters);
 
-        if( $days > 0 ){
-            $daily_sum = self::get_sum( array_merge($filters, array('recurring'=>'daily')) ); $total+= ($daily_sum * $days);
-        }
+        if( $CompoundSQL ){
 
-        if( $months > 0 ){
-            $mothly_sum =  self::get_sum(array_merge($filters, array('recurring'=>'monthly'))); $total+= ($mothly_sum * $months);
-        }
+            $currencies = self::get_distinct_currencies($filters);
 
-        if( $years > 0 ){
-            $yearly_sum =  self::get_sum(array_merge($filters, array('recurring'=>'yearly'))); $total+= ($yearly_sum * $years);
+            if( count($currencies) ) foreach ($currencies as $currency_id){
+
+                $CompoundSQL = self::apply_period_filters( array_merge($filters, array('currency_id'=>$currency_id)) );
+
+                $fnsql->init(SQLStatement::$SELECT);
+                $fnsql->sum('period_total', 'total');
+                $fnsql->query_append(" FROM ($CompoundSQL) AS Z  ");
+
+                $Row = $fndb->get_row( $fnsql->get_query() );
+                if( $Row and isset( $Row->total ) ) $total+= fn_Currency::convert_to_default($Row->total, $currency_id);
+
+            }
+
+
+
         }
 
         return $total;
@@ -640,6 +806,7 @@ class fn_OP_Pending{
             $Rows = $fndb->get_rows( $fnsql->get_query() );
 
             if($Rows and count($Rows)) foreach($Rows as $row) $Currencies[] = $row->currency_id;
+            //--- select all distinct currencies ---//
 
         }
 
@@ -692,10 +859,12 @@ class fn_OP_Pending{
         if( isset($filters['order']) ) unset($filters['order']);
         if( isset($filters['orderby']) ) unset($filters['orderby']);
 
+        if( isset($filters['startdate']) ) unset($filters['startdate']);
+
         //--- get min date ---//
         $fnsql->init(SQLStatement::$SELECT);
         $fnsql->table(self::$table);
-        $fnsql->min('fdate', 'mindate');
+        $fnsql->min('sdate', 'mindate');
         $fnsql->from();
 
         self::apply_filters($filters);
@@ -706,8 +875,26 @@ class fn_OP_Pending{
 
         //--- get min date ---//
 
-        return date(FN_MYSQL_DATE, 0);
+        return date(FN_MYSQL_DATE);
 
+    }
+
+    public static function get_distinct_currencies($filters){
+
+        global $fndb, $fnsql; $currencies = array();
+
+        $fnsql->init(SQLStatement::$SELECT);
+        $fnsql->table(self::$table);
+        $fnsql->distinct('currency_id');
+        $fnsql->from();
+
+        self::apply_filters($filters);
+
+        $Rows = $fndb->get_rows( $fnsql->get_query() );
+
+        if($Rows and count($Rows)) foreach($Rows as $row) $currencies[] = $row->currency_id;
+
+        return $currencies;
     }
 
     public static function get_future_recurring_time($timestamp, $recurring ){
@@ -719,6 +906,19 @@ class fn_OP_Pending{
             'daily'         => strtotime('+1 day', strtotime( date("Y-m-$day 00:00:01", $timestamp) )),
             'monthly'    => strtotime('+1 month', strtotime(date("Y-m-$day 00:00:01", $timestamp) )),
             'yearly'       => strtotime('+1 year', strtotime(date("Y-m-$day 00:00:01", $timestamp) ))
+        );
+
+        return intval( $recs[$recurring] );
+
+    }
+
+    public static function get_past_recurring_time($timestamp, $recurring ){
+
+        $recs = array(
+            'no'             => $timestamp,
+            'daily'         => strtotime('-1 day', strtotime( date("Y-m-d 00:00:01", $timestamp) )),
+            'monthly'    => strtotime('-1 month', strtotime(date("Y-m-d 00:00:01", $timestamp) )),
+            'yearly'       => strtotime('-1 year', strtotime(date("Y-m-d 00:00:01", $timestamp) ))
         );
 
         return intval( $recs[$recurring] );

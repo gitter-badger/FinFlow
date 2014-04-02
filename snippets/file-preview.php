@@ -33,6 +33,11 @@ if( $exists ){
     $fileinfo['size']    = fn_Util::fmt_filesize(@filesize($path));
     //--- get file info ---//
 
+
+    //--- get file download URL ---//
+    $download_url = fn_UI::get_file_download_url($file, 0, $filename);
+    //--- get file download URL ---//
+
 }
 
 $backURL = ( isset($_SERVER['HTTP_REFERER']) and strlen($_SERVER['HTTP_REFERER']) ) ? $_SERVER['HTTP_REFERER'] : "#";
@@ -122,14 +127,14 @@ $backJS   = ( $backURL != '#' ) ? 'return true;' : 'window.history.back();return
                 <ul class="nav">
                     <li><a href="<?php echo $backURL; ?>" onclick="<?php echo $backJS; ?>" title="Inapoi"><span class="icon-arrow-left"></span> </a> </li>
                     <li><a href="#info" onclick="$('#ajaxModalInfo').modal(true);" title="Detalii fisier"><span class="icon-info-sign"></span></a> </li>
-                    <li><a href="<?php echo fn_UI::get_file_download_url($file, 0, $filename); ?>" title="Descarca"><span class="icon-download-alt"></span> </a> </li>
+                    <li><a href="<?php echo $download_url; ?>" title="Descarca"><span class="icon-download-alt"></span> </a> </li>
                     <li><a href="#remove" onclick="confirm_delete('<?php echo $deleteurl; ?>');" title="Sterge"><span class="icon-remove"></span></a> </li>
                 </ul>
             </div>
         </div>
     </div>
 
-	<?php fn_UI::html_embed_file($url, $filename); else: ?>
+	<?php fn_UI::html_embed_file($url, $filename, $download_url); else: ?>
 	<p class="msg warn" style="margin: 25px;">
         <a href="<?php echo $backURL; ?>" onclick="<?php echo $backJS; ?>" title="Inapoi"><span class="icon-arrow-left"></span> &#238;napoi</a>
         Fi&#351;ierul nu poate fi afi&#351;at. Probabil c&#259; fost &#351;ters sau nu este accesibil.

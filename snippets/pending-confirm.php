@@ -168,7 +168,6 @@ if( count($Transaction) and isset($Transaction->trans_id) ){
             <p class="popup-btn-group">
                 <button class="btn btn-primary" type="button" onclick="send_transaction('confirm');">Confirm&#259;</button>
                 <button class="btn" type="button"  onclick="send_transaction('clean');">Cur&#259;&#355;&#259;</button>
-                <a class="btn" href="#" onclick="window.close();">Anuleaz&#259;</a>
             </p>
 
             <input type="hidden" name="action" id="selectedAction" value="confirm"/>

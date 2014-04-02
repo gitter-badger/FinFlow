@@ -120,7 +120,21 @@
 <script type="text/javascript">
 
     max_filesize = parseInt('<?php echo fn_Util::get_max_upload_filesize(); ?>');
-    var picker = new Pikaday({ field: document.getElementById('date'), firstDay: 1, i18n: PikadayRO,  format: 'YYYY-MM-DD', maxDate: new Date("<?php echo date('Y-m-d'); ?>") });
+
+    var today  = new Date();
+    var picker = new Pikaday({
+                                 field: document.getElementById('date'),
+                                 firstDay: 1,
+                                 i18n: PikadayRO,
+                                 format: 'YYYY-MM-DD',
+                                 onSelect: function(date) {
+                                     if( date > today ) {
+                                         //---- is a pending transaction ---//
+                                         $('#add_pending').prop('checked', true); $('.recurring-choices').slideDown('fast');
+                                         //---- is a pending transaction ---//
+                                     }
+                                 }
+     });
 
     $(document).ready(function($){
        $('#add_pending').click(function(){
