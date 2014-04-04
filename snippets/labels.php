@@ -21,7 +21,8 @@ if ( count($_POST['title']) ){
 	//--- check for unique slug ---//
 	
 	if ( empty($errors) ){
-		$saved = fn_Label::add($_POST['title'], $_POST['description']);
+
+		$saved = fn_Label::add($_POST['title'], $_POST['description'], $_POST['parent_id']);
 		
 		if ( $saved )
 			$notices[] = "Eticheta a fost adaugata";
@@ -89,28 +90,7 @@ $Labels = fn_Label::get_all($offset, $per_page);
 			<?php endif;?>
 		<?php endif;?>
 		
-		<?php if ( $tab == 'add' ): ?>
-		
-			<?php fn_UI::show_errors($errors); fn_UI::show_notes($notices); ?>
-		
-			<form action="<?php fn_UI::page_url('labels', array('t'=>'add'))?>" method="post" name="add-label-form" id="addLabelForm">
-				<p>
-					<label for="title">Nume:</label>
-					<input type="text" size="45" maxlength="255" name="title" id="title" value="<?php echo fn_UI::extract_post_val('title'); ?>" /> 
-					<span class="required">*</span> 
-				</p>
-				<p>
-					<label for="description">Descriere:</label>
-					<input type="text" size="45" maxlength="255" name="description" id="description" value="<?php echo fn_UI::extract_post_val('description'); ?>" /> 
-				</p>
-				
-				<p>
-					<input type="hidden" name="add" value="yes" />
-					<button class="btn btn-primary" type="submit">Adaug&#259;</button>
-				</p>
-			</form>
-			
-		<?php endif;?>
+		<?php if ( $tab == 'add' ) include_once 'labels-add.php'; ?>
 		
 	</div>
 	

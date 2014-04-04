@@ -16,7 +16,19 @@ class fn_Label{
 		
 		return $fndb->get_row( $fnsql->get_query() );
 	}
-	
+
+    public static function get_parents(){
+
+        global $fndb, $fnsql;
+
+        $fnsql->select('*', self::$table);
+        $fnsql->condition('parent_id', '=', '0');
+        $fnsql->conditions_ready();
+        $fnsql->orderby('slug', self::$table, "ASC");
+
+        return $fndb->get_rows( $fnsql->get_query() );
+
+    }
 	
 	public static function get_all($start=0, $count=25){
 		
@@ -46,6 +58,10 @@ class fn_Label{
 		return 0;
 		
 	}
+
+    public static function get_by_id($label_id){
+        return self::get_by($label_id, 'id');
+    }
 	
 	public static function get_by($input, $by='slug'){
 		
@@ -68,7 +84,7 @@ class fn_Label{
 		
 	}
 	
-	public static function add($title, $longdesc="", $customslug=""){
+	public static function add($title, $longdesc="", $parent_id=0, $customslug=""){
 		
 		global $fndb, $fnsql; 
 		
@@ -77,9 +93,10 @@ class fn_Label{
 		$longdesc 	= $fndb->escape($longdesc);
 		$title			= $fndb->escape($title); 
 		
-		$fnsql->insert(self::$table, array('slug'=>$slug, 'title'=>$title, 'description'=>$longdesc)); 
+		$fnsql->insert(self::$table, array('parent_id'=>$parent_id, 'slug'=>$slug, 'title'=>$title, 'description'=>$longdesc));
 		
 		return ( $fndb->execute_query( $fnsql->get_query() ) === false ) ? false : $fndb->last_insert_id;
+
 	}
 	
 	public static function update($label_id, $title, $longdesc=""){
@@ -125,6 +142,7 @@ class fn_Label{
 	}
 	
 	public static function remove($label_id){
+
 		global $fndb, $fnsql;
 		
 		$label_id = intval($label_id);
@@ -134,10 +152,12 @@ class fn_Label{
             //--- remove label assocs ---//
 			$fnsql->delete(self::$table_assoc, array('label_id'=>$label_id));
             $fndb->execute_query( $fnsql->get_query() );
-
-            $fnsql->delete(fn_Accounts::$table_assoc, array('label_id'=>$label_id));
-            $fndb->execute_query( $fnsql->get_query() );
             //--- remove label assocs ---//
+
+            //--- update children to parent '0' ---//
+            $fnsql->update(self::$table, array('parent_id'=>0), array('parent_id'=>$label_id));
+            $fndb->execute_query( $fnsql->get_query() );
+            //--- update children to parent '0' ---//
 
 	        $fnsql->delete(self::$table, array('label_id'=>$label_id));  //--- remove label ---//
 				

@@ -229,7 +229,7 @@ a.default:hover{
 	clear:both;
 	padding: 9px;
 	border:1px #CACACA solid;
-	border-radius: 4px;
+	border-radius: 0px;
 }
 
 .sidebar .widget a{
@@ -259,7 +259,10 @@ a.default:hover{
 	width:93%;
 	text-align:center;
 	font-weight:bold;
-	background: #EDEDED;
+    font-size: 1.4em;
+    line-height: normal;
+    height: auto;
+    border-radius: 0px;
 }
 
 .well.requirement{
@@ -295,6 +298,8 @@ a.default:hover{
 	background: #FFF;
 	padding: 4px 0px;
 	border:1px #CCC solid;
+    font-size: 1.4em;
+    line-height: normal;
 }
 
 .balance{

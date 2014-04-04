@@ -1,6 +1,6 @@
 <?php if( !defined('FNPATH') ) exit;
 
-global $fndb, $fnsql;
+global $fndb, $fnsql; $Currency = fn_Currency::get_default();
 
 include_once ( FNPATH . '/inc/transfilter-vars.php');
 include_once (FNPATH . '/inc/Highchart.php');
@@ -26,9 +26,9 @@ if( $tab =='list' ){ //totals performance
 
     if ( count($Sums) ){
 
-        $vars = fn_Util::highchart_prepare_data($Sums); @extract($vars);
+        $vars = fn_Util::highchart_prepare_data($Sums, $Currency->ccode); @extract($vars);
 
-        $Chart = fn_Util::highchart('chartTransactionsGrowth', 'column', "Performanta Rulaj: {$chartdtspan}", $categories, "Suma (RON)", $series, TRUE);
+        $Chart = fn_Util::highchart('chartTransactionsGrowth', 'column', "Performanta Rulaj: {$chartdtspan}", $categories, "Suma ({$Currency->ccode})", $series, TRUE);
 
         $Chart->xAxis->labels->rotation 	= -45;
         $Chart->xAxis->labels->align 		= "right";
@@ -64,9 +64,9 @@ if( $tab == 'list2' ){
 
     ksort($Sums);
 
-    $vars = fn_Util::highchart_prepare_data($Sums); @extract($vars);
+    $vars = fn_Util::highchart_prepare_data($Sums, $Currency->ccode); @extract($vars);
 
-    $Chart = fn_Util::highchart('chartBalanceEvolution', 'line', "Evolutie balanta: {$chartdtspan}", $categories, "Suma (RON)", $series, TRUE);
+    $Chart = fn_Util::highchart('chartBalanceEvolution', 'line', "Evolutie balanta: {$chartdtspan}", $categories, "Suma ({$Currency->ccode})", $series, TRUE);
 
     $Chart->xAxis->labels->rotation 	= -45;
     $Chart->xAxis->labels->align 		= "right";

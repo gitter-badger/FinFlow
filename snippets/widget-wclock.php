@@ -25,5 +25,5 @@ if( array_key_exists(FN_TIMEZONE, $dtimezones) ); else {
         </option>
         <?php endforeach; ?>
 	</select>
-	<strong id="displayWClock" class="widget-inline-blockclear"><?php echo date('H:i:s'); ?></strong>
+	<strong id="displayWClock" class="widget-inline-blockclear">--:--:--</strong>
 </p>

@@ -345,7 +345,7 @@ class fn_Util{
 	}
 
 
-    public static function highchart_prepare_data($Sums, $series_color=FALSE, $negative_color=FALSE){
+    public static function highchart_prepare_data($Sums, $currency_code="RON", $series_color=FALSE, $negative_color=FALSE){
 
         $chartdtspan  	= "";
         $categories 		= array();
@@ -382,7 +382,7 @@ class fn_Util{
 
         }
 
-        $series[] = array('name'=>"RON", 'data' =>$seriesdata, 'threshold'=>0, 'negativeColor'=>'#F2637B');
+        $series[] = array('name'=>$currency_code, 'data' =>$seriesdata, 'threshold'=>0, 'negativeColor'=>'#F2637B');
 
         return array('series'=>$series, 'chartdtspan'=>$chartdtspan, 'categories'=>$categories);
     }

@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Operations Main Class
+ * Class fn_OP
+ * @version 1.5
+ * @author Adrian7 (adrian@finflow.org)
+ */
 class fn_OP{
 	
 	public static $table 			   = 'cash_op';
@@ -618,16 +623,29 @@ class fn_OP{
 	}
 	
 	public static function associate_label($trans_id, $label_id){
+
 		global $fndb, $fnsql; 
 		
 		$trans_id = intval($trans_id);
 		$label_id = intval($label_id);
 		
 		if ( $label_id and $trans_id ){
-		
+
+            //--- if the label has a parent also associate the parent label ---//
+
+            $label = fn_Label::get_by_id($label_id); if( $label and isset($label->parent_id) and ( $label->parent_id > 0 ) ) {
+
+                $fnsql->insert(fn_Label::$table_assoc, array('label_id'=>$label->parent_id, 'trans_id'=>$trans_id));
+                $fndb->execute_query( $fnsql->get_query() );
+
+            }
+
+            //--- if the label has a parent also associate the parent label ---//
+
 			$fnsql->insert(fn_Label::$table_assoc, array('label_id'=>$label_id, 'trans_id'=>$trans_id));
 
 			return $fndb->execute_query( $fnsql->get_query() );
+
 		}
 		
 	}
