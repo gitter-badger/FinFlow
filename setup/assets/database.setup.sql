@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS `cash_currency_history` (
 
 CREATE TABLE IF NOT EXISTS `cash_labels` (
   `label_id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) NOT NULL DEFAULT '0',
   `slug` varchar(125) NOT NULL,
   `title` varchar(225) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
@@ -66,6 +67,20 @@ CREATE TABLE IF NOT EXISTS `cash_op_meta` (
   `meta_key` varchar(64) NOT NULL,
   `meta_value` text,
   PRIMARY KEY (`meta_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `cash_op_pending` (
+  `trans_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `root_id` int(11) DEFAULT '0',
+  `optype` enum('in','out') NOT NULL DEFAULT 'out',
+  `value` float NOT NULL,
+  `currency_id` int(11) NOT NULL DEFAULT '1',
+  `recurring` enum('no','daily','monthly','yearly') DEFAULT 'no',
+  `sdate` datetime NOT NULL,
+  `fdate` datetime DEFAULT NULL,
+  `active` enum('yes','no') DEFAULT 'yes',
+  `metadata` text,
+  PRIMARY KEY (`trans_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `cash_settings` (

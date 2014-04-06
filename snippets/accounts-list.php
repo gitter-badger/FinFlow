@@ -39,6 +39,13 @@
             </tr>
         <?php endforeach; ?>
     </table>
+
+    <div class="pagination">
+        <?php $total = fn_Accounts::get_total(); if ( $total > $per_page ):?>
+            <ul><?php fn_UI::pagination($total, $per_page, $offset, fn_UI::page_url('accounts', array(), false)); ?></ul>
+        <?php endif;?>
+    </div>
+
 <?php else :?>
     <?php fn_UI::msg(sprintf("Nu sunt conturi predefinite! Po&#355;i ad&#259;uga conturi folosind <a href=\"%s\">formularul de ad&#259;ugare</a>.", 'index.php?p=accounts&t=add'), fn_UI::$MSG_WARN); ?>
 <?php endif;?>

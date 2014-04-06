@@ -59,10 +59,11 @@ if ( !$testing and !$active )
 
 //--- validate the hostname --//
 if ( !fn_CheckValidityOf::hostname($Settings['host']) ) fn_CronAssistant::cron_error("Serverul de mail {$Settings['host']} nu poate fi contactat.", $testing);
+//--- validate the hostname --//
 
 try{
 
-    //TODO add IMAP protocol support
+    //TODO! add IMAP protocol support
 
 	fn_CronAssistant::get_lock(__FILE__);
 	

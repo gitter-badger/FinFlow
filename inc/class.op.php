@@ -65,14 +65,23 @@ class fn_OP{
 			}
 
             if ( $filters['accounts'] and is_array( $filters['accounts']) and count($filters['accounts']) ){
-                $alist = $fndb->escape(implode(",", $filters['accounts'])); $fnsql->condition('account_id', "IN", "({$alist})", "AND", fn_Accounts::$table_assoc, FALSE);
+                $alist = $fndb->escape(implode(",", $filters['accounts'])); $fnsql->condition('account_id', "IN", "({$alist})", "AND", self::$table, FALSE);
             }
 
-            if( $filters['ignore_accounts']  and is_array( $filters['ignore_accounts']) and count($filters['ignore_accounts']) ){
-                $ialist = $fndb->escape(implode(",", $filters['ignore_accounts']));
+            if( $filters['ignore_accounts'] ){
 
-                $fnsql->condition('account_id', "NOT IN", "({$ialist})", "AND", fn_Accounts::$table_assoc, FALSE, 1);
-                $fnsql->condition('account_id', 'IS', 'NULL', "OR", fn_Accounts::$table_assoc, FALSE, 1); //add IS NULL condition
+                $act_group_id = 0; $act_sql_junction = "AND";
+
+                if( is_array( $filters['ignore_accounts']) and count($filters['ignore_accounts']) ){
+
+                    $act_group_id = 1; $act_sql_junction = "OR";
+
+                    $ialist = $fndb->escape(implode(",", $filters['ignore_accounts']));
+                    $fnsql->condition('account_id', "NOT IN", "({$ialist})", "AND", self::$table, FALSE, $act_group_id);
+
+                }
+
+                $fnsql->condition('account_id', '=', '0', $act_sql_junction, self::$table, FALSE, $act_group_id); //AND|OR `account_id` = 0
 
             }
 			
@@ -129,9 +138,6 @@ class fn_OP{
         if ( isset($filters['labels']) )
             $fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
 
-        if( isset($filters['accounts']) or isset($filters['ignore_accounts']) )
-            $fnsql->left_join(fn_Accounts::$table_assoc, 'trans_id', 'trans_id');
-
         $filters = array_merge($filters);
 
         self::apply_filters($filters);
@@ -157,9 +163,6 @@ class fn_OP{
 
 		if ( isset($filters['labels']) )
 			$fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
-
-        if( isset($filters['accounts']) or isset($filters['ignore_accounts']) )
-            $fnsql->left_join(fn_Accounts::$table_assoc, 'trans_id', 'trans_id');
 		
 		$filters = array_merge($filters, array('start'=>$start, 'count'=>$count));
 
@@ -207,21 +210,14 @@ class fn_OP{
 
         if ( $trans_id ){
 
-            $fnsql->init(SQLStatement::$SELECT);
-            $fnsql->table( fn_Accounts::$table_assoc );
+            $trans = self::get($trans_id);
 
-            $fnsql->fields('*', fn_Accounts::$table_assoc);
-            $fnsql->fields('*', fn_Accounts::$table);
-
-            $fnsql->from();
-
-            $fnsql->left_join(fn_Accounts::$table, 'account_id', 'account_id');
-            $fnsql->condition('trans_id', '=', $trans_id);
-            $fnsql->conditions_ready();
+            $fnsql->select('*', fn_Accounts::$table, array('account_id'=>$trans->account_id));
 
             return $fndb->get_row( $fnsql->get_query() );
 
         }
+
     }
 	
 	public static function remove($trans_id){
@@ -235,11 +231,7 @@ class fn_OP{
 			$fnsql->delete(fn_Label::$table_assoc, array('trans_id'=>$trans_id));
 			$fndb->execute_query( $fnsql->get_query() );
 
-            //delete accounts assoc
-            $fnsql->delete(fn_Accounts::$table_assoc, array('trans_id'=>$trans_id));
-            $fndb->execute_query( $fnsql->get_query() );
-
-            //TODO remove trans from account balance
+            //TODO! remove trans from account balance
 
             //delete attachments
             $attachments= fn_OP::get_metadata($trans_id, 'attachments');
@@ -321,9 +313,6 @@ class fn_OP{
 		
 		if ( isset($filters['labels']) )
 			$fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
-
-        if( isset($filters['accounts']) or isset($filters['ignore_accounts']) )
-            $fnsql->left_join(fn_Accounts::$table_assoc, 'trans_id', 'trans_id');
 		
 		self::apply_filters($filters);
 		
@@ -345,9 +334,6 @@ class fn_OP{
 				
 			if ( isset($filters['labels']) )
 				$fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
-
-            if( isset($filters['accounts']) or isset($filters['ignore_accounts']) )
-                $fnsql->left_join(fn_Accounts::$table_assoc, 'trans_id', 'trans_id');
 				
 			self::apply_filters( array_merge($filters, array('currency_id'=>$row->currency_id)) );
 
@@ -415,9 +401,6 @@ class fn_OP{
 		
 		if ( isset($filters['labels']) or isset($filters['ignore_labels']) )
 			$fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
-
-        if( isset($filters['accounts']) or isset($filters['ignore_accounts']) )
-            $fnsql->left_join(fn_Accounts::$table_assoc, 'trans_id', 'trans_id'); //TODO joins might be too slow
 		
 		self::apply_filters($filters);
 		
@@ -433,12 +416,9 @@ class fn_OP{
 			
 			if ( isset($filters['labels']) )
 				$fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
-
-            if( isset($filters['accounts']) or isset($filters['ignore_accounts']) )
-                $fnsql->left_join(fn_Accounts::$table_assoc, 'trans_id', 'trans_id');
 			
 			self::apply_filters( array_merge($filters, array('currency_id'=>$row->currency_id)) );
-			
+
 			$sum = $fndb->get_row( $fnsql->get_query() );
 			$sum = floatval($sum->ctotal);
 			
@@ -463,17 +443,12 @@ class fn_OP{
             $filters = array('startdate'=>0, 'enddate'=>0);
 
         if( $include_accounts ){
-            $aclist      = array();
-            $accounts = fn_Accounts::get_all(0, 999); if( count($accounts) ) foreach($accounts as $account) $aclist[] = $account->account_id;
-
-            if( count($aclist) ) $filters['ignore_accounts'] = $aclist;
-
+            $filters['ignore_accounts'] = true;
         }
 
 
         $Income		= fn_OP::get_sum(array_merge($filters, array('type'=>FN_OP_IN)));
         $Outcome	= fn_OP::get_sum(array_merge($filters, array('type'=>FN_OP_OUT)));
-
 
         if( $include_accounts ){
             //--- include accounts deposits in calculations ---//
@@ -549,6 +524,7 @@ class fn_OP{
              }
 
             return array('account_id'=>$account->account_id, 'value'=>$value, 'currency_id'=>$currency_id);
+
         }
 
         return array('value'=>$value, 'currency_id'=>$currency_id);
@@ -718,7 +694,6 @@ class fn_OP{
      * @return bool
      */
     public static function create($type, $value, $ccode, $account, $labels=array(), $timestamp=NULL, $metadata=array()){
-		//Create a new transaction
 		
 		global $fndb, $fnsql;
 		
@@ -976,17 +951,6 @@ class fn_OP{
             $labelsIDs = count($labelsList) ? implode(",", $labelsList) : "";
             //--- prepare associated labels ---//
 
-            //--- prepare associated account ---//
-
-            $account_id = 0;
-
-            $fnsql->select('account_id', fn_Accounts::$table_assoc, array('trans_id'=>$row->trans_id));
-            $account = $fndb->get_row( $fnsql->get_query() );
-
-            if( $account and isset($account->account_id) ) $account_id = $account->account_id;
-
-            //--- prepare associated account ---//
-
             $trans['ID']                = $row->trans_id;      //keep the trans id for reference
             $trans['cid']              = $row->currency_id;//keep the currency id for reference
             $trans['type']            = $row->optype;
@@ -995,7 +959,7 @@ class fn_OP{
             $trans['comments']   = $row->comments;
             $trans['metadata']    = $metadata;
             $trans['labels']         = $labelsIDs;
-            $trans['account']      = $account_id;
+            $trans['account']      = $row->account_id;
 
             $Export[] = $trans;
         }

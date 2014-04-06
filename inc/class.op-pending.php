@@ -431,12 +431,6 @@ class fn_OP_Pending{
             $fnsql->sum('value', 'ctotal');
             $fnsql->from();
 
-            if ( isset($filters['labels']) )
-                $fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
-
-            if( isset($filters['accounts']) or isset($filters['ignore_accounts']) )
-                $fnsql->left_join(fn_Accounts::$table_assoc, 'trans_id', 'trans_id');
-
             self::apply_filters( array_merge($filters, array('currency_id'=>$row->currency_id)) );
 
             $sum = $fndb->get_row( $fnsql->get_query() );

@@ -35,8 +35,8 @@ if ( count($_POST['title']) ){
 
 if ( isset($_GET['del']) ) fn_Label::remove($_GET['del']);
 
-$offset     = isset($_GET['pag']) ? intval($_GET['pag']) : 0;
 $per_page= FN_RESULTS_PER_PAGE;
+$offset     = isset($_GET['pag']) ? fn_UI::pagination_get_current_offset($_GET['pag'], $per_page) : 0;
 
 $Labels = fn_Label::get_all($offset, $per_page);
 

@@ -152,7 +152,7 @@ class fn_Accounts{
         $account_id = intval($account_id);
 
         //--- remove associated transactions ---//
-        $fnsql->delete(self::$table_assoc, array('account_id'=>$account_id));
+        $fnsql->update(fn_OP::$table, array('account_id'=>0), array('account_id'=>$account_id));
         $fndb->execute_query( $fnsql->get_query() );
         //--- remove associated transactions ---//
 
@@ -192,12 +192,11 @@ class fn_Accounts{
 
     public static function get_account_trans($account_id){
 
-        //TODO
         global $fndb, $fnsql;
 
         $account_id = intval($account_id);
 
-        $fnsql->select('*', self::$table_assoc, array('account_id'=>$account_id));
+        $fnsql->select('*', fn_OP::$table, array('account_id'=>$account_id));
 
         return $fndb->get_rows( $fnsql->get_query() );
 
@@ -236,14 +235,11 @@ class fn_Accounts{
     }
 
     public static function assoc_trans($account_id, $trans_id){
-        global $fndb, $fnsql;
 
         $account_id = intval( $account_id );
         $trans_id     = intval( $trans_id );
 
-        $fnsql->insert(self::$table_assoc, array('account_id'=>$account_id, 'trans_id'=>$trans_id));
-
-        return $fndb->execute_query( $fnsql->get_query() );
+        return fn_OP::update($trans_id, array('account_id'=>$account_id));
 
     }
 

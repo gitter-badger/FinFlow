@@ -27,10 +27,10 @@ $threshold_color = $threshold_color ? $threshold_color : '';
 //---- calculate balance ---//
 
 //---- get latest transactions ---//
-$start = 0;
-$count= FN_RESULTS_PER_PAGE;
+$offset      = 0;
+$per_page = FN_RESULTS_PER_PAGE;
 
-$Transactions = fn_OP::get_operations($filters, $start, $count);
+$Transactions = fn_OP::get_operations($filters, $offset, $per_page);
 
 $Currency = fn_Currency::get_default();
 //---- get latest transactions ---//

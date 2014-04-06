@@ -72,7 +72,7 @@
 
     <div class="pagination">
         <?php $total = fn_OP::get_total($filters); if ( $total > $count ):?>
-            <ul><?php fn_UI::pagination($total, $count, $_GET['pag'], fn_UI::page_url('transactions', $pagevars, FALSE)); ?></ul>
+            <ul><?php fn_UI::pagination($total, $count, $start, fn_UI::page_url('transactions', $pagevars, FALSE)); ?></ul>
         <?php endif;?>
     </div>
 

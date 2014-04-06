@@ -1,13 +1,14 @@
 <?php
 /**
- * Generates bulk data and fills the database
+ * FinFlow Test suite - Generates bulk data and fills it in the database
+ * @version 1.2
  */
 
 include_once '../inc/init.php';
 
 set_time_limit(0);
 
-define('FAKER_AUTOLOAD', '../../thirdparty/Faker-master/src/autoload.php');
+define('FAKER_AUTOLOAD', 'faker/autoload.php');
 define('CURPATH', dirname(__FILE__));
 
 define('REF_AMOUNT', 5000);
@@ -59,10 +60,20 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
     //--- insert a few accounts ---//
     $accounts = array(); $accounts_amount = intval( REF_AMOUNT / 10 );
 
+    //Some IBAN codes
     $ibans = array(
-        'AL47212110090000000235698741', 'BG80BNBG96611020345678', 'FO1464600009692713', 'FI2112345600000785',
-        'GL8964710001000206', 'IT60X0542811101000000123456', 'MC5813488000010051108001292', 'SK3112000000198742637541',
-        'GB29NWBK60161331926819', 'DO28BAGR00000001212453611324', 'ML03D00890170001002120000447', 'AE260211000000230064016'
+        'AL47212110090000000235698741',
+        'BG80BNBG96611020345678',
+        'FO1464600009692713',
+        'FI2112345600000785',
+        'GL8964710001000206',
+        'IT60X0542811101000000123456',
+        'MC5813488000010051108001292',
+        'SK3112000000198742637541',
+        'GB29NWBK60161331926819',
+        'DO28BAGR00000001212453611324',
+        'ML03D00890170001002120000447',
+        'AE260211000000230064016'
     );
 
     for( $i=0; $i<$accounts_amount; $i++ ){
@@ -88,11 +99,11 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
             'balance'=> $faker->numberBetween(100, 1000)
         );
 
-        $accounts[] = fn_Accounts::add($account); //TODO
+        $accounts[] = fn_Accounts::add($account);
 
     }
 
-    echo "<p>Created {$accounts_amount} fake accounts</p>";
+    echo "<p>Created {$accounts_amount} fake accounts.</p>";
     //--- insert a few accounts ---//
 
     //--- insert a few transactions ---//
@@ -114,6 +125,7 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
         $trans_id = fn_OP::add($type, $value, $currency_id, $faker->text(100), $date);
 
         if( $trans_id ) {
+
             if( $has_meta ) fn_OP::save_metadata($trans_id, 'details', $faker->text(500));
 
             if( $has_account ) {
@@ -129,10 +141,19 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
 
     }
 
-    echo "<p>Created {$trans_amount} fake transactions</p>";
+    echo "<p>Created {$trans_amount} fake transactions.</p>";
     //--- insert a few transactions ---//
 
-    echo '<p><strong>Finished with ' . ( $labels_amount + $accounts_amount + $trans_amount ) . ' fake data generated.</strong></p>';
+    //--- insert a few pending transactions ---//
+    $recurring_opts = array('no', 'daily', 'monthly', 'yearly');
+
+    //TODO
+
+    //--- insert a few pending transactions ---//
+
+    echo '<p>
+                <strong>Finished with ' . ( $labels_amount + $accounts_amount + $trans_amount ) . ' fake data generated.</strong>
+              </p>';
 
 }
-else fn_UI::fatal_error("Could not find Faker autoloader!");
+else fn_UI::fatal_error('Could not find Faker autoloader. You can get Faker from here <a href="https://github.com/fzaninotto/Faker">https://github.com/fzaninotto/Faker</a>!');

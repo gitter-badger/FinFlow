@@ -12,3 +12,5 @@ if( isset($_GET['email']) and isset($_GET['pass']) ){
     fn_UI::fatal_error($output, true, true, fn_UI::$MSG_NOTE, '');
 
 }
+
+else fn_UI::fatal_error("Usage: mkpass.php?email=you@example.com&pass=123456", true, true, fn_UI::$MSG_NOTE, '');

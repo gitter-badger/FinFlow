@@ -233,8 +233,8 @@ class fn_UI{
 		if( strlen($page) )
 			$vars = array_merge(array('p'=>strtolower($page)), $vars);
 		
-		$url = trim(FN_URL, "/") . '/?' .http_build_query($vars);
-		
+		$url = ( trim(FN_URL, "/") . '/?' . http_build_query($vars) );
+
 		if( $echo )	
 			echo $url;
 		else 			
@@ -291,117 +291,148 @@ class fn_UI{
 		return implode(" ", $classes);
 	
 	}
-	
+
+    public static function pagination_get_current_offset($page, $per_page=25){
+        if( $page <= 1 ) return 0; return ($page-1)*$per_page;
+    }
+
+    public static function pagination_get_multiplier($offset, $per_page=25){
+        $multiplier = floor($offset/$per_page);return $multiplier <= 0 ? 1 : $multiplier+1;
+    }
+
+    public static function pagination_add_standard_vars($baseurl){
+
+        return $baseurl;
+
+        $stdvars = array('p', 't', 'sdate', 'edate', 'labels', 'accounts', 'currency_id', 'type'); //TODO add standard supported GET vars
+        $setvars= array();
+
+        foreach($stdvars as $var) if ( isset($_GET[$var]) ) $setvars[$var] = urlencode($_GET[$var]);
+
+        if( ( strpos($baseurl, '?') === false ) and ( strpos($baseurl, '&') === false ) )
+            $baseurl.="?";
+        elseif( strpos($baseurl, '?') > 0)
+            $baseurl.="&";
+
+        return ( $baseurl . http_build_query($setvars) );
+    }
+
 	public static function pagination($total, $per_page=25, $current=0, $baseurl="?", $smartnav=15, $echo=TRUE, $bootstrap_compatible=TRUE){
-	
-		if (empty($per_page)) $per_page = intval($_GET['per_page']);
-	
-		$nr_pages = floor($total/$per_page);
-		$lastPage  = $total%$per_page;
-	
-		$nav  	 = "";
-		$jPage 	= 0;
-		$i     		= 1;
-		$starter = 0;
-		$finisher =0;
-	
-		$before_a = $after_a =  $before_current = "";
-	
-		if ($bootstrap_compatible){
-			$before_a 			= '<li>';
-			$after_a	   			= '</li>';
-			$before_current	= '<li class="active">';
-		}
-	
-		if ( ($total/$per_page) > 1 ){
-	
-			if (  $smartnav > 0 ){
-				$smartnav 	= (floor($smartnav/2) == 0) ? ($smartnav +1) : $smartnav; //this must be an odd number
-			}
-				
-			if ( $nr_pages > $smartnav ){ //set up a starter so, we don't generate all of the pages, only a smaller subset needed
-				$starter = ( $current - (2 * $per_page) );
-				$finisher= ( $current + (2 * $per_page) );
-	
-				$starter = $starter > 0 ? $starter : 0;
-	
-				$nr_pages = $finisher > $nr_pages ? $nr_pages : $finisher;
-			}
-				
-			$pages = array();
-	
-			for ($i = $starter; $i < $nr_pages; $i++){
-		   
-				if ( ( $current == $jPage ) or ( ($current > $jPage) and $current < ( $jPage + $per_page)) ) {
-					$pages[] 		= ($before_current . '<a id="current" >' . ($i+1) .'</a> ' . $after_a);
-					$current_page = count($pages)-1;
-				}
-				else {
-					$pages[]= ($before_a . '<a href="' . $baseurl . '&pag=' . $jPage . '">' . ($i+1) .' </a> ' . $after_a);
-				}
-	
-				$jPage+= $per_page;
-	
-			}
-	
-			if ($lastPage > 0){
-	
-				if ( $current == $jPage ){
-					$pages[]			= ($before_current . '<a id="current">'. ($i+1) .'</a> ' . $after_a);
-					$current_page = count($pages)-1;
-				}
-				else {
-					$pages[]= ($before_a . ' <a href="' . $baseurl . '&pag=' . $jPage . '">'. ($i+1) .' </a> ' . $after_a);
-				}
-			}
-		}
-	
-		if( $smartnav > 0 ){
-	
-			$half  = floor($smartnav/2);
-			 
-			if( count($pages) > $smartnav ){
-	
-				$lower = $current_page - $half;
-				$upper = $current_page + $half;
-				 
-				if($lower > 0){
-					$pag = $pages[$lower];
-	
-					$link = substr($pag, (strpos($pag, 'href="')+6));
-					$link = substr($link, 0, strpos($link, '"'));
-	
-					$pages[$lower] = ($before_a . ' <a class="prev" href="' . $link . '">&lt;&lt; </a> '. $after_a);
-				}
-	
-				if( $upper < count($pages) ) {
-					$pag = $pages[$upper];
-	
-					$link = substr($pag, (strpos($pag, 'href="')+6));
-					$link = substr($link, 0, strpos($link, '"'));
-	
-					$pages[$upper] = ($before_a . '<a class="next" href="' . $link . '"> &gt;&gt;</a> ' . $after_a);
-				}
-	
-				for($i=$lower; $i<=$upper; $i++){
-					$nav.=$pages[$i];
-				}
-			}
-			else{
-				for($i=0; $i<count($pages); $i++){
-					$nav.=$pages[$i];
-				}
-			}
-			 
-		}else{
-			if(count($pages)) foreach($pages as $p){
-				$nav.= $p;
-			}
-		}
-	
-		if($echo) echo $nav;
-	
-		return $nav;
+
+        if (empty($per_page)) $per_page = intval($_GET['per_page']);
+
+        $nr_pages = floor($total/$per_page);
+        $lastPage  = $total%$per_page;
+
+        $nav  	 = "";
+        $jPage 	= 0;
+        $i     		= 1;
+        $starter = 0;
+        $finisher =0;
+
+        $before_a = $after_a =  $before_current = "";
+
+        if ($bootstrap_compatible){
+            $before_a 			= '<li>';
+            $after_a	   			= '</li>';
+            $before_current	= '<li class="active">';
+        }
+
+        if ( ($total/$per_page) > 1 ){
+
+            if (  $smartnav > 0 ){
+                $smartnav 	= (floor($smartnav/2) == 0) ? ($smartnav +1) : $smartnav; //this must be an odd number
+            }
+
+            if ( $nr_pages > $smartnav ){ //set up a starter so, we don't generate all of the pages, only a smaller subset needed
+                $starter = ( $current - (2 * $per_page) );
+                $finisher= ( $current + (2 * $per_page) );
+
+                $starter = $starter > 0 ? $starter : 0;
+
+                $nr_pages = $finisher > $nr_pages ? $nr_pages : $finisher;
+                //TODO add a limiter, so only pages in range are generated
+
+            }
+
+            $pages = array();
+
+            for ($i = 0; $i < $nr_pages; $i++){
+
+                if ( ( $current == $jPage ) or ( ($current > $jPage) and $current < ( $jPage + $per_page)) ) {
+                    $pages[] 		= ($before_current . '<a id="current" >' . ($i+1) .'</a> ' . $after_a);
+                    $current_page = count($pages)-1;
+                }
+                else {
+                    $pages[]= ($before_a . '<a href="' . self::pagination_add_standard_vars( $baseurl . '&pag=' . self::pagination_get_multiplier($jPage, $per_page) ) . '">' . ($i+1) .' </a> ' . $after_a);
+                }
+
+                $jPage+= $per_page;
+
+            }
+
+            if ($lastPage > 0){
+
+                if ( $current == $jPage ){
+                    $pages[]			= ($before_current . '<a id="current">'. ($i+1) .'</a> ' . $after_a);
+                    $current_page = count($pages)-1;
+                }
+                else {
+                    $pages[]= ($before_a . ' <a href="' . self::pagination_add_standard_vars( $baseurl . '&pag=' . self::pagination_get_multiplier($jPage, $per_page) ) . '">'. ($i+1) .' </a> ' . $after_a);
+                }
+            }
+        }
+
+        if( $smartnav > 0 ){
+
+            $half  = floor($smartnav/2);
+
+            if( count($pages) > $smartnav ){
+
+                $lower = $current_page > $half ? $current_page - $half : 0;
+                $upper = $current_page < $half ? $smartnav : $current_page + $half;
+
+                if( $upper > count($pages) ){
+                    $upper = count($pages); $lower = $upper - $smartnav-1;
+                }
+
+                if($lower > 0){
+                    $pag = $pages[$lower];
+
+                    $link = substr($pag, (strpos($pag, 'href="')+6));
+                    $link = substr($link, 0, strpos($link, '"'));
+
+                    $pages[$lower] = ($before_a . ' <a class="prev" href="' . $link . '">&lt;&lt; </a> '. $after_a);
+                }
+
+                if( $upper < count($pages) ) {
+                    $pag = $pages[$upper];
+
+                    $link = substr($pag, (strpos($pag, 'href="')+6));
+                    $link = substr($link, 0, strpos($link, '"'));
+
+                    $pages[$upper] = ($before_a . '<a class="next" href="' . $link . '"> &gt;&gt;</a> ' . $after_a);
+                }
+
+                for($i=$lower; $i<=$upper; $i++){
+                    $nav.=$pages[$i];
+                }
+            }
+            else{
+                for($i=0; $i<count($pages); $i++){
+                    $nav.=$pages[$i];
+                }
+            }
+
+        }else{
+            if(count($pages)) foreach($pages as $p){
+                $nav.= $p;
+            }
+        }
+
+        if($echo) echo $nav;
+
+        return $nav;
 	}
 
     public static function get_file_url($file, $encode=true){

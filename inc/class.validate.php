@@ -72,10 +72,14 @@ class fn_CheckValidityOf{
 	public static function hostname($host){
 		
 		$result = $host;
-		
-		$check_ip = str_replace(".", "", $host);
-		$check_ip = preg_replace('/[0-9]/', "", $check_ip);
-		
+
+        if( strpos($host, ':') == 4) //IPv6
+            $check_ip = 0;
+        else {
+            $check_ip = str_replace(".", "", $host);
+            $check_ip = preg_replace('/[0-9]/', "", $check_ip);
+        }
+
 		if ( empty($check_ip) ) //it is an ip address
 			$result = @gethostbyaddr($host);
 		else 

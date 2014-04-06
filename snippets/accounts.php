@@ -71,10 +71,10 @@ if ( ( $tab == 'add' ) or ( $tab == 'edit' ) ) {
 
 if( $tab == 'list' ){
 
-    $offset = isset($_GET['pag']) ? intval($_GET['pag']) : 0;
-    $limit   = FN_RESULTS_PER_PAGE;
+    $per_page   = FN_RESULTS_PER_PAGE;
+    $offset         = isset($_GET['pag']) ? fn_UI::pagination_get_current_offset($_GET['pag'], $per_page) : 0;
 
-    $Accounts = fn_Accounts::get_all($offset, $limit);
+    $Accounts = fn_Accounts::get_all($offset, $per_page);
 
 }
 

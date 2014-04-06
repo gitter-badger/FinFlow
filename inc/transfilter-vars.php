@@ -41,8 +41,8 @@ if( isset($_GET['accounts']) ){
 if ( isset($_GET['currency_id']) )
 	$currency_id = intval($_GET['currency_id']);
 
-$start 	= isset($_GET['pag']) ? intval($_GET['pag']) : 0;
 $count	= FN_RESULTS_PER_PAGE;
+$start 	= isset($_GET['pag']) ? fn_UI::pagination_get_current_offset($_GET['pag'], $count) : 0;
 
 $year  	= date('Y', strtotime($sdate));
 $month	= date('n', strtotime($sdate));
@@ -72,8 +72,8 @@ else
 $pagevars = array(
     'sdate'             => $filters['startdate'],
     'edate'            => $filters['enddate'],
-    'labels'            => $filters['labels'],
-    'accounts'        => $filters['accounts'],
+    'labels'            => is_array($filters['labels']) ? @implode(',', $filters['labels']) : $filters['labels'],
+    'accounts'        => is_array($filters['accounts']) ? @implode(',', $filters['accounts']) : $filters['accounts'],
     'currency_id'   => $filters['currency_id'],
     'type'             => $filters['type']
 );

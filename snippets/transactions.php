@@ -218,13 +218,13 @@ else
 			<li class="<?php echo $activetab['add']; ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'add'))?>"> Adaug&#259; </a></li>
 		</ul>
 		
-		<?php if ( $tab == 'list' ) include_once ( FNPATH . '/snippets/transactions-list.php' ); ?>
+		<?php if ( $tab == 'list' ) include_once (  'transactions-list.php' ); ?>
 
-		<?php if ( $tab == 'pending' ) include_once ( FNPATH . '/snippets/pending.php' ); ?>
+		<?php if ( $tab == 'pending' ) include_once ( 'pending.php' ); ?>
 
-		<?php if ( $tab == 'generator' ) include_once ( FNPATH . '/snippets/transactions-filter.php' ); ?>
+		<?php if ( $tab == 'generator' ) include_once (  'transactions-filter.php' ); ?>
 		
-		<?php if ( $tab == 'add' ) include_once ( FNPATH . '/snippets/transactions-add.php' ); ?>
+		<?php if ( $tab == 'add' ) include_once ( 'transactions-add.php' ); ?>
 		
 	</div>
 	

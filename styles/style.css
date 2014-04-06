@@ -105,6 +105,12 @@ p.msg a{
     background-image: url("../images/finflow-logo.png");
 }
 
+.details pre{
+    font-size: 90%;
+    font-family: "Consolas", monospace sans-serif;
+    line-height: normal;
+}
+
 label, input[type=checkbox], input[type=radio]{
 	float:left;
 	font-size: 1em;
@@ -236,6 +242,10 @@ a.default:hover{
 	color: #333 !important;
 }
 
+.pagination{
+    text-align: center;
+}
+
 .widget input, .widget textarea, .widget select{
 	width:90px;
 	padding: 2px 4px;
@@ -308,6 +318,8 @@ a.default:hover{
     border:1px #CCC solid;
     font-size: 1.3em;
     font-weight: normal;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    margin-top: 0px;
 }
 
 .balance .value{
@@ -330,16 +342,32 @@ a.default:hover{
     background: #FF738A;
 }
 
+.balance.treshold.red{
+    border-color: #FF3D51;
+}
+
 .treshold.yellow{
     background: #FCED44;
+}
+
+.balance.treshold.yellow{
+    border-color: #F5E214;
 }
 
 .treshold.blue{
     background: #5EAFFF;
 }
 
+.balance.treshold.blue{
+    border-color: #4199F0;
+}
+
 .treshold.green{
     background: #93FC8D;
+}
+
+.balance.treshold.green{
+    border-color: #61E05A;
 }
 
 .recurring-choices{
