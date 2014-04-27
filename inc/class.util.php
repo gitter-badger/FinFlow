@@ -244,10 +244,10 @@ class fn_Util{
                 return ( $days * 24 ) +  $interval->h;
 
             if ( $output == 'minutes' )
-                return ( $days * 24  * 60 ) + $interval->m;
+                return $days > 0 ? ( $days * 24  * 60 ) + $interval->i : ( $interval->h * 60 ) + $interval->i ;
 
             if ( $output == 'seconds' )
-                return ( $days * 24 * 60 * 60 ) + $interval->s;
+                return $days > 0 ? ( $days * 24 * 60 * 60 ) + $interval->s : ( $interval->h * 3600 ) + ( $interval->i * 60 ) + $interval->s;
 
 		}
 
@@ -570,6 +570,17 @@ class fn_Util{
 
     }
 
+    public static function get_server_base_url(){
+
+        $url = self::get_base_url();
+
+        while(strrpos($url, "/") > 7){
+            $url = rtrim($url, "/"); $url=substr($url, 0, strrpos($url, "/"));
+        }
+
+        return $url;
+    }
+
     public static function get_file_path($url){
         if( strpos(self::get_base_url(), $url) === FALSE )
             return ( rtrim(FNPATH, "/") . "/" . ltrim($url, "/") );
@@ -779,6 +790,18 @@ class fn_Util{
 
         } else if ( file_exists ( $spath ) )
             @copy ( $spath, $dstpath );
+    }
+
+    public static function get_cache_folder_path(){
+        if( defined('FN_CACHE_FOLDER') ) return rtrim( (strpos(FN_CACHE_FOLDER, DIRECTORY_SEPARATOR) === false ) ? ( FNPATH . DIRECTORY_SEPARATOR . FN_CACHE_FOLDER ) : (  strpos(FN_CACHE_FOLDER, DIRECTORY_SEPARATOR) == 0 ) ? FN_CACHE_FOLDER : ( FNPATH . DIRECTORY_SEPARATOR . FN_CACHE_FOLDER ), DIRECTORY_SEPARATOR);
+    }
+
+    public static function get_cache_file_path($filename){
+        return (self::get_cache_folder_path() . DIRECTORY_SEPARATOR . trim($filename, DIRECTORY_SEPARATOR) );
+    }
+
+    public static function get_cache_path($relative_path=null){
+        return $relative_path ? self::get_cache_folder_path() : self::get_cache_file_path($relative_path);
     }
 
     public static function escape_xml($value){

@@ -4,7 +4,6 @@
 class fn_Accounts{
 
     public static $table          = 'cash_accounts';
-    public static $table_assoc = 'cash_accounts_assoc';
 
     public static function  get_all($offset=0, $limit=25){
 

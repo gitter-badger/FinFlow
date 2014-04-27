@@ -3,7 +3,7 @@
 
 class fn_Log{
 
-    public static function to_file($msg, $prefix="MESSAGE: ", $sizelimit=1){
+    public static function to_file($msg, $prefix="MESSAGE: ", $sizelimit=1){ //TODO add sizelimit support
 
         if( defined('FN_LOGFILE')  ){
 

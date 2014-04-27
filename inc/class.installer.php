@@ -40,6 +40,38 @@ class fn_Installer{
         return @file_exists( FNPATH . DIRECTORY_SEPARATOR . 'config.php' );
     }
 
+    public static function setup_cache_folder($folder){
+
+        $folder = rtrim($folder, DIRECTORY_SEPARATOR); $cachepath = FNPATH;
+
+        if( strpos($folder, DIRECTORY_SEPARATOR) === false ){ //simple path
+            $cachepath = ( FNPATH . DIRECTORY_SEPARATOR . $folder );
+        }
+        else {
+            $parts = @explode(DIRECTORY_SEPARATOR, $folder); if( count($parts) ) foreach($parts as $part){
+                if( strlen($part) and ( $part != '.' )){
+                    if( $part == '..' ) //upper directory
+                        $cachepath = substr($cachepath, 0, strrpos($cachepath, DIRECTORY_SEPARATOR));
+                    else
+                        $cachepath.= (DIRECTORY_SEPARATOR . $part);
+                }
+            }
+        }
+
+       if( ( !is_dir($cachepath) and @mkdir($cachepath, 0755, true) ) or ( is_dir($cachepath) and is_writable($cachepath) ) ){
+
+           $htaccess = "<IfModule mod_rewrite.c>\nRewriteEngine On\ndeny from all\n</IfModule>";
+
+           if( @file_put_contents($cachepath . DIRECTORY_SEPARATOR . '.htaccess', $htaccess) )
+               return $cachepath;
+       }
+
+        fn_Log::to_file("Nu se poate accesa directorul cache la " . $cachepath);
+
+        return false;
+
+    }
+
     public static function install_db($host='localhost', $user='root', $password='', $name='test'){
 
         global $fndb;
@@ -114,7 +146,12 @@ class fn_Installer{
             if( !isset($_SESSION['fn_install_host']) )
                 $_SESSION['fn_install_host'] = $_SERVER['REMOTE_ADDR'];
 
-            return @file_put_contents(FNPATH . '/setup/.remotehost', $_SESSION['fn_install_host']);
+            $saved =  @file_put_contents(FNPATH . '/setup/.remotehost', $_SESSION['fn_install_host']);
+
+            if( $saved )
+                return $saved;
+            else
+                fn_UI::fatal_error("Nu se poate salva fi&#351;ierul sesiune pe server. Verific&#259; permisiunile fi&#351;ierelor &#351;i &#238;ncearc&#259; din nou.");
 
         }
 

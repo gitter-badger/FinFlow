@@ -11,7 +11,18 @@ $errors = array(); $success = false;
 
 if( count($_POST) ){
 
-    if( fn_Installer::check_db_connection($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpassword'], $_POST['dbname']) ){
+    if( !fn_Installer::check_db_connection($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpassword'], $_POST['dbname']) )
+        $errors[] = "Nu se poate realiza conexiunea la baza de date {$_POST['dbname']} pe {$_POST['dbhost']}.
+                            Verific&#259; dac&#259;  datele de conectare &#351;i numele bazei de date este corect &#351;i &#238;ncearc&#259; din nou.";
+
+    $cache_folder = fn_Installer::setup_cache_folder($_POST['cache_folder']);
+
+    if( !$cache_folder )
+        $errors[] = "Nu se poate initializa folderul pentru cache. Verific&#259; dac&#259; calea introdus&#259; este accesibil&#259; &#351;i serverul are permisiuni de scriere.";
+    else
+        $_POST['cache_folder'] = $cache_folder;
+
+    if( empty($errors) ){
 
         if( fn_Installer::create_cfg_file($_POST) ){
 
@@ -26,8 +37,6 @@ if( count($_POST) ){
                                 Verific&#259; permisiunile asupra directorului aplica&#355;iei &#351;i &#238;ncearc&#259; din nou.";
 
     }
-    else $errors[] = "Nu se poate realiza conexiunea la baza de date {$_POST['dbname']} pe {$_POST['dbhost']}.
-                            Verific&#259; dac&#259;  datele de conectare &#351;i numele bazei de date este corect &#351;i &#238;ncearc&#259; din nou.";
 
 }
 
@@ -44,6 +53,9 @@ if( count($_POST) ){
 
     <?php if( !$success ): ?>
         <form name="setup-create-cfg" id="setupCreateCfg" method="post" target="_self">
+
+            <legend>Configurarea bazei de date</legend>
+
             <p>
                 <label for="dbhost">Gazda (Host):</label>
                     <input type="text" name="dbhost" id="dbhost" value="<?php echo fn_UI::extract_post_val('dbhost', 'localhost'); ?>"/>
@@ -59,6 +71,13 @@ if( count($_POST) ){
             <p>
                 <label for="dbname">Baza de date:</label>
                 <input type="text" name="dbname" id="dbname" value="<?php echo fn_UI::extract_post_val('dbname'); ?>"/>
+            </p>
+
+            <legend>Configurare cache</legend>
+
+            <p>
+                <label for="cache_folder">Cale director:</label>
+                <input type="text" name="cache_folder" id="cache_folder" value="<?php echo fn_UI::extract_post_val('cache_folder', '.cache'); ?>"/>
             </p>
 
             <p style="text-align: center;">

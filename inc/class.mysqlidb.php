@@ -147,7 +147,7 @@ class MySQLiDB{
 		}
 		else {
 			
-			$this->error	   = mysqli_error($this->connectionId);
+			$this->error	   = @mysqli_error($this->connectionId);
 			$this->errorLog.= ("\n". $this->error);
 				
 			return FALSE;

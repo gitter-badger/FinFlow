@@ -11,7 +11,7 @@ class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements f
     const websiteURL                          = 'http://openexchangerates.appspot.com';
 
     const EndpointURL                       = 'http://openexchangerates.appspot.com/currency';
-    const CurrenciesEndpointURL       = 'http://openexchangerates.appspot.com/currencies-en_US.json';
+    const CurrenciesEndpointURL       = 'http://openexchangerates.appspot.com/currencies.json';
 
     const defaultCurrency     = 'USD';
 
@@ -57,7 +57,7 @@ class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements f
         $json = @json_decode( $this->jsonDocument, true );
 
         if( empty( $json ) ){
-            fn_Log::to_file('Fisierul nu poate fi parsat ca si json. Eroare la descarcarea fisierului.' ); return false;
+            fn_Log::to_file('Fisierul  de la adresa ' .  self::CurrenciesEndpointURL . ' nu poate fi parsat ca si json. Eroare la descarcarea fisierului.' ); return false;
         }
 
         $this->date 			= date(FN_DATETIME_FORMAT, time());
@@ -80,6 +80,8 @@ class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements f
 	 */
     public function getExchangeRate( $ccode ){
 
+        if( $rate = $this->getExchangeRateFromCache($ccode) ) return $rate; //get it from cache if available
+
         $this->jsonDocument = @file_get_contents( $this->getEndpointURL( $ccode ) );
 
         $json = @json_decode( $this->jsonDocument, true );
@@ -93,7 +95,7 @@ class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements f
 	}
 
     public function setBaseCurrency( $ccode ){
-        $this->origCurrency = $ccode;
+        $this->origCurrency = $ccode; return true;
     }
 
     public function getBaseCurrency(){
@@ -106,6 +108,118 @@ class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements f
 
     public function isServiceAvailable(){
         $this->jsonDocument = @file_get_contents( $this->getEndpointURL( self::defaultCurrency ) ); $json = @json_decode( $this->jsonDocument, true ); if( empty( $json ) or empty( $json['rate'] ) ) return false; return true;
+    }
+
+    /**
+     * Saves a cache file with all supported currencies
+     * @param string $base
+     * @return bool|string
+     */
+    public function buildCache( $base=null ){
+
+        $origCurrency = $this->origCurrency;
+
+        if( empty($base) )
+            $base = $this->origCurrency;
+        else
+            $this->setBaseCurrency($base);
+
+        $currencies =  $this->getAvailableCurrencies();
+        $json          = array('base'=>$base, 'timestamp'=>time(), 'rates'=>array());
+        $rates         = array();
+
+        if( count($currencies) ) foreach($currencies as $ccode){
+            if( $ccode ) $rates[$ccode] = $this->getExchangeRate($ccode); @sleep(1);
+        }
+
+        $this->setBaseCurrency($origCurrency); //reset original currency
+
+        $json['rates'] = $rates; $json = json_encode($json); $path = $this->getCacheFilePath();
+
+        if( @file_put_contents($path, $json) )
+            return $path;
+        else
+            return false;
+
+    }
+
+    public function buildCacheInWindow( $base=null  ){
+
+        $hash = md5(__FILE__); $per_batch = 1;
+
+        $origCurrency = $this->origCurrency;
+
+        if( session_id() and session_start() ){
+
+            $base = isset($_SESSION[$hash . '_pbase']) ? $_SESSION[$hash . '_pbase'] : $base; $_SESSION[$hash . '_pbase'] = $base;
+
+            if( empty($base) )
+                $base = $this->origCurrency;
+            else
+                $this->setBaseCurrency($base);
+
+            $currencies = isset($_SESSION[$hash . '_pcurrencies']) ? $_SESSION[$hash . '_pcurrencies'] : $this->getAvailableCurrencies();
+            $json          = isset($_SESSION[ $hash . '_pjson']) ? $_SESSION[ $hash . '_pjson'] : array('base'=>$base, 'timestamp'=>time(), 'rates'=>array());
+            $rates         = isset($json['rates']) ? $json['rates'] : array();
+
+            if( count($currencies) ) foreach($currencies as $ccode){
+
+                if( $ccode and !isset($rates[$ccode]) ){
+
+                    $rates[$ccode] = $this->getExchangeRate($ccode); $per_batch--; $json['rates'] = $rates;
+
+                    $_SESSION[$hash . '_pcurrencies'] = $currencies;
+                    $_SESSION[$hash . '_pjson']          = $json;
+
+                    if( empty($per_batch) ){
+                        return '<script type="text/javascript">setTimeout(\'window.location.reload()\', 1100);</script>'; //reload page to trigger next batch processing
+                    }
+
+                }
+
+            }
+
+            $this->setBaseCurrency($origCurrency); //reset original currency
+
+            $json['rates'] = $rates; $json = json_encode($json); $path = $this->getCacheFilePath();
+
+            if( @file_put_contents($path, $json) )
+                return 'ended';
+            else
+                return false;
+
+        }
+        else trigger_error("Function " . __CLASS__ . '::' . __FUNCTION__ . ' requires session support.', E_USER_WARNING);
+
+    }
+
+    /**
+     * Checks if the cache file has been last generated today
+     * @return bool
+     */
+    public function isCacheValid(){
+        $mtime = @filemtime($this->getCacheFilePath()); if( $mtime < strtotime(date('Y-m-d 00:00:00')) ) return false; return true;
+    }
+
+    public function getCacheFilePath(){
+        return ( rtrim(fn_Util::get_cache_folder_path(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'currency-rates-' . strtolower($this->origCurrency) . '.json' );
+    }
+
+    public function getExchangeRateFromCache($ccode){
+
+        if( !$this->isCacheValid() ) return false;
+
+        $json = @json_decode( $this->getCacheFilePath(), true );
+
+        $this->date 			= date(FN_DATETIME_FORMAT, $json['timestamp']);
+        $this->timestamp 	= @intval( $json['timestamp'] );
+
+        if( $json['base'] == $this->origCurrency ){
+            if( is_array( $json['rates'] ) and count( $json['rates'] ) and isset($json['rates'][$ccode]) ) return floatval($json['rates'][$ccode]);
+        }
+
+        return false;
+
     }
 
 }

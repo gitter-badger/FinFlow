@@ -17,8 +17,9 @@ $Settings = array(
 		'password'	    =>''
 );
 
-$active  = fn_Settings::get('mup_state') == 'active' ? TRUE :FALSE;
-$testing = isset($_GET['test']) ? TRUE : FALSE;
+$active         = fn_Settings::get('mup_state') == 'active' ? TRUE :FALSE;
+$testing        = isset($_GET['test']) ? TRUE : FALSE;
+$in_window  = ( ( php_sapi_name() != 'cli' ) and strlen($_SERVER['REMOTE_ADDR']) );
 
 if ($active){
 	//--- get settings from database ---//
@@ -46,19 +47,19 @@ if ( $testing )
 	//--- override settings with $_POST array ---//
 
 //--- validate stuff ---//
-if ( empty($Settings['host']) ) 		    fn_CronAssistant::cron_error("Adresa serverului de mail nu este configurat&#259;.", $testing);
-if ( empty($Settings['port']) ) 		    fn_CronAssistant::cron_error("Portul de conectare prin protocolul POP nu este configurat.", $testing);
-if ( empty($Settings['encryption']) ) fn_CronAssistant::cron_error("Tipul de criptare utilizat de server, nu este configurat.", $testing);
+if ( empty($Settings['host']) ) 		    fn_CronAssistant::cron_error("Adresa serverului de mail nu este configurat&#259;.", ($testing or $in_window));
+if ( empty($Settings['port']) ) 		    fn_CronAssistant::cron_error("Portul de conectare prin protocolul POP nu este configurat.", ($testing or $in_window));
+if ( empty($Settings['encryption']) ) fn_CronAssistant::cron_error("Tipul de criptare utilizat de server, nu este configurat.", ($testing or $in_window));
 //--- validate stuff ---//
 
 if ( !$active and !$testing and count($_POST) )
-    fn_CronAssistant::cron_error("Scriptul este dezactivat!");
+    fn_CronAssistant::cron_error("Scriptul este dezactivat!", ($testing or $in_window));
 
 if ( !$testing and !$active ) 
 	exit(); //silent exit
 
 //--- validate the hostname --//
-if ( !fn_CheckValidityOf::hostname($Settings['host']) ) fn_CronAssistant::cron_error("Serverul de mail {$Settings['host']} nu poate fi contactat.", $testing);
+if ( !fn_CheckValidityOf::hostname($Settings['host']) ) fn_CronAssistant::cron_error("Serverul de mail {$Settings['host']} nu poate fi contactat.", ($testing or $in_window));
 //--- validate the hostname --//
 
 try{
@@ -126,7 +127,10 @@ try{
 	}
 	
 	$MailFetch->quit(); //disconnect and delete marked messages
-	
+
+    if( $in_window )
+        fn_UI::fatal_error("Tranzac&#355;iile trimise pe email au fost actualizate.", false, true, 'note', "Not&#259;: ", 'Not&#259;');
+
 	fn_CronAssistant::release_lock(__FILE__);
 	
 }
@@ -134,9 +138,9 @@ catch( POP3_Exception $e ){
 	fn_CronAssistant::release_lock(__FILE__);
 
     if( strpos( strtolower($e), 'authentication failed' ) === false ) //unknown error
-        fn_CronAssistant::cron_error($e, $testing);
+        fn_CronAssistant::cron_error($e, ($testing or $in_window));
     else                                                                                   //authentication error
-        fn_CronAssistant::cron_error("Nu se poate realiza autentificarea la {$Settings['host']}. Verfic&#259; numele de utilizator, parola &#351;i tipul de criptare cerute de server &#351;i &#238;ncearc&#259; din nou.", $testing);
+        fn_CronAssistant::cron_error("Nu se poate realiza autentificarea la {$Settings['host']}. Verfic&#259; numele de utilizator, parola &#351;i tipul de criptare cerute de server &#351;i &#238;ncearc&#259; din nou.", ($testing or $in_window));
 }
 
 //---- run the mailupdate cron ---//

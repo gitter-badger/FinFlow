@@ -58,13 +58,13 @@ class OER_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_Ex
 
     public function refresh(){
 
-        $this->jsonDocument = @file_get_contents( $this->getEndpointURL() );
+        $this->jsonDocument = $this->isCacheValid() ? @file_get_contents( $this->getCacheFilePath() ) : @file_get_contents( $this->getEndpointURL() );
 
         if( strlen( $this->jsonDocument ) ){
             $this->parseJSONDocument(); return true;
         }else {
 
-            fn_Log::to_file('Fisierul  de la URL-ul ' . $this->getEndpointURL() . 'nu poate fi parsat ca si json.' );
+            fn_Log::to_file('Fisierul  de la URL-ul ' . $this->getEndpointURL() . ' nu poate fi parsat ca si json.' );
             trigger_error(__CLASS__ . ' Error: Could not parse the json file from ' . $this->getEndpointURL() , E_USER_WARNING );
 
             return false;
@@ -150,4 +150,65 @@ class OER_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_Ex
     public function getTimestamp(){
         return $this->timestamp;
     }
+
+    /**
+     * Saves a cache file with all supported currencies
+     * @param string $base
+     * @return bool|string
+     */
+    public function buildCache( $base=null ){
+
+        $origCurrency = $this->origCurrency;
+
+        if( empty($base) )
+            $base = $this->origCurrency;
+        else
+            $this->setBaseCurrency($base);
+
+        $json = $this->jsonDocument;
+
+        $this->setBaseCurrency($origCurrency); //reset original currency
+
+        $path = $this->getCacheFilePath();
+
+        if( @file_put_contents($path, $json) )
+            return $path;
+        else
+            return false;
+
+    }
+
+    /**
+     * Checks if the cache file has been last generated today
+     * @return bool
+     */
+    public function isCacheValid(){
+        $mtime = @filemtime($this->getCacheFilePath()); if( $mtime < strtotime(date('Y-m-d 00:00:00')) ) return false; return true;
+    }
+
+    public function getCacheFilePath(){
+        return ( rtrim(fn_Util::get_cache_folder_path(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'currency-rates-' . strtolower($this->origCurrency) . '.json' );
+    }
+
+    public function getExchangeRateFromCache($ccode){
+
+        if( !$this->isCacheValid() ) return false;
+
+        $this->jsonDocument = @file_get_contents( $this->getCacheFilePath() ); $json = @json_decode( $this->jsonDocument, true );
+
+        if( strlen( $this->jsonDocument ) and ( $json['base'] == $this->origCurrency ) ){
+            $this->parseJSONDocument(); return $this->getExchangeRate($ccode);
+        }
+
+        return false;
+
+    }
+
+    public function buildCacheInWindow( $base=null  ){
+        if( $this->buildCache($base) )
+            return 'ended';
+        else
+            return false;
+    }
+
 }

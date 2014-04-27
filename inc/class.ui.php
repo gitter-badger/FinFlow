@@ -109,6 +109,26 @@ class fn_UI{
 		if ( $die ) die();
 		
 	}
+
+    public static function loading_screen($msg, $die=TRUE){
+        ?>
+        <html>
+        <head>
+            <meta charset="utf-8" />
+            <title>FinFlow | loading </title>
+            <?php fn_UI::error_page_css(); ?>
+        </head>
+        <body class="error">
+        <div class="wrap">
+            <p style="text-align: center"><img src="<?php echo FN_URL; ?>/images/preloader.gif" align="absmiddle"/></p>
+            <p class="msg" style="text-align: center;"></strong><?php echo $msg; ?></p>
+        </div>
+        </body>
+        </html>
+        <?php
+
+        if( $die ) die();
+    }
 	
 	public static function esc_html( $input ){
 		return htmlentities( stripslashes($input) , ENT_NOQUOTES, 'UTF-8' );
@@ -269,6 +289,10 @@ class fn_UI{
 		}
 		
 	}
+
+    public static function current_page_url(){
+        return ( fn_Util::get_server_base_url() . $_SERVER['REQUEST_URI'] );
+    }
 	
 	public static function get_body_class(){
 	

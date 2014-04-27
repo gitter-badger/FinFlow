@@ -5,6 +5,10 @@
  * @version 1.0
  */
 
+
+die( date('YmdHis') );
+
+
 $days = 180;
 
 $datestart = date('Y-m-d');

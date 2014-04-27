@@ -1,7 +1,12 @@
 <?php if( !defined('FNPATH') ) exit;
 
-//--- get the list of available currencies ---//
-include_once ( FNPATH . '/inc/exr-init.php' ); global $fnexr;
+include_once ( FNPATH . '/inc/exr-init.php' ); global $fnexr; ?>
+
+<?php if( !$fnexr->isCacheValid() ): ?>
+    <p class="msg note">Fi&#351;ierul cache-ul cu ratele de schimb trebuie actualizat. <a href="#" onclick="fn_popup('<?php echo FN_URL; ?>/inc/cron/cron.exchangerates.php');">Actualizeaz&#259; acum</a> </p>
+<?php return; endif; ?>
+
+<?php
 
 $Currencies = array();
 
@@ -24,7 +29,7 @@ fn_UI::show_errors($errors); fn_UI::show_notes($notices);
         <label for="ccode">Cod:</label>
         <?php if( count($Currencies) ): ?>
             <select name="ccode" id="ccode">
-                <?php foreach($Currencies as $currency):  ?>
+                <?php foreach($Currencies as $currency): ?>
                     <option value="<?php echo $currency['code']; ?>" data-cname="<?php echo $currency['name']; ?>" data-symbol="<?php echo $currency['symbol']; ?>" data-rate="<?php echo $currency['rate']; ?>">
                         <?php echo $currency['code']; ?>
                     </option>

@@ -12,12 +12,6 @@ CREATE TABLE IF NOT EXISTS `cash_accounts` (
   UNIQUE KEY `account_slug` (`account_slug`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-CREATE TABLE IF NOT EXISTS `cash_accounts_assoc` (
-  `account_id` int(11) NOT NULL,
-  `trans_id` int(11) NOT NULL,
-  UNIQUE KEY `account_id` (`account_id`,`trans_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
 CREATE TABLE IF NOT EXISTS `cash_assoc` (
   `trans_id` bigint(20) NOT NULL,
   `label_id` bigint(20) NOT NULL,
@@ -55,6 +49,7 @@ CREATE TABLE IF NOT EXISTS `cash_op` (
   `optype` enum('in','out') NOT NULL DEFAULT 'out',
   `value` float NOT NULL,
   `currency_id` int(11) NOT NULL DEFAULT '1',
+  `account_id` int(11) NOT NULL DEFAULT '0',
   `comments` varchar(255) DEFAULT NULL,
   `sdate` datetime NOT NULL,
   `mdate` datetime DEFAULT NULL,

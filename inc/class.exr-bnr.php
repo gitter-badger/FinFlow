@@ -36,7 +36,7 @@ class BNR_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_Ex
      * Constructor
      */
     function __construct(){
-		$this->xmlDocument = @file_get_contents( self::EndpointURL ); if( strlen($this->xmlDocument) ) $this->parseXMLDocument();
+		$this->xmlDocument = $this->isCacheValid() ? @file_get_contents( $this->getCacheFilePath() ) : @file_get_contents( self::EndpointURL ); if( strlen($this->xmlDocument) ) $this->parseXMLDocument();
 	}
 	 
 	/**
@@ -120,6 +120,53 @@ class BNR_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_Ex
 
     public function getExchangeRate($ccode){
         return ($ccode == $this->origCurrency) ? 1 : $this->getCurs( $ccode );
+    }
+
+    /**
+     * Saves a cache file with all supported currencies
+     */
+    public function buildCache(){
+
+        $xml = @file_get_contents( self::EndpointURL ); $path = $this->getCacheFilePath();
+
+        if( @file_put_contents($path, $xml) )
+            return $path;
+        else
+            return false;
+
+    }
+
+    /**
+     * Checks if the cache file has been last generated today
+     * @return bool
+     */
+    public function isCacheValid(){
+        $mtime = @filemtime($this->getCacheFilePath()); if( $mtime < strtotime(date('Y-m-d 00:00:00')) ) return false; return true;
+    }
+
+    public function getCacheFilePath(){
+        return ( rtrim(fn_Util::get_cache_folder_path(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'currency-rates-' . strtolower($this->origCurrency) . '.xml' );
+    }
+
+    public function getExchangeRateFromCache($ccode){
+
+        if( !$this->isCacheValid() ) return false;
+
+        $this->xmlDocument = @file_get_contents( $this->getCacheFilePath() );
+
+        if( strlen( $this->xmlDocument ) ){
+            $this->parseXMLDocument(); return $this->getExchangeRate($ccode);
+        }
+
+        return false;
+
+    }
+
+    public function buildCacheInWindow(){
+        if( $this->buildCache() )
+            return 'ended';
+        else
+            return false;
     }
 
 }
