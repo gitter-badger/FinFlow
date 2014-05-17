@@ -20,6 +20,7 @@ include_once ( FNPATH . '/inc/class.installer.php' );
                 'mbstring'=>'missing',
                 'sockets'=>'missing',
                 'mysqli'=>'missing',
+                'json'=>'missing',
                 'calendar'=>'missing',
                 'date'=>'missing',
                 'session'=>'missing',

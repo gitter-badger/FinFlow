@@ -148,12 +148,12 @@ if( $unit and $unit_val ){
     <table class="list report" border="1">
         <tr>
             <td>Rulaj: </td>
-            <td class="align-right"><?php echo fn_UI::format_money($Total); ?></td>
+            <td class="align-right"><?php echo fn_UI::format_money( $Total ); ?></td>
         </tr>
         <?php if( $exclude !=  FN_OP_IN ): ?>
             <tr>
                 <td>Venit: </td>
-                <td class="align-right"><?php echo fn_UI::format_money($TotalIncome); ?></td>
+                <td class="align-right"><?php echo fn_UI::format_money( $Income ); ?></td>
             </tr>
         <?php endif;?>
         <?php if ( $exclude !=  FN_OP_OUT ): ?>
@@ -165,7 +165,7 @@ if( $unit and $unit_val ){
         <tr class="highlight">
             <td>Balan&#355;a: </td>
             <td class="align-right">
-                <strong><?php echo fn_UI::format_money($Balance); ?> </strong>
+                <strong><?php echo fn_UI::format_money( $Balance ); ?> </strong>
             </td>
         </tr>
     </table>

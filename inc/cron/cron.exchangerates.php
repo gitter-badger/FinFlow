@@ -47,9 +47,7 @@ if ( $fnexr->isServiceAvailable() ){
 	
 	if ( count($Currencies) ) foreach ($Currencies as $currency){
 
-        if ( $testing and $rate ) continue;
-
-		$rate = $fnexr->getExchangeRate( $currency->ccode );
+		$rate = $fnexr->getExchangeRate( $currency->ccode ); if ( $testing and $rate ) continue;
 
 		if ( $rate ){
 			

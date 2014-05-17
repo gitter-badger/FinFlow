@@ -589,7 +589,7 @@ class fn_Util{
     }
 
     public static function format_nr($number, $decimals=2, $precision=FALSE){
-        $rmode     = PHP_ROUND_HALF_EVEN; if( !defined('PHP_ROUND_HALF_EVEN') ) $rmode = PHP_ROUND_HALF_UP;
+        $rmode     = PHP_ROUND_HALF_EVEN; if( !defined('PHP_ROUND_HALF_EVEN') ) $rmode = PHP_ROUND_HALF_DOWN;
         $precision = $precision > 0 ? $precision : $decimals;  $number = round(floatval($number), $precision, $rmode);  return number_format($number, $decimals, ",", ".");
     }
 

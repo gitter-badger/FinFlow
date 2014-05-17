@@ -49,22 +49,23 @@
         <?php endif;?>
     </p>
 
+    <?php $Contacts = fn_Contacts::get_all(0, 999); if ( count($Contacts) ):?>
     <p>
         <label for="contact_id">Contact:</label>
-        <?php $Contacts = fn_Contacts::get_all(0, 999); if ( count($Contacts) ):?>
-            <select name="contact_id" id="contact_id">
-                <?php foreach ($Contacts as $contact): ?>
-                    <option value="<?php echo $contact->contact_id; ?>" <?php echo fn_UI::selected_or_not($contact->contact_id, $_POST['contact_id']); ?>>
-                        <?php echo fn_UI::esc_html("{$contact->first_name} {$contact->last_name} ({$contact->organization})"); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        <?php endif;?>
+        <select name="contact_id" id="contact_id">
+            <?php foreach ($Contacts as $contact): ?>
+                <option value="<?php echo $contact->contact_id; ?>" <?php echo fn_UI::selected_or_not($contact->contact_id, $_POST['contact_id']); ?>>
+                    <?php echo fn_UI::esc_html("{$contact->first_name} {$contact->last_name} ({$contact->organization})"); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
     </p>
+    <?php endif;?>
+
 
     <p>
-        <label for="labels">Etichete:</label>
         <?php $Labels = fn_Label::get_parents(); if ( count($Labels) ): ?>
+        <label for="labels">Etichete:</label>
             <select name="labels[]" id="labels" size="10" multiple="multiple">
                 <?php foreach ($Labels as $label): $ChildrenLabels = fn_Label::get_children($label->label_id); ?>
 

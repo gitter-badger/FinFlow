@@ -49,7 +49,7 @@ class fn_Installer{
         }
         else {
             $parts = @explode(DIRECTORY_SEPARATOR, $folder); if( count($parts) ) foreach($parts as $part){
-                if( strlen($part) and ( $part != '.' )){
+                if( strlen($part) and ( $part != '.' ) ){
                     if( $part == '..' ) //upper directory
                         $cachepath = substr($cachepath, 0, strrpos($cachepath, DIRECTORY_SEPARATOR));
                     else

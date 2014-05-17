@@ -16,6 +16,8 @@ $ExrCurrencies = $fnexr->getAvailableCurrencies(); if( count($ExrCurrencies) ) f
     $details = fn_Currency::get_currency_details($ccode, ( FNPATH . '/setup/assets/currencies.json' ));
     $details = is_array($details) ? $details : array();
 
+    if( empty($details) ) continue; //no details for the currency, maybe currency isn't supported
+
     $Currencies[] = array_merge($details, array('rate'=>$rate));
 
 }
