@@ -536,7 +536,7 @@ p.installer-mchoice input[type="radio"]:checked + span{
     }
 }
 
-/* Landscape phones and down */
+/* Landscape phones and smaller devices */
 @media (max-width: 600px) {
     /*TODO */
 }

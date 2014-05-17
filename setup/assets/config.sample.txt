@@ -4,6 +4,9 @@
  * @since 0.5
  */
 
+/** URL-ul de baza al aplicatiei */
+define('FN_URL'		, '{baseurl}');
+
 
 /** Setari pentru conexiuna la baza de date, le poti obtine de la furnizorul tau de servicii de gazduire web */
 define('FN_DB_HOST'		, '{dbhost}');

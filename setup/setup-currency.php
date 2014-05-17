@@ -5,11 +5,17 @@
  * @version 1.0
  */
 
+
+
+
 include_once 'header.php';
 include_once '../inc/class.currency.php';
 include_once '../inc/exr-init.php';
 
+
+
 global $fnexr; $errors = array(); $success = false; $choiceDefaultCurrency = true;
+
 
 if( count($_POST) ){
    if( fn_Installer::setup_default_currency( $_POST['currency_default'] ) )
@@ -25,6 +31,7 @@ if( $fnexr::id == BNR_ExchangeRateParser::id ){
     $choiceDefaultCurrency = false; $currencies[] = $_POST['currency_default'] = BNR_ExchangeRateParser::defaultCurrency;
 }
 //--- if the parser is BNR the default currency will be RON ---//
+
 
 //--- check of we can change the default currency for OER ---//
 if( $fnexr::id == OER_ExchangeRateParser::id and !$fnexr->setBaseCurrency('EUR') ){

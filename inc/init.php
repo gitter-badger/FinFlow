@@ -1,7 +1,7 @@
 <?php
 
-define('FN_VERSION'     , '0.9.3');
-define('FN_DB_VERSION', '1.0');
+define('FN_VERSION'     , '1.2.3');
+define('FN_DB_VERSION', '1.3');
 
 define('FNPATH', rtrim(str_replace(basename(dirname(__FILE__)), '', dirname(__FILE__)), DIRECTORY_SEPARATOR));
 
@@ -45,8 +45,14 @@ if( defined('FN_DEBUG') and FN_DEBUG ) {
 }
 //--- init debug ---//
 
-//--- setup base url ---//
-define('FN_URL', fn_Util::get_base_url( false, ( defined('FN_FORCE_HTTPS') and FN_FORCE_HTTPS ) ));
+//--- setup base url (in case not set yet) ---//
+if( !defined('FN_URL') ){
+
+    if( defined('FN_IS_INSTALLING') )
+        define('FN_URL', fn_Util::get_base_url( false, false, '/setup/'));
+    else
+        define('FN_URL', fn_Util::get_base_url( false, ( defined('FN_FORCE_HTTPS') and FN_FORCE_HTTPS ) ));
+}
 //--- setup base url ---//
 
 //--- setup uploads dir ---//

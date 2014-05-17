@@ -24,7 +24,7 @@ if( count($_POST) ){
 
     if( empty($errors) ){
 
-        if( fn_Installer::create_cfg_file($_POST) ){
+        if( fn_Installer::create_cfg_file( array_merge($_POST, array('baseurl'=>FN_URL) ) ) ){
 
             if( fn_Installer::install_db($_POST['dbhost'], $_POST['dbuser'], $_POST['dbpassword'], $_POST['dbname']) )
                 $success = true;

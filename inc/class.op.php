@@ -474,6 +474,7 @@ class fn_OP{
         }
 
         return floatval($Income - $Outcome);
+
     }
 	
 	public static function consistent_flow($type, $value, $currency_id, $date=FALSE){

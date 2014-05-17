@@ -548,7 +548,7 @@ class fn_Util{
 
     }
 
-    public static function get_base_url($static=FALSE, $force_https=FALSE){
+    public static function get_base_url($static=FALSE, $force_https=FALSE, $path_hint=''){
 
         if( $static and ( strlen($static) > 11 ) ) return $static;
 
@@ -557,12 +557,20 @@ class fn_Util{
         $url = $_SERVER['SERVER_NAME'];
         $url = self::is_https($force_https) ? ( 'https://' . $url ) : ( 'http://' . $url );
 
+
         if( ( $_SERVER['SERVER_PORT'] != '80' ) and ( $_SERVER['SERVER_PORT'] != '443' ) ) //not standard http(s) ports
             $url.= (':' . $_SERVER['SERVER_PORT']);
 
-        $docroot   = rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
 
-        $url  = str_replace($docroot, $url, FNPATH);
+        $docroot = rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
+
+        if( strpos(FNPATH, $docroot) === false ){
+            $url.= str_replace('?' . $_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
+        }else
+            $url  = str_replace($docroot, $url, FNPATH);
+
+        if( $path_hint and strpos($url, $path_hint) )
+            $url = substr($url, 0, strrpos($url, $path_hint));
 
         if( !self::is_https() and $force_https and !headers_sent() ) @header("Location: " . $url); //redirect to the https url right away
 
