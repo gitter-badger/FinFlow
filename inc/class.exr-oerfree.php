@@ -181,6 +181,9 @@ class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements f
 
             $this->setBaseCurrency($origCurrency); //reset original currency
 
+            unset($_SESSION[$hash . '_pcurrencies']);
+            unset($_SESSION[$hash . '_pjson']);
+
             $json['rates'] = $rates; $json = json_encode($json); $path = $this->getCacheFilePath();
 
             if( @file_put_contents($path, $json) )
@@ -209,7 +212,7 @@ class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements f
 
         if( !$this->isCacheValid() ) return false;
 
-        $json = @json_decode( $this->getCacheFilePath(), true );
+        $json = json_decode( @file_get_contents( $this->getCacheFilePath() ), true );
 
         $this->date 			= date(FN_DATETIME_FORMAT, $json['timestamp']);
         $this->timestamp 	= @intval( $json['timestamp'] );

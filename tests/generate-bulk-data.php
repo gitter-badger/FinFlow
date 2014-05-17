@@ -11,7 +11,9 @@ set_time_limit(0);
 define('FAKER_AUTOLOAD', 'faker/autoload.php');
 define('CURPATH', dirname(__FILE__));
 
-define('REF_AMOUNT', 5000);
+define('REF_AMOUNT', 12000);
+
+if (ob_get_level() == 0) ob_start();
 
 if( file_exists( FAKER_AUTOLOAD ) ) {
 
@@ -38,7 +40,7 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
     if( count($db_currencies) ) foreach($db_currencies as $currency) $currencies[] = $currency->currency_id;
     //--- get the list of available currencies ---//
 
-    echo '<div style="font-size: 1.3em; font-family: monospace;">';
+    echo '<div style="font-size: 1.3em; font-family: monospace;">'; ob_flush(); flush();
 
     //--- insert a few labels ---//
 
@@ -53,7 +55,7 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
 
     }
 
-    echo "<p>Created {$labels_amount} fake labels</p>";
+    echo "<p>Created {$labels_amount} fake labels</p>"; ob_flush(); flush();
 
     //--- insert a few labels ---//
 
@@ -103,7 +105,7 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
 
     }
 
-    echo "<p>Created {$accounts_amount} fake accounts.</p>";
+    echo "<p>Created {$accounts_amount} fake accounts.</p>"; ob_flush(); flush();
     //--- insert a few accounts ---//
 
     //--- insert a few transactions ---//
@@ -141,19 +143,62 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
 
     }
 
-    echo "<p>Created {$trans_amount} fake transactions.</p>";
+    echo "<p>Created {$trans_amount} fake transactions.</p>"; ob_flush(); flush();
     //--- insert a few transactions ---//
 
     //--- insert a few pending transactions ---//
     $recurring_opts = array('no', 'daily', 'monthly', 'yearly');
 
-    //TODO
+    for( $i=0; $i<$trans_amount; $i++ ){
+
+        $has_meta = $faker->boolean(50);
+        $has_account = $faker->boolean(50);
+        $has_labels = $faker->boolean(50);
+
+        $type = $faker->boolean(50) ? FN_OP_IN : FN_OP_OUT;
+        $value= $faker->randomFloat(2, 1, 99999);
+
+        $recurring_n =  $faker->numberBetween(0, count($recurring_opts) -1); $recurring = $recurring_opts[$recurring_n];
+
+        $currency_n = $faker->numberBetween(0, count($currencies) -1); $currency_id = $currencies[$currency_n];
+
+        $date = date(FN_MYSQL_DATE, @strtotime("-" . $faker->numberBetween(2, 8000) . ' days'));
+
+        $trans_id = fn_OP::add($type, $value, $currency_id, $faker->text(100), $date);
+        $trans_id = fn_OP_Pending::add($type, $value, $currency_id, $recurring, array());
+
+        if( $trans_id ) {
+
+            $metadata = array();
+
+            if( $has_meta )
+                $metadata['details'] = $faker->text(500);
+
+            if( $has_account ) {
+                $account_n = $faker->numberBetween(0, count($accounts) -1); $account_id = $accounts[$account_n];
+                if($account_id) $metadata['account_id'] = $account_id;
+            }
+
+            if( $has_labels ){
+                $label_n = $faker->numberBetween(0, count($labels) -1); $label_id = $labels[$label_n];
+                if($label_id) $metadata['labels'][] = $label_id;
+            }
+
+            $metadata = @serialize($metadata); fn_OP_Pending::update($trans_id, array('metadata'=>$metadata));
+
+            if( $_POST['recurring'] != 'no' )
+                $children = fn_OP_Pending::add_children($trans_id); //Add a children as instance of the recurring transaction
+            else
+                $children = $trans_id;
+        }
+
+    }
+
+    echo "<p>Created {$trans_amount} fake pending transactions.</p>"; ob_flush(); flush();
 
     //--- insert a few pending transactions ---//
 
-    echo '<p>
-                <strong>Finished with ' . ( $labels_amount + $accounts_amount + $trans_amount ) . ' fake data generated.</strong>
-              </p>';
+    echo '<p> <strong>Finished with ' . ( $labels_amount + $accounts_amount + $trans_amount ) . ' fake data generated.</strong></p>';
 
 }
 else fn_UI::fatal_error('Could not find Faker autoloader. You can get Faker from here <a href="https://github.com/fzaninotto/Faker">https://github.com/fzaninotto/Faker</a>!');

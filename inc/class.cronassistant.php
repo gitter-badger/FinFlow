@@ -18,6 +18,10 @@ class fn_CronAssistant{
 		return TRUE;
 		
 	}
+
+    public static function is_running_in_window(){
+        return ( php_sapi_name() != 'cli' ) and strlen($_SERVER['REMOTE_ADDR']);
+    }
 	
 	
 	public static function skey($cron, $prefix=""){
@@ -62,8 +66,12 @@ class fn_CronAssistant{
 			
 			return TRUE;
 			
-		}elseif ($stop)
-			die( date(FN_MYSQL_DATE) . " Eroare: Cronul " . $cron . " a fost blocat. Se pare ca o alta instanta a aceluiasi fisier ruleaza in acest moment." );
+		}elseif ($stop){
+            if( self::is_running_in_window() )
+                fn_UI::fatal_error('Cronul ' . $cron . ' a fost blocat. Se pare ca o alta instanta a aceluiasi fisier ruleaza in acest moment.');
+            else
+			    die( date(FN_MYSQL_DATE) . " Eroare: Cronul " . $cron . " a fost blocat. Se pare ca o alta instanta a aceluiasi fisier ruleaza in acest moment." );
+        }
 		
 		return FALSE;
 		

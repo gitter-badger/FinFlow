@@ -26,13 +26,13 @@ if ( $fnexr->isServiceAvailable() ){
 
             session_start(); //start browser session
 
-            if( !$_SESSION['fn_exr_cache_built'] ) $status = $fnexr->buildCacheInWindow(); $_SESSION['fn_exr_cache_builder_runcount']++;
+            $status = $fnexr->buildCacheInWindow(); $_SESSION['fn_exr_cache_builder_runcount']++;
 
             if( $status and ( $status != 'ended' ) ){
-                $_SESSION['fn_exr_cache_built'] = 0; fn_UI::loading_screen('Se pregate&#351;te cache-ul... ('  . $_SESSION['fn_exr_cache_builder_runcount'] . ' de monede).' . $status);
+                 fn_UI::loading_screen('Se pregate&#351;te cache-ul... ('  . $_SESSION['fn_exr_cache_builder_runcount'] . ' de monede).' . $status, true);
             }
             else{
-                $_SESSION['fn_exr_cache_built'] = 1;
+                $_SESSION['fn_exr_cache_builder_runcount'] = 0;
             }
 
         }else
@@ -71,7 +71,7 @@ if ( $fnexr->isServiceAvailable() ){
 	if ( $testing )
         fn_UI::fatal_error("Scriptul func&#355;ioneaz&#259; normal.", false, true, 'note', "Not&#259;: ", 'Not&#259;');
 
-    if( $in_window )
+    elseif( $in_window )
         fn_UI::fatal_error("Ratele de schimb au fost actualizate.", false, true, 'note', "Not&#259;: ", 'Not&#259;');
 	
 	fn_CronAssistant::release_lock(__FILE__);

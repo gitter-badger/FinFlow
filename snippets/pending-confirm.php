@@ -15,11 +15,11 @@ if( isset($_POST['action']) ){
 
 
     if( $confirm and fn_OP_Pending::confirm($Transaction, $instances) ) {
-        $notices[] = "Tranzactia a fost confirmata.";
+        $notices[] = "Tranzactia a fost confirmat&#259;.";
     }
 
     if($clear and fn_OP_Pending::clear($Transaction, $instances))
-        $notices[] = "Tranzactia a fost curatata.";
+        $notices[] = "Tranzactia a fost curatat&#259;.";
 
 }
 
@@ -62,6 +62,7 @@ if( count($Transaction) and isset($Transaction->trans_id) ){
     <?php fn_UI::show_errors($errors); fn_UI::show_notes($notices); fn_UI::show_warnings($warnings); ?>
 
 	<?php if ( count($Transaction) ): ?>
+
         <table class="list details" border="1">
             <tr>
                 <td>Data:</td>

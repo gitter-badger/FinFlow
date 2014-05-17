@@ -158,6 +158,12 @@ class fn_UI{
 		
 		if ( $inputval == $checkval ) return 'selected'; return "";
 	}
+
+    public static function form_hidden_fields($data, $ignore=array()){
+        if( count($data) ) foreach($data as $key=>$value) : if( in_array($key, $ignore, true) ) continue; ?>
+            <input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>"/>
+       <?php endforeach;
+    }
 	
 	public static function show_errors($errors){
 
@@ -240,13 +246,44 @@ class fn_UI{
 			$date = str_replace('st', "", $date);
 			$date = str_replace('nd', "", $date);
 			$date = str_replace('rd', "", $date);
-			
+
+            $date = str_replace(array('Augu', 'augu'), array('August', 'august'), $date);
+
 			$date = str_replace(' am', " AM", $date);
 			$date = str_replace(' pm', " PM", $date);
 			
 			return $date;
 			
 	}
+
+    public static function format_nr($number, $decimals=2, $precision=FALSE){
+        return fn_Util::format_nr($number, $decimals, $precision);
+    }
+
+    public static function format_money($value, $currency=false, $show_cc=false, $currency_after=false){
+
+        $value = self::format_nr($value);
+
+        $currency = empty($currency) ? 0 : $currency;
+
+        if( empty($currency) ){
+            $currency = fn_Currency::get_default();
+        }else{
+
+            if( is_string($currency) )
+                $currency = fn_Currency::get_by_code($currency);
+
+            if( is_int( $currency ) )
+                $currency = fn_Currency::get($currency);
+
+        }
+
+        if( is_object($currency) ){
+            $s_currency = $show_cc ?  $currency->ccode : $currency->csymbol; return $currency_after ? "{$value} {$s_currency}" : "{$s_currency} {$value}";
+        }
+
+        return $value;
+    }
 	
 	public static function page_url($page='index', $vars=array(), $echo=TRUE){
 

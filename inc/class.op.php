@@ -340,10 +340,19 @@ class fn_OP{
 			self::apply_timely_groupping($span);
 
             //--- order by date DESC ---//
-            $fnsql->orderby(array('year', 'month'), "", 'ASC'); //TODO check integrity if query
+            switch($span){
+
+                case 'yearly': $fnsql->orderby(array('year'), "", 'ASC'); break;
+                case 'daily': $fnsql->orderby(array('year', 'month', 'day'), "", 'ASC'); break;
+
+               default: $fnsql->orderby(array('year', 'month'), "", 'ASC');
+
+            }
             //--- order by date DESC ---//
 
 			$Groups = $fndb->get_rows( $fnsql->get_query() );
+
+            fn_Log::to_screen( $fnsql->get_query() );//TODO
 			
 			if ( count($Groups) ) foreach ($Groups as $group){
 				

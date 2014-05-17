@@ -2,9 +2,10 @@
 
 <?php
 
-if( $_GET['roots'] ):
+if( isset( $_GET['forecast'] ) ):
 
-    echo 'Showing roots';//TODO
+
+    include_once 'pending-forecast.php';
 
 else:
 

@@ -153,6 +153,10 @@ class fn_Currency{
 		return  $fndb->get_row( $fnsql->get_query() );
 		
 	}
+
+    public static function get_default_cc(){
+        $d = self::get_default(); return isset($d->ccode) ? $d->ccode : false;
+    }
 	
 	public static function get_by_symbol($symbol, $fields="*"){
 		

@@ -1,9 +1,12 @@
 <?php
 
+$fn_log_messages = array();
 
 class fn_Log{
 
     public static function to_file($msg, $prefix="MESSAGE: ", $sizelimit=1){ //TODO add sizelimit support
+
+        if( defined('FN_DEBUG') and !FN_DEBUG ) return false; //debug deactivated
 
         if( defined('FN_LOGFILE')  ){
 
@@ -30,12 +33,34 @@ class fn_Log{
         else fn_UI::fatal_error("Constanta FN_LOGFILE nu este definita!");
     }
 
-    public static function to_screen(){
-        //TODO
+    public static function to_screen($msg, $prefix="MESSAGE: "){
+
+        global $fn_log_messages;
+
+        if( defined('FN_DEBUG') and !FN_DEBUG ) return false; //debug deactivated
+
+        $now = date(FN_MYSQL_DATE);
+
+        $fn_log_messages[] = ("{$now} {$prefix} {$msg}\n");
+
     }
 
     public static function display($limit=125){
-        //TODO display the log file
+
+        global $fn_log_messages;
+
+        if( empty($fn_log_messages) ) return;
+
+       $messages = array_slice ($fn_log_messages, 0 , $limit);
+
+        echo('<div class="fn-log-messages"><div class="pre-wrap"><pre>');
+
+        if( count($messages) ) foreach($messages as $message){
+            echo($message);
+        }
+
+        echo('</pre></div></div>');
+
     }
 
 }

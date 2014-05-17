@@ -3,7 +3,7 @@
 
 class fn_Accounts{
 
-    public static $table          = 'cash_accounts';
+    public static $table = 'cash_accounts';
 
     public static function  get_all($offset=0, $limit=25){
 
@@ -119,7 +119,7 @@ class fn_Accounts{
     public static function add($data){
         global $fndb, $fnsql;
 
-        if( empty($data['account_slug']) ) $data['account_slug'] = fn_Label::get_slug( $data['holder_name'] );
+        if( empty($data['account_slug']) ) $data['account_slug'] = fn_Util::make_slug( $data['holder_name'] );
 
         $data  = $fndb->escape( $data );
 

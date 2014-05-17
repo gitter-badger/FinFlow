@@ -40,6 +40,11 @@
 	?>
 	
 	<?php if ( fn_User::is_authenticated() ) include_once (FNPATH . '/snippets/footer.php');?>
-	
 </div>
+
+<!--- debug output --->
+<?php if( defined('FN_DEBUG') and FN_DEBUG ) fn_Log::display(); ?>
+<!--- debug output --->
+
 </body>
+</html>

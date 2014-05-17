@@ -409,6 +409,80 @@ p.installer-mchoice input[type="radio"]:checked + span{
     font-weight: bold;
 }
 
+.fn-log-messages{
+    position: relative;
+    bottom: 0px;
+    height: auto;
+    width: 100%;
+    margin: 30px 0px;
+}
+
+.fn-log-messages .pre-wrap{
+    overflow: auto;
+    display: block;
+    margin: 10px auto;
+    width: 88%;
+    height: 250px;
+    border:3px #F0F0F0 solid;
+    border-radius: .4em;
+    -webkit-transition : border 500ms ease-out;
+    -moz-transition : border 500ms ease-out;
+    -o-transition : border 500ms ease-out;
+    box-shadow: 3px 3px 6px #CCC;
+}
+
+.fn-log-messages pre{
+    background: #000000;
+    color: #ffffff;
+    font-family: "Consolas", monospace sans-serif;
+    border-radius: 0;
+    margin: 0px;
+}
+
+.balance-forecast{
+    width: 100%;
+    height: auto;
+    line-height: 40px;
+    background: none;
+}
+
+.balance-forecast .forecast-wrap div {
+    float: left;
+}
+
+.balance-forecast .indicator-title{
+    text-align: center;
+    width: auto;
+    float: none !important;
+    margin: 0px auto;
+}
+
+.balance-forecast .balance-available{
+    background: #61E05A;
+}
+
+.balance-forecast .balance-available > .balance-required,
+.balance-forecast .balance-required > .balance-available{
+    box-shadow:inset 1px 1px 3px rgba(0, 0, 0, 0.5);
+    border-right: 1px rgba(0, 0, 0, 0.5) outset;
+}
+
+.balance-forecast .balance-required{
+    background-color: #FF3D51;
+}
+
+.balance-forecast .forecast-wrap > .balance-available,
+.balance-forecast .forecast-wrap > .balance-required {
+    border: 1px #333 solid;
+    width: 100%;
+    max-height: 40px;
+    overflow: hidden;
+}
+
+.balance-forecast .forecast-wrap{
+    width: 100%;
+}
+
 /* Small desktop */
 @media (max-width: 1280px) {
 	table tr td:last-child, table tr th:last-child{

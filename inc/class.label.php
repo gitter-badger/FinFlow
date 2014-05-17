@@ -29,6 +29,17 @@ class fn_Label{
         return $fndb->get_rows( $fnsql->get_query() );
 
     }
+
+    public static function get_children($label_id){
+
+        global $fndb, $fnsql; $label_id = intval($label_id);
+
+        $fnsql->select('*', self::$table, array('parent_id'=>$label_id));
+        $fnsql->orderby('slug', self::$table, "ASC");
+
+        return $fndb->get_rows( $fnsql->get_query() );
+
+    }
 	
 	public static function get_all($start=0, $count=25){
 		

@@ -234,6 +234,7 @@ class fn_OP_Pending{
             $comments     = self::get_metdata($trans, 'comments', null);
             $labels           = self::get_metdata($trans, 'labels', array());
             $account_id    = self::get_metdata($trans, 'account_id', 0);
+            $contact_id    = self::get_metdata($trans, 'contact_id', 0);
 
             $attachments= fn_OP_Pending::get_metdata($trans, 'attachments');
 
@@ -244,6 +245,9 @@ class fn_OP_Pending{
 
                 if( $account_id and fn_Accounts::get($account_id))
                     fn_Accounts::add_trans($account_id, $op_trans_id);
+
+                if( $contact_id )
+                    fn_Contacts::assoc_trans($contact_id, $op_trans_id);
 
                 if( is_array($attachments) and count($attachments) ){
 

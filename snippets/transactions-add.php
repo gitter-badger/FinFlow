@@ -38,7 +38,7 @@
 
     <p>
         <label for="currency_id">Moneda:</label>
-        <?php $Currencies = fn_Currency::get_all(FALSE); if (count($Currencies)):?>
+        <?php $Currencies = fn_Currency::get_all(FALSE); if ( count($Currencies) ):?>
             <select name="currency_id" id="currency_id">
                 <?php foreach ($Currencies as $currency): ?>
                     <option value="<?php echo $currency->currency_id; ?>" <?php echo fn_UI::selected_or_not($currency->currency_id, $_POST['currency_id']); ?>>
@@ -50,13 +50,34 @@
     </p>
 
     <p>
-        <label for="labels">Etichete:</label>
-        <?php $Labels = fn_Label::get_all(0, 999); if ( count($Labels) ): ?>
-            <select name="labels[]" id="labels" size="10" multiple="multiple">
-                <?php foreach ($Labels as $label): ?>
-                    <option value="<?php echo $label->label_id; ?>" <?php echo fn_UI::selected_or_not($label->label_id, $_POST['labels']); ?>>
-                        <?php echo fn_UI::esc_html($label->title); ?>
+        <label for="contact_id">Contact:</label>
+        <?php $Contacts = fn_Contacts::get_all(0, 999); if ( count($Contacts) ):?>
+            <select name="contact_id" id="contact_id">
+                <?php foreach ($Contacts as $contact): ?>
+                    <option value="<?php echo $contact->contact_id; ?>" <?php echo fn_UI::selected_or_not($contact->contact_id, $_POST['contact_id']); ?>>
+                        <?php echo fn_UI::esc_html("{$contact->first_name} {$contact->last_name} ({$contact->organization})"); ?>
                     </option>
+                <?php endforeach; ?>
+            </select>
+        <?php endif;?>
+    </p>
+
+    <p>
+        <label for="labels">Etichete:</label>
+        <?php $Labels = fn_Label::get_parents(); if ( count($Labels) ): ?>
+            <select name="labels[]" id="labels" size="10" multiple="multiple">
+                <?php foreach ($Labels as $label): $ChildrenLabels = fn_Label::get_children($label->label_id); ?>
+
+                    <option value="<?php echo $label->label_id; ?>" <?php echo fn_UI::selected_or_not($label->label_id, $_POST['labels']); ?>>
+                        <?php echo fn_UI::esc_html( $label->title ); ?>
+                    </option>
+
+                    <?php if( count($ChildrenLabels) ) foreach($ChildrenLabels as $child): ?>
+                        <option value="<?php echo $child->label_id; ?>" <?php echo fn_UI::selected_or_not($child->label_id, $_POST['labels']); ?>>
+                            &#150; <?php echo fn_UI::esc_html( $child->title ); ?>
+                        </option>
+                    <?php endforeach; ?>
+
                 <?php endforeach; ?>
             </select>
         <?php else: ?>

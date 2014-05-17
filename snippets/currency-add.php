@@ -1,6 +1,6 @@
 <?php if( !defined('FNPATH') ) exit;
 
-include_once ( FNPATH . '/inc/exr-init.php' ); global $fnexr; ?>
+include_once ( FNPATH . '/inc/exr-init.php' ); global $fnexr; $fnexr->setBaseCurrency( fn_Currency::get_default_cc() ) ?>
 
 <?php if( !$fnexr->isCacheValid() ): ?>
     <p class="msg note">Fi&#351;ierul cache-ul cu ratele de schimb trebuie actualizat. <a href="#" onclick="fn_popup('<?php echo FN_URL; ?>/inc/cron/cron.exchangerates.php');">Actualizeaz&#259; acum</a> </p>

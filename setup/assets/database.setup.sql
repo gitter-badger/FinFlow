@@ -10,13 +10,30 @@ CREATE TABLE IF NOT EXISTS `cash_accounts` (
   `balance_spent` float NOT NULL DEFAULT '0',
   PRIMARY KEY (`account_id`),
   UNIQUE KEY `account_slug` (`account_slug`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `cash_assoc` (
   `trans_id` bigint(20) NOT NULL,
   `label_id` bigint(20) NOT NULL,
   UNIQUE KEY `trans_id` (`trans_id`,`label_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `cash_contacts` (
+  `contact_id` int(11) NOT NULL AUTO_INCREMENT,
+  `contact_slug` varchar(255) DEFAULT NULL,
+  `first_name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `contact_email` varchar(255) DEFAULT NULL,
+  `organization` varchar(255) DEFAULT NULL,
+  `phone` varchar(32) DEFAULT NULL,
+  `country` varchar(255) DEFAULT NULL,
+  `department` varchar(255) DEFAULT NULL,
+  `city` varchar(255) DEFAULT NULL,
+  `postcode` varchar(24) DEFAULT NULL,
+  `address` text,
+  PRIMARY KEY (`contact_id`),
+  KEY `contact_id` (`contact_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `cash_currency` (
   `currency_id` smallint(6) NOT NULL AUTO_INCREMENT,
@@ -25,14 +42,14 @@ CREATE TABLE IF NOT EXISTS `cash_currency` (
   `ccode` varchar(12) NOT NULL,
   `cexchange` float NOT NULL DEFAULT '1',
   PRIMARY KEY (`currency_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `cash_currency_history` (
   `currency_id` int(11) NOT NULL,
   `regdate` datetime NOT NULL,
   `cexchange` float NOT NULL DEFAULT '1',
   UNIQUE KEY `currency_id` (`currency_id`,`regdate`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `cash_labels` (
   `label_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -42,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `cash_labels` (
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`label_id`),
   UNIQUE KEY `slug` (`slug`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `cash_op` (
   `trans_id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -50,11 +67,12 @@ CREATE TABLE IF NOT EXISTS `cash_op` (
   `value` float NOT NULL,
   `currency_id` int(11) NOT NULL DEFAULT '1',
   `account_id` int(11) NOT NULL DEFAULT '0',
+  `contact_id` int(11) NOT NULL DEFAULT '0',
   `comments` varchar(255) DEFAULT NULL,
   `sdate` datetime NOT NULL,
   `mdate` datetime DEFAULT NULL,
   PRIMARY KEY (`trans_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `cash_op_meta` (
   `meta_id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -62,11 +80,12 @@ CREATE TABLE IF NOT EXISTS `cash_op_meta` (
   `meta_key` varchar(64) NOT NULL,
   `meta_value` text,
   PRIMARY KEY (`meta_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `cash_op_pending` (
   `trans_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `root_id` int(11) DEFAULT '0',
+  `contact_id` int(11) NOT NULL DEFAULT '0',
   `optype` enum('in','out') NOT NULL DEFAULT 'out',
   `value` float NOT NULL,
   `currency_id` int(11) NOT NULL DEFAULT '1',
@@ -76,14 +95,14 @@ CREATE TABLE IF NOT EXISTS `cash_op_pending` (
   `active` enum('yes','no') DEFAULT 'yes',
   `metadata` text,
   PRIMARY KEY (`trans_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `cash_settings` (
   `setting_key` varchar(225) NOT NULL,
   `setting_val` varchar(225) DEFAULT NULL,
   `settting_desc` text,
   UNIQUE KEY `setting_key` (`setting_key`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `cash_users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -93,4 +112,4 @@ CREATE TABLE IF NOT EXISTS `cash_users` (
   `last_login` datetime DEFAULT NULL,
   `pw_reset_key` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

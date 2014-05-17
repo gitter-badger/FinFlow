@@ -18,7 +18,8 @@ if ( isset($_POST['add']) ){
     $date  = $_POST['date'];
 
     $account_id = isset($_POST['account_id']) ? intval($_POST['account_id']) : 0;
-	
+    $contact_id = isset($_POST['contact_id']) ? intval($_POST['contact_id']) : 0;
+
 	if ( $value <= 0 )                     $errors[] = "Valoare tranzac&#355;iei lipse&#351;te.";
     if( strtotime($date) === false) $errors[] = "Data specificat&#259; este invalida";
 	
@@ -38,12 +39,13 @@ if ( isset($_POST['add']) ){
 
             if( $trans_id ){
 
-                $metadata = array('labels'=>array(), 'files'=>array(), 'account_id'=>0);
+                $metadata = array('labels'=>array(), 'files'=>array(), 'account_id'=>0, 'comments'=>trim($_POST['comments']));
 
                 //--- add the metadata ---//
                 if ( count($_POST['labels']) ) foreach ($_POST['labels'] as $label_id) $metadata['labels'][] = $label_id;
 
                 if( $account_id ) $metadata['account_id'] = $account_id;
+                if( $contact_id ) $metadata['contact_id'] = $contact_id;
 
                 //--- upload files if any ---//
                 if( count( $_FILES ) ) {
@@ -142,6 +144,10 @@ if ( isset($_POST['add']) ){
                 }
                 //--- upload files if any ---//
 
+                //--- associate with a contact (if any selected) ---//
+                if( $contact_id ) fn_Contacts::assoc_trans($contact_id, $trans_id);
+                //--- associate with a contact (if any selected) ---//
+
                 $notices[] = "Tranzac&#355;ia a fost adaugat&#259;.";
 
             }
@@ -212,7 +218,7 @@ else
                     <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'6 months')); ?>">&#206;n urm&#259;toarele 6 luni</a></li>
                     <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'12 months')); ?>">&#206;n urm&#259;toarele 12 luni</a></li>
                     <li class="divider"></li>
-                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'roots'=>'1')); ?>">Modific&#259;</a></li>
+                    <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'forecast'=>'1')); ?>">Prognoza</a></li>
                 </ul>
             </li>
 			<li class="<?php echo $activetab['add']; ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'add'))?>"> Adaug&#259; </a></li>

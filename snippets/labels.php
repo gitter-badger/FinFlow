@@ -81,7 +81,7 @@ $Labels = fn_Label::get_all($offset, $per_page);
 
             <div class="pagination">
                 <?php $total = fn_Label::get_total(); if ( $total > $per_page ):?>
-                <ul><?php fn_UI::pagination($total, $per_page, $_GET['pag'], fn_UI::page_url('labels', array(), FALSE)); ?></ul>
+                <ul><?php fn_UI::pagination($total, $per_page, $offset, fn_UI::page_url('labels', array(), FALSE)); ?></ul>
                 <?php endif;?>
             </div>
 

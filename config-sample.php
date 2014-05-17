@@ -1,7 +1,7 @@
 <?php
 /**
  * FinFlow Configuration file
- * @version 1.2
+ * @version  1.2.3
  * @since 0.5
  */
 
@@ -33,3 +33,6 @@ define('FN_RESULTS_PER_PAGE', 15);
 /**Numele directorului cache*/
 define('FN_CACHE_FOLDER', '.cache');
 define('FN_CACHE_EXPIRE', 7200);
+
+/**Activeaza debuging*/
+define('FN_DEBUG', true);

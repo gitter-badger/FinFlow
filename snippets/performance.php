@@ -30,6 +30,9 @@ if( $tab =='list' ){ //totals performance
 
         $Chart = fn_Util::highchart('chartTransactionsGrowth', 'column', "Performanta Rulaj: {$chartdtspan}", $categories, "Suma ({$Currency->ccode})", $series, TRUE);
 
+
+        $Chart->chart->zoomType = 'x'; //enable zoom on x-axis
+
         $Chart->xAxis->labels->rotation 	= -45;
         $Chart->xAxis->labels->align 		= "right";
 
@@ -39,6 +42,9 @@ if( $tab =='list' ){ //totals performance
 }
 
 if( $tab == 'list2' ){
+
+    //--- evolutie balanta ---//
+
     $Incomes    = fn_OP::get_timely_sum(array_merge($filters, array('type'=>FN_OP_IN)), $span);
     $Outcomes = fn_OP::get_timely_sum(array_merge($filters, array('type'=>FN_OP_OUT)), $span);
 
@@ -68,10 +74,13 @@ if( $tab == 'list2' ){
 
     $Chart = fn_Util::highchart('chartBalanceEvolution', 'line', "Evolutie balanta: {$chartdtspan}", $categories, "Suma ({$Currency->ccode})", $series, TRUE);
 
+    $Chart->chart->zoomType = 'x';
     $Chart->xAxis->labels->rotation 	= -45;
     $Chart->xAxis->labels->align 		= "right";
 
     $Chart->xAxis->labels->style->font = "normal 14px Verdana, sans-serif";
+
+    //--- evolutie balanta ---//
 }
 
 ?>

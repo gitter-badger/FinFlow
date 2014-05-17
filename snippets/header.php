@@ -9,6 +9,7 @@
 					<li class="<?php echo $active['performance']; ?>"><a href="<?php fn_UI::page_url('performance'); ?>">Performan&#355;&#259;</a></li>
 					<li class="<?php echo $active['labels']; ?>"><a href="<?php fn_UI::page_url('labels'); ?>">Etichete</a></li>
                     <li class="<?php echo $active['accounts']; ?>"><a href="<?php fn_UI::page_url('accounts'); ?>">Conturi</a></li>
+                    <li class="<?php echo $active['contacts']; ?>"><a href="<?php fn_UI::page_url('contacts'); ?>">Contacte</a></li>
 					<li class="<?php echo $active['currencies']; ?>"><a href="<?php fn_UI::page_url('currencies'); ?>">Monede</a></li>
                     <li class="<?php echo $active['tools']; ?>"><a href="<?php fn_UI::page_url('tools'); ?>">Unelte</a></li>
 					<li class="<?php echo $active['settings']; ?>"><a href="<?php fn_UI::page_url('settings'); ?>">Set&#259;ri</a></li>
