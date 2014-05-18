@@ -12,6 +12,7 @@
 <link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/bootstrap-responsive.min.css" />
 <link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/font-awesome.min.css" />
 <link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/style.css" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/responsive.css" />
 <link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/pikaday.css" />
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script type="text/javascript" src="<?php echo FN_URL; ?>/js/bootstrap.min.js"></script>

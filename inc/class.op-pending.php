@@ -741,7 +741,7 @@ class fn_OP_Pending{
             //--- only for a single root ---//
         }
 
-        $once_sum = self::get_sum(array_merge($filters, array('recurring'=>'no'))); $total+= $once_sum;
+        //$once_sum = self::get_sum(array_merge($filters, array('recurring'=>'no'))); $total+= $once_sum;
 
         //--- now move forward to calculate compound sum for recurring transactions ---//
         $CompoundSQL = self::apply_period_filters($filters);
@@ -759,11 +759,10 @@ class fn_OP_Pending{
                 $fnsql->query_append(" FROM ($CompoundSQL) AS Z  ");
 
                 $Row = $fndb->get_row( $fnsql->get_query() );
+
                 if( $Row and isset( $Row->total ) ) $total+= fn_Currency::convert_to_default($Row->total, $currency_id);
 
             }
-
-
 
         }
 

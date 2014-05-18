@@ -351,8 +351,6 @@ class fn_OP{
             //--- order by date DESC ---//
 
 			$Groups = $fndb->get_rows( $fnsql->get_query() );
-
-            fn_Log::to_screen( $fnsql->get_query() );//TODO
 			
 			if ( count($Groups) ) foreach ($Groups as $group){
 				
