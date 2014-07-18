@@ -66,7 +66,7 @@
 
     <p>
         <label for="balance">Balan&#355;a:</label>
-        <input type="number" size="45" maxlength="255" placeholder="100000" name="balance" id="balance"  value="<?php echo fn_UI::extract_post_val('balance', "", TRUE); ?>" />
+        <input type="number" size="45" step="any" maxlength="255" placeholder="100000.45" name="balance" id="balance"  value="<?php echo fn_UI::extract_post_val('balance', "", TRUE); ?>" />
 
         <span class="details"> &nbsp;Suma disponibil&#259; in cont. </span>
 

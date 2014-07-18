@@ -16,6 +16,7 @@ if( count($Transaction) and isset($Transaction->trans_id) ){
     $currency	  = fn_Currency::get( $Transaction->currency_id );
 
     $details		   = $is_pending ? fn_OP_Pending::get_metdata($Transaction, 'details') : fn_OP::get_metadata($trans_id, 'details');
+    $comments   = $is_pending ? fn_OP_Pending::get_metdata($Transaction, 'comments') : $Transaction->comments;
     $attachments= $is_pending ?  fn_OP_Pending::get_metdata($Transaction, 'attachments') : fn_OP::get_metadata($trans_id, 'attachments');
 
     if( ( is_array($attachments) and count($attachments) ) or strlen($attachments) ){
@@ -74,10 +75,10 @@ if( count($Transaction) and isset($Transaction->trans_id) ){
         </tr>
         <?php endif; ?>
 
-		<?php if ( !empty($Transaction->comments) ): ?>
+		<?php if ( !empty( $comments ) ): ?>
 		<tr>
 			<td>Comentarii: </td>
-			<td><?php echo fn_UI::esc_html( $Transaction->comments ); ?></td>
+			<td><?php echo fn_UI::esc_html( $comments ); ?></td>
 		</tr>
 		<?php endif;?>
 

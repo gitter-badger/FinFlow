@@ -64,7 +64,7 @@
 
     <p>
         <label for="balance">Balan&#355;a:</label>
-        <input type="number" size="45" maxlength="255" name="balance" id="balance"  value="<?php echo fn_UI::extract_post_val('balance', $Account->balance, TRUE); ?>" />
+        <input type="number" size="45" step="any" maxlength="255" name="balance" id="balance"  value="<?php echo fn_UI::extract_post_val('balance', $Account->balance, TRUE); ?>" />
 
         <span class="details"> &nbsp;Suma disponibil&#259; &#238;n cont. </span>
 
