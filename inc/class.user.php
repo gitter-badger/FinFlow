@@ -8,7 +8,7 @@ class fn_User{
 	protected $email;
 	protected $avatar;
 	
-	public static $table = 'cash_users';
+	public static $table = 'fn_users';
 	
 	public function __construct($email=FALSE, $password=FALSE){
 		$this->authenticated = FALSE;

@@ -284,7 +284,9 @@ class fn_UI{
 
         return $value;
     }
-	
+
+
+
 	public static function page_url($page='index', $vars=array(), $echo=TRUE){
 
 		if( strlen($page) )
@@ -297,6 +299,10 @@ class fn_UI{
 		else 			
 			return $url;
 	}
+
+    public static function asset_url($asset, $version=null, $echo=true){
+        $version = empty($version) ? FN_VERSION : $version; $url = ( self::base_url($asset) . '?v' . $version ); if( $echo ) echo $url; else return $url;
+    }
 
     public static function page_title($page, $echo=true){
 
@@ -327,6 +333,10 @@ class fn_UI{
 		
 	}
 
+    public static function base_url($relative_url='/'){
+        return ( rtrim( fn_Util::get_base_url(), '/' ) . '/' . trim($relative_url, '/') );
+    }
+
     public static function current_page_url(){
         return ( fn_Util::get_server_base_url() . $_SERVER['REQUEST_URI'] );
     }
@@ -341,7 +351,7 @@ class fn_UI{
 			$classes[] = "logged-out";
 	
 		if( isset($_GET['p']) )
-			$classes[] = ( "page-" . strtolower(urldecode($_GET['p'])) );
+			$classes[] = ( "page-" . self::esc_html( strtolower( urldecode($_GET['p'] ) ) ) );
 		else{
 			if ( fn_User::is_authenticated() )
 				$classes[] = "dashboard";

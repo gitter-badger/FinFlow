@@ -3,6 +3,8 @@
 define('FN_VERSION'     , '1.2.3');
 define('FN_DB_VERSION', '1.3');
 
+define('FN_ENVIRONMENT', ( defined('FN_ENVIRONMENT') ? FN_ENVIRONMENT : ( isset($_SERVER['ENVIRONMENT']) ? $_SERVER['ENVIRONMENT'] : 'production' ) ) );
+
 define('FNPATH', rtrim(str_replace(basename(dirname(__FILE__)), '', dirname(__FILE__)), DIRECTORY_SEPARATOR));
 
 define('FN_OP_IN'		, 'in');

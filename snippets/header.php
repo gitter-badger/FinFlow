@@ -15,9 +15,15 @@
 					<li class="<?php echo $active['settings']; ?>"><a href="<?php fn_UI::page_url('settings'); ?>">Set&#259;ri</a></li>
 				</ul>
 				
-				<a class="btn pull-right logout" href="<?php fn_UI::page_url('logout'); ?>" title="de-autentificare"><span class="icon-off"></span></a>
-				<a class="btn pull-right default" onclick="fn_popup('<?php echo FN_URL; ?>/snippets/help.php?topic=<?php echo $_GET['p']; ?>');" href="#help" title="ajutor"><span class="icon-question-sign"></span></a>
-                <a class="btn pull-right default" href="<?php echo fn_UI::get_file_url('/setup/upgrade.php', false); ?>" title="verifica actualizari"><span class="icon-cloud-download"></span></a>
+				<a class="btn pull-right logout" href="<?php fn_UI::page_url('logout'); ?>" title="de-autentificare">
+                    <span class="icon-off"></span>
+                </a>
+				<a class="btn pull-right default" onclick="fn_popup('<?php echo FN_URL; ?>/snippets/help.php?topic=<?php echo fn_UI::esc_html( $_GET['p'] ); ?>');" href="#help" title="ajutor">
+                    <span class="icon-question-sign"></span>
+                </a>
+                <a class="btn pull-right default" href="<?php echo fn_UI::get_file_url('/setup/upgrade.php', false); ?>" title="verifica actualizari">
+                    <span class="icon-cloud-download"></span>
+                </a>
 			</div>
 		</div>
 	</div>

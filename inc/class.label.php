@@ -3,8 +3,8 @@
 
 class fn_Label{
 	
-	public static $table 			= 'cash_labels';
-	public static $table_assoc 	= 'cash_assoc';
+	public static $table 			= 'fn_labels';
+	public static $table_assoc 	= 'fn_assoc';
 	
 	public static function get($slug){
 		

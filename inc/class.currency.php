@@ -3,8 +3,8 @@
 
 class fn_Currency{
 	
-	public static $table 			= 'cash_currency';
-	public static $table_history = 'cash_currency_history';
+	public static $table 			= 'fn_currency';
+	public static $table_history = 'fn_currency_history';
 
 
     public static function add($name, $symbol='lei', $code='RON', $rate=1){

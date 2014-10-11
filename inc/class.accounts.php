@@ -3,7 +3,7 @@
 
 class fn_Accounts{
 
-    public static $table = 'cash_accounts';
+    public static $table = 'fn_accounts';
 
     public static function  get_all($offset=0, $limit=25){
 

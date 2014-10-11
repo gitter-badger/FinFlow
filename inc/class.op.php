@@ -8,8 +8,8 @@
  */
 class fn_OP{
 	
-	public static $table 			   = 'cash_op';
-	public static $table_meta 	   = 'cash_op_meta';
+	public static $table 			   = 'fn_op';
+	public static $table_meta 	   = 'fn_op_meta';
 
     public static $uploads_dir = "/uploads";
     public static $attached    = 'attached';

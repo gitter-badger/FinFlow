@@ -7,7 +7,7 @@
 
 class fn_OP_Pending{
 
-    public static $table  = 'cash_op_pending';
+    public static $table  = 'fn_op_pending';
 
     /**
      * The SQL Query template used to build the compound sum select query
@@ -79,7 +79,7 @@ class fn_OP_Pending{
 
                         AS `day_count_till_enable`
 
-                        FROM `cash_op_pending`
+                        FROM `{table}`
 
                         {conditions}
 
@@ -583,6 +583,8 @@ class fn_OP_Pending{
 
             $SQLTemplate = str_replace('{ordering}', $order, $SQLTemplate);
             $SQLTemplate = str_replace('{limit}', $limit, $SQLTemplate);
+
+            $SQLTemplate = str_replace('{table}', self::$table, $SQLTemplate);
 
             return $SQLTemplate;
 

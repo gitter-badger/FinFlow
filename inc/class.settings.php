@@ -2,7 +2,7 @@
 
 class fn_Settings{
 	
-	public static $table = 'cash_settings';
+	public static $table = 'fn_settings';
 	
 	public static function get($key, $default=FALSE, $multiple=FALSE){
 		

@@ -548,18 +548,18 @@ class fn_Util{
 
     }
 
-    public static function get_base_url($static=FALSE, $force_https=FALSE, $path_hint=''){
+    public static function get_base_url($static=false, $force_https=false, $path_hint=''){
 
-        if( $static and ( strlen($static) > 11 ) ) return $static;
+        if( $static and ( strlen($static) > 10 ) ) return $static;
 
         if( defined('FN_URL') ) return FN_URL;
 
-        $url = $_SERVER['SERVER_NAME'];
+        $url = isset( $_SERVER['HTTP_HOST'] ) ? ( strpos($_SERVER['HTTP_HOST'], $_SERVER['SERVER_NAME']) === false ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST']  ) : $_SERVER['SERVER_NAME'];
+
         $url = self::is_https($force_https) ? ( 'https://' . $url ) : ( 'http://' . $url );
 
-
         if( ( $_SERVER['SERVER_PORT'] != '80' ) and ( $_SERVER['SERVER_PORT'] != '443' ) ) //not standard http(s) ports
-            $url.= (':' . $_SERVER['SERVER_PORT']);
+            $url.= ( ':' . $_SERVER['SERVER_PORT'] );
 
 
         $docroot = rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);

@@ -6,7 +6,7 @@
  */
 
 /** URL-ul de baza al aplicatiei */
-define('FN_URL'		, 'http://example.com/finflow');
+define('FN_URL', 'http://example.com/finflow');
 
 /** Setari pentru conexiuna la baza de date, le poti obtine de la furnizorul tau de servicii de gazduire web */
 define('FN_DB_HOST'		, 'localhost');

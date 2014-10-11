@@ -7,7 +7,7 @@
 
 class fn_Contacts{
 
-    public static $table  = 'cash_contacts';
+    public static $table  = 'fn_contacts';
 
     public static function add($data){
         //TODO

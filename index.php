@@ -7,18 +7,15 @@
 <title> FinFlow | <?php fn_UI::page_title($_GET['p']); ?></title>
 <meta name="generator" content="FinFlow <?php echo FN_VERSION; ?>" />
 <meta id="view" name="viewport" content="width=device-width, maximum-scale=1.0, minimum-scale=1.0, initial-scale=1" />
-<link rel="shortcut icon" href="<?php echo FN_URL; ?>/images/favicon.png" type="image/x-icon">
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/bootstrap.min.css" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/bootstrap-responsive.min.css" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/font-awesome.min.css" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/style.css" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/responsive.css" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/pikaday.css" />
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo FN_URL; ?>/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="<?php echo FN_URL; ?>/js/fn.js"></script>
+<link rel="shortcut icon" href="<?php fn_UI::asset_url('/images/favicon.png'); ?>" type="image/x-icon">
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/bootstrap.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/bootstrap-responsive.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/font-awesome.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/style.css'); ?>" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/responsive.css'); ?>" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/pikaday.css'); ?>"/>
 </head>
-<body id="page-<?php echo strtolower($_GET['p']); ?>" class="<?php echo fn_UI::get_body_class(); ?>">
+<body id="page-<?php echo fn_UI::esc_html( strtolower($_GET['p']) ); ?>" class="<?php echo fn_UI::get_body_class(); ?>">
 <div class="container">
 	
 	<?php if ( fn_User::is_authenticated() ) include_once (FNPATH . '/snippets/header.php');?>
@@ -41,11 +38,16 @@
 	?>
 	
 	<?php if ( fn_User::is_authenticated() ) include_once (FNPATH . '/snippets/footer.php');?>
+
 </div>
 
 <!--- debug output --->
 <?php if( defined('FN_DEBUG') and FN_DEBUG ) fn_Log::display(); ?>
 <!--- debug output --->
+
+<script type="text/javascript" src="<?php fn_UI::asset_url('js/jquery.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php fn_UI::asset_url('js/bootstrap.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php fn_UI::asset_url('js/fn.js'); ?>"></script>
 
 </body>
 </html>
