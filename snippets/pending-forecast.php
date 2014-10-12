@@ -54,44 +54,46 @@ if( $unit and $unit_val ){
 ?>
 
 <?php if( empty($unit_val) ):  ?>
-<form action="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'forecast'=>1)); ?>" class="forecast" name="forecast-balance-form" id="forecastBalanceForm" method="get">
+
+<form class="form form-horizontal forecast" action="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'forecast'=>1)); ?>" name="forecast-balance-form" id="forecastBalanceForm" method="get">
 
     <?php fn_UI::form_hidden_fields($_GET, array('unit_value', 'unit', 'exclude')) ?>
 
-    <p>
-        <label for="unit_value">Perioada:</label>
+    <div class="form-group">
+        <label class="col-lg-3 control-label" for="unit_value">Perioada:</label>
+        <div class="col-lg-2">
+            <input type="number" name="unit_value" id="unit_value" maxlength="4" class="form-control" min="1" placeholder="12" value="<?php echo fn_UI::extract_post_val('unit_value', 6); ?>"/>
+        </div>
+        <div class="col-lg-4">
+            <select class="form-control" name="unit" id="unit">
+                <option value="days" <?php echo fn_UI::selected_or_not('days', $_GET['unit']); ?>>zile</option>
+                <option value="months" <?php echo fn_UI::selected_or_not('months', $_GET['unit']); ?>>luni</option>
+                <option value="years" <?php echo fn_UI::selected_or_not('years', $_GET['unit']); ?>>ani</option>
+            </select>
+        </div>
+    </div>
 
-        <input type="number" name="unit_value" id="unit_value" maxlength="4" class="input-mini" placeholder="12" value="<?php echo fn_UI::extract_post_val('unit_value', 6); ?>"/>
+    <div class="form-group">
+        <label class="control-label col-lg-3" for="exclude">Exclude:</label>
+        <div class="col-lg-6">
+            <select class="form-control" name="exclude" id="exclude">
+                <option value="none"> - f&#259;ra excluderi - </option>
+                <option value="<?php echo FN_OP_IN; ?>" <?php echo fn_UI::selected_or_not(FN_OP_IN, $_GET['exclude']); ?>>venit</option>
+                <option value="<?php echo FN_OP_OUT; ?>" <?php echo fn_UI::selected_or_not(FN_OP_OUT, $_GET['exclude']); ?>>cheltuieli</option>
+            </select>
+        </div>
+    </div>
 
-        <select name="unit" id="unit">
-            <option value="days" <?php echo fn_UI::selected_or_not('days', $_GET['unit']); ?>>zile</option>
-            <option value="months" <?php echo fn_UI::selected_or_not('months', $_GET['unit']); ?>>luni</option>
-            <option value="years" <?php echo fn_UI::selected_or_not('years', $_GET['unit']); ?>>ani</option>
-        </select>
-    </p>
+    <div class="form-group">
+        <div class="col-lg-offset-5 col-lg-7"> <button class="btn btn-primary" type="submit"> Aplica </button> </div>
+    </div>
 
-    <p>
-
-        <label for="exclude">Exclude:</label>
-
-        <select name="exclude" id="exclude">
-            <option value="none"> - f&#259;ra excluderi - </option>
-            <option value="<?php echo FN_OP_IN; ?>" <?php echo fn_UI::selected_or_not(FN_OP_IN, $_GET['exclude']); ?>>venit</option>
-            <option value="<?php echo FN_OP_OUT; ?>" <?php echo fn_UI::selected_or_not(FN_OP_OUT, $_GET['exclude']); ?>>cheltuieli</option>
-        </select>
-    </p>
-
-    <p>
-        <button class="btn btn-primary" type="submit"> Aplica </button>
-    </p>
 </form>
 
 <?php else: $Currency = fn_Currency::get_default(); ?>
 
-    <h4 class="form-label-normal">
-
+    <h4>
         <em>
-
             Prognoza p&#226;n&#259; la <?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, $endtime) ); ?>
 
             <?php if( $exclude and ( $exclude != 'none' ) ): ?>
@@ -145,7 +147,7 @@ if( $unit and $unit_val ){
 
     </div>
 
-    <table class="list report" border="1">
+    <table class="table table-striped list report">
         <tr>
             <td>Rulaj: </td>
             <td class="align-right"><?php echo fn_UI::format_money( $Total ); ?></td>
@@ -170,7 +172,7 @@ if( $unit and $unit_val ){
         </tr>
     </table>
 
-    <br class="clear"/>
+    <div class="clearfix"/>
 
 <?php endif;?>
 

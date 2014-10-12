@@ -22,6 +22,10 @@ class fn_CronAssistant{
     public static function is_running_in_window(){
         return ( php_sapi_name() != 'cli' ) and strlen($_SERVER['REMOTE_ADDR']);
     }
+
+    public static function is_cli(){
+        return ( php_sapi_name() == 'cli' ) and empty($_SERVER['REMOTE_ADDR']);
+    }
 	
 	
 	public static function skey($cron, $prefix=""){

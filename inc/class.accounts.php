@@ -127,7 +127,6 @@ class fn_Accounts{
 
        if( $fndb->execute_query( $fnsql->get_query() ) ) return $fndb->last_insert_id;
 
-
         return false;
 
     }

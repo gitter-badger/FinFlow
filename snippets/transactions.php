@@ -188,15 +188,16 @@ else
 
 ?>
 
-<div class="row content">
-	<div class="span10">
+<div class="row">
+
+	<div class="<?php fn_UI::main_container_grid_class(); ?>">
 		
-		<ul class="nav nav-tabs">
+		<ul class="nav nav-tabs" role="tablist">
 			<li class="dropdown <?php echo $activetab['list']; ?>">
 				<a href="<?php fn_UI::page_url('transactions', array('t'=>'list'))?>" class="dropdown-toggle" data-toggle="dropdown">
-                    Raport <?php echo $report_period; ?> <b class="caret"></b>
+                    Raport <?php echo $report_period; ?> <span class="caret"></span>
                 </a>
-				<ul class="dropdown-menu">
+				<ul class="dropdown-menu" role="menu">
                 	<li><a href="<?php fn_UI::page_url('transactions', array('sdate'=>$currmonthstart)); ?>">Luna aceasta</a></li>
                   	<li><a href="<?php fn_UI::page_url('transactions', array('sdate'=>fn_Util::get_relative_time(0, 3, 0, $currmonthstart)) ); ?>">Ultimele 3 luni</a></li>
                   	<li><a href="<?php fn_UI::page_url('transactions', array('sdate'=>fn_Util::get_relative_time(0, 6, 0, $currmonthstart)) ); ?>">Ultimele 6 luni</a></li>
@@ -209,9 +210,9 @@ else
 			<li class="<?php echo $activetab['generator']; ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'generator'))?>"> Generator raport  </a></li>
 			<li class="dropdown <?php echo $activetab['pending']; ?>">
                 <a href="<?php fn_UI::page_url('transactions', array('t'=>'pending'))?>"  class="dropdown-toggle" data-toggle="dropdown">
-                    &#206;n a&#351;teptare <b class="caret"></b>
+                    &#206;n a&#351;teptare <span class="caret"></span>
                 </a>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu" role="menu">
                     <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'overdue')); ?>">&#206;n &#238;ntarziere</a></li>
                     <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'30 days')); ?>">&#206;n urm&#259;toarele 30 de zile</a></li>
                     <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'over'=>'3 months')); ?>">&#206;n urm&#259;toarele 3 luni</a></li>
@@ -221,14 +222,16 @@ else
                     <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'forecast'=>'1')); ?>">Prognoza</a></li>
                 </ul>
             </li>
-			<li class="<?php echo $activetab['add']; ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'add'))?>"> Adaug&#259; </a></li>
+			<li class="<?php echo $activetab['add']; ?>">
+                <a href="<?php fn_UI::page_url('transactions', array('t'=>'add'))?>"> Adaug&#259; </a>
+            </li>
 		</ul>
 		
-		<?php if ( $tab == 'list' ) include_once (  'transactions-list.php' ); ?>
+		<?php if ( $tab == 'list' ) include_once ( 'transactions-list.php' ); ?>
 
 		<?php if ( $tab == 'pending' ) include_once ( 'pending.php' ); ?>
 
-		<?php if ( $tab == 'generator' ) include_once (  'transactions-filter.php' ); ?>
+		<?php if ( $tab == 'generator' ) include_once ( 'transactions-filter.php' ); ?>
 		
 		<?php if ( $tab == 'add' ) include_once ( 'transactions-add.php' ); ?>
 		

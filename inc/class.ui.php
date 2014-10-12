@@ -1,27 +1,29 @@
 <?php
 
 class fn_UI{
-	
-	public static $MSG_ERROR = 'error';
-	public static $MSG_NOTE  = 'note';
-	public static $MSG_WARN = 'warning';
+
+    public static $MSG_ERROR = 'error';
+    public static $MSG_NOTE  = 'note';
+    public static $MSG_WARN = 'warning';
 
     public static $pageNames = array(
-        'index'             => 'Panou Principal',
-        'dashboard'      =>  'Panou Principal',
-        'transactions'    => 'Tranzac&#355;ii',
-        'performance'   => 'Performan&#355;&#259;',
-        'labels'             => 'Etichete',
-        'accounts'         => 'Conturi',
-        'currencies'       => 'Monede',
-        'tools'              => 'Unelte',
-        'settings'          => 'Set&#259;ri',
-        'login'             => 'Autentificare',
+        'index'            => 'Panou Principal',
+        'dashboard'     =>  'Panou Principal',
+        'transactions'   => 'Tranzac&#355;ii',
+        'performance'  => 'Performan&#355;&#259;',
+        'labels'            => 'Etichete',
+        'accounts'       => 'Conturi',
+        'currencies'     => 'Monede',
+        'tools'            => 'Unelte',
+        'settings'        => 'Set&#259;ri',
+        'login'            => 'Autentificare',
         'pwreset'       => 'Recuperare parol&#259;'
     );
-	
+
+    public static $transactionTypesNames = array(FN_OP_IN=>'venit', FN_OP_OUT=>'cheluial&#259;');
+
 	public static function msg($msg, $type="note"){
-		if ( strlen($msg) ) echo '<p class="msg ' . $type . '"> ' . $msg . ' </p>';
+		if ( strlen($msg) ) echo '<div class="alert alert-' . $type . '"> ' . $msg . ' </div>';
 	}
 	
 	public static function error_page_css(){ ?>
@@ -363,6 +365,14 @@ class fn_UI{
 	
 	}
 
+    public static function sidebar_grid_class($default='col-sm-offset-1 col-lg-2 col-md-2 col-sm-3'){
+        $setting = fn_Settings::get('sidebar_grid_class', $default); echo $setting;
+    }
+
+    public static function main_container_grid_class($default='col-lg-9 col-md-9 col-sm-7'){
+        $setting = fn_Settings::get('main_container_grid_class', $default); echo $setting;
+    }
+
     public static function pagination_get_current_offset($page, $per_page=25){
         if( $page <= 1 ) return 0; return ($page-1)*$per_page;
     }
@@ -582,4 +592,7 @@ class fn_UI{
 
     }
 
+    public static function transaction_icon($type){
+        ?><a class="fa fa-arrow-<?php echo $type == FN_OP_IN ? 'right' : 'left' ?> icon-transaction-<?php echo $type;  ?>" title="<?php echo self::$transactionTypesNames[$type]; ?>"></a><?php
+    }
 }

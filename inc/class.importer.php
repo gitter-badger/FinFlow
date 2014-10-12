@@ -20,7 +20,12 @@ class fn_Importer{
         $this->filepath = trim($filepath);
     }
 
-    public function import(){
+    /**
+     * Imports data from file
+     * @param string $type
+     * @return bool|int
+     */
+    public function import($type='mysqldump'){ //TODO add mysqldump support
 
         $contents = @file_get_contents($this->filepath);
 

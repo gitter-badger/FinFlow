@@ -46,8 +46,9 @@ foreach ($Cronjobs as $job){
 
 ?>
 
-<div class="row content">
-	<div class="span10">
+<div class="row">
+
+	<div class="<?php fn_UI::main_container_grid_class(); ?>">
 
         <h4 class="balance treshold <?php echo $threshold_color; ?>">
             Balan&#355;&#259;: <span class="value"> <?php echo $Currency->csymbol; ?> <?php echo fn_Util::format_nr($Balance); ?> </span>
@@ -57,7 +58,7 @@ foreach ($Cronjobs as $job){
 		
 		<?php if ( count($Transactions) ): ?>
 			
-			<table class="list report" border="1">
+			<table class="table table-responsive table-bordered list report">
 				<tr>
 					<td>Rulaj: </td>
 					<td class="align-right"><?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Total); ?></td>
@@ -86,7 +87,7 @@ foreach ($Cronjobs as $job){
 			
 			<br class="clear"/>
 			
-			<table class="list transactions" border="1">
+			<table class="table table-responsive table-striped table-bordered list transactions">
 				<tr>
 					<th>Tip</th>
 					<th>Suma</th>
@@ -98,7 +99,7 @@ foreach ($Cronjobs as $job){
 				<?php foreach ($Transactions as $transaction):  $k++; $trclass= ( $k%2 == 0) ? 'even' : 'odd'; $currency = fn_Currency::get($transaction->currency_id); ?>
 				<tr class="<?php echo $trclass; ?>">
 					<td>
-                        <img src="images/<?php echo $transaction->optype; ?>.png" align="middle" title="<?php echo ($transaction->optype == FN_OP_IN) ? 'venit' : 'cheltuiala'; ?>" alt="<?php echo $transaction->optype; ?>"/>
+                        <?php fn_UI::transaction_icon($transaction->optype); ?>
                     </td>
 					<td><?php echo fn_Util::format_nr( $transaction->value ); ?></td>
 					<td><?php echo $currency->ccode; ?></td>
@@ -110,7 +111,7 @@ foreach ($Cronjobs as $job){
 					</td>
 					<td class="align-center">
 						<button class="btn" onclick="confirm_delete('<?php fn_UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
-							<span class="icon-remove"></span>
+							<span class="fa fa-remove"></span>
 						</button>
 					</td>
 				</tr>
@@ -133,7 +134,7 @@ foreach ($Cronjobs as $job){
 
 		<h4 class="page-heading">Ultimele actualiz&#259;ri f&#259;cute de cronjob-uri</h4>
 		
-		<table class="list report" border="1">
+		<table class="table table-responsive table-striped list report" border="1">
 			<tr>
 				<td>Actualizare curs:</td>
 				<td class="align-right"><?php echo $Cronupdates[0];  ?></td>

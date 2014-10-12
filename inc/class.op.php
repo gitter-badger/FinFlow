@@ -196,7 +196,7 @@ class fn_OP{
 			$fnsql->left_join(fn_Label::$table, 'label_id', 'label_id');
 			$fnsql->condition('trans_id', '=', $trans_id);
 			$fnsql->conditions_ready();
-			
+
 			return $fndb->get_rows( $fnsql->get_query() );
 
 		}
@@ -840,7 +840,7 @@ class fn_OP{
         return ( rtrim(FNPATH, "/") . self::$uploads_dir . "/" . trim($attachment, "/") );
     }
 
-    public static function get_filter_readable_string($vars, $date_format='j F Y'){
+    public static function get_filter_readable_string($vars, $before='', $after='', $date_format='j F Y'){
 
         if( empty($vars) ) $vars = $_GET;
 
@@ -917,7 +917,7 @@ class fn_OP{
 
         $readable = ucfirst(trim($readable));
 
-        return strlen($readable) ? ( '<h4 class="trans-readable-filter">' . $readable . '</h4>' ) : "";
+        return strlen($readable) ? ( $before . '<h4 class="trans-readable-filter">' . $readable . '</h4>' . $after ) : "";
 
     }
 

@@ -3,7 +3,8 @@
 if( count($Transactions) ): ?>
 
     <?php if( $list_report != 'no' ): ?>
-        <table class="list report" border="1">
+
+        <table class="table table-responsive table-striped list report">
             <tr>
                 <td>Rulaj: </td>
                 <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Total); ?></td>
@@ -24,11 +25,9 @@ if( count($Transactions) ): ?>
             </tr>
         </table>
 
-        <br class="clear"/>
-
     <?php endif; ?>
 
-    <table class="list transactions" border="1">
+    <table class="table table-responsive table-striped list transactions">
         <tr>
             <th>ID</th>
             <th>Tip</th>
@@ -41,9 +40,7 @@ if( count($Transactions) ): ?>
         <?php foreach ($Transactions as $transaction):  $k++; $trclass= ( $k%2 == 0) ? 'even' : 'odd'; $currency = fn_Currency::get($transaction->currency_id); $meta = @unserialize($transaction->metadata); ?>
             <tr class="<?php echo $trclass; ?>">
                 <td>#<?php echo $transaction->trans_id; ?></td>
-                <td>
-                    <img src="images/<?php echo $transaction->optype; ?>.png" title="<?php echo ($transaction->optype == FN_OP_IN) ? 'venit' : 'cheltuiala'; ?>" align="middle" alt="<?php echo $transaction->optype; ?>"/>
-                </td>
+                <td> <?php fn_UI::transaction_icon( $transaction->optype ); ?></td>
                 <td>
                     <?php echo $transaction->period_instances; ?> x <?php echo fn_Util::format_nr( $transaction->value ); ?>
                 </td>
@@ -55,21 +52,19 @@ if( count($Transactions) ): ?>
                     <?php endforeach; ?>
                 </td>
                 <td>
-                    <a class="btn" href="#nwhr"  onclick="fn_popup('<?php echo (FN_URL . "/snippets/pending-confirm.php?id={$transaction->trans_id}"); ?>');" title="confirma">
-                        <span class="icon-ok"></span>
+                    <a class="btn btn-default" href="#nwhr"  onclick="fn_popup('<?php echo (FN_URL . "/snippets/pending-confirm.php?id={$transaction->trans_id}"); ?>');" title="confirma">
+                        <span class="fa fa-check"></span>
                     </a>
-                    &nbsp;&nbsp;
-                    <a class="btn" href="#nwhr" title="vezi detalii" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>&t=pending')">
-                        <span class="icon-info-sign"></span>
+                    <a class="btn btn-default" href="#nwhr" title="vezi detalii" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>&t=pending')">
+                        <span class="fa fa-info-circle"></span>
                     </a>
-                    &nbsp;&nbsp;
-                    <button class="btn" onclick="confirm_delete('<?php fn_UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
-                        <span class="icon-remove"></span>
+                    <button class="btn btn-default" onclick="confirm_delete('<?php fn_UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
+                        <span class="fa fa-remove"></span>
                     </button>
                 </td>
             </tr>
         <?php endforeach; ?>
     </table>
 <?php else: ?>
-    <p class="msg note">Nu am gasit tranzactii... .</p>
+    <div class="alert alert-info">Nu am gasit tranzactii... .</div>
 <?php endif; ?>

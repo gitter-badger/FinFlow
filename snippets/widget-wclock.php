@@ -17,13 +17,18 @@ if( array_key_exists(FN_TIMEZONE, $dtimezones) ); else {
 }
 
 ?>
-<p>
-	<select name="clock_tz" id="clock_tz" class="widget-input-fullwidth">
-        <?php foreach($dtimezones as $tz=>$city): ?>
-		<option value="<?php echo fn_Util::get_timezone_offset($tz, FN_TIMEZONE); ?>" <?php echo fn_UI::selected_or_not($tz, FN_TIMEZONE); ?>>
-            <?php echo $city; ?>
-        </option>
-        <?php endforeach; ?>
-	</select>
-	<strong id="displayWClock" class="widget-inline-blockclear">--:--:--</strong>
-</p>
+<form class="form-horizontal">
+    <div class="form-group">
+        <select name="clock_tz" id="clock_tz" class="form-control">
+            <?php foreach($dtimezones as $tz=>$city): ?>
+                <option value="<?php echo fn_Util::get_timezone_offset($tz, FN_TIMEZONE); ?>" <?php echo fn_UI::selected_or_not($tz, FN_TIMEZONE); ?>>
+                    <?php echo $city; ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+
+    <div class="form-group">
+	    <output  id="displayWClock" class="form-control form-output">--:--:--</output>
+    </div>
+</form>

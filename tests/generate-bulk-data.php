@@ -6,22 +6,29 @@
 
 include_once '../inc/init.php';
 
-set_time_limit(0); $main_step = isset($_GET['step']) ? intval($_GET['step']) : 1; $baseurl = $_SERVER['REQUEST_URI'];
+set_time_limit(0);
+
+$main_step = isset($_GET['step']) ? intval($_GET['step']) : 1;
+$baseurl     = $_SERVER['REQUEST_URI'];
 
 if( strlen($_SERVER['QUERY_STRING']) ){
     $baseurl = trim(str_replace($_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']), '?');
 }
 
 function next_step(){
-    global $main_step, $baseurl; $url = ( $baseurl . '?step=' . ( $main_step + 1 ) ); ?>
-    <script type="text/javascript">setTimeout("window.location.href='<?php echo $url; ?>'", 900)</script>
+
+    if( fn_CronAssistant::is_cli() ) return; global $main_step, $baseurl; $url = ( $baseurl . '?step=' . ( $main_step + 1 ) ); ?>
+        <h3>Generating bulk data...</h3>
+        <p style="text-align: center"><img src="<?php fn_UI::asset_url('images/preloader.gif'); ?>"/></p>
+        <script type="text/javascript">setTimeout("window.location.href='<?php echo $url; ?>'", 3000)</script>
     <?php die();
+
 }
 
 define('FAKER_AUTOLOAD', 'faker/autoload.php');
 define('CURPATH', dirname(__FILE__));
 
-define('REF_AMOUNT', 12000);
+define('REF_AMOUNT', 3000);
 
 if (ob_get_level() == 0) ob_start();
 
@@ -54,9 +61,17 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
     $db_currencies = fn_Currency::get_all(); $currencies = array(); if( count($db_currencies) ) foreach($db_currencies as $currency) $currencies[] = $currency->currency_id;
     //--- get the list of available currencies ---//
 
+    if( count($currencies) <= 1){
+        die("Please add some currencies before generating random transactions");
+    }
+
     //--- get the list of available labels ---//
     $db_labels = fn_Label::get_all(0, 9999); $labels = array(); if( count($db_labels) ) foreach($db_labels as $label) $labels[] = $label->label_id;
     //--- get the list of available labels ---//
+
+    //--- get the list of available accounts ---//
+    $db_accounts = fn_Accounts::get_all(0, 9999); $accounts = array(); if( count($db_accounts) ) foreach($db_accounts as $account) $accounts[] = $account->account_id;
+    //--- get the list of available accounts ---//
 
     if( $main_step == 2 ){
 
@@ -139,6 +154,9 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
     $trans_amount = intval( REF_AMOUNT );
 
     if( $main_step == 4 ){
+
+        if( count($labels) <= 1 ) die("Oops! Only one label found!");
+        if( count($accounts) <= 1 ) die("Oops! Only one account found!");
 
         //--- insert a few transactions ---//
 
@@ -241,4 +259,5 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
     echo '<p> <strong>Finished with ' . ( $labels_amount + $accounts_amount + $trans_amount ) . ' fake data generated.</strong></p>';
 
 }
-else fn_UI::fatal_error('Could not find Faker autoloader. You can get Faker from here <a href="https://github.com/fzaninotto/Faker">https://github.com/fzaninotto/Faker</a>!');
+else
+    fn_CronAssistant::cron_error('Could not find Faker autoloader. You can get Faker from here <a href="https://github.com/fzaninotto/Faker">https://github.com/fzaninotto/Faker</a>!',fn_CronAssistant::is_running_in_window());

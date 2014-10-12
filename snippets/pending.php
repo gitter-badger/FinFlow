@@ -4,7 +4,6 @@
 
 if( isset( $_GET['forecast'] ) ):
 
-
     include_once 'pending-forecast.php';
 
 else:
@@ -52,17 +51,17 @@ else:
 
     <?php if( count($Transactions) ): ?>
 
-        <h4 class="form-label-normal" style="margin-top: 20px;">
+        <h4>
             <em>P&#226;n&#259; la <?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, $endtime) ); ?></em>
         </h4>
 
         <?php include 'pending-period-list.php'; ?>
 
     <?php else: ?>
-        <h4 class="form-label-normal" style="margin-top: 20px;">
+        <h4>
             <em>P&#226;n&#259; la <?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, $endtime) ); ?></em>
         </h4>
-        <p class="msg note">
+        <p class="alert alert-info">
             Nu am gasit tranzac&#355;ii &#238;n a&#351;teptare pentru perioada selectat&#259;.
         </p>
     <?php endif; ?>

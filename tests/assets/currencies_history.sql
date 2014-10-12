@@ -1,11 +1,11 @@
-CREATE TABLE IF NOT EXISTS `cash_currency_history` (
+CREATE TABLE IF NOT EXISTS `fn_currency_history` (
   `currency_id` int(11) NOT NULL,
   `regdate` datetime NOT NULL,
   `cexchange` float NOT NULL DEFAULT '1',
   UNIQUE KEY `currency_id` (`currency_id`,`regdate`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `cash_currency_history` (`currency_id`, `regdate`, `cexchange`) VALUES
+INSERT INTO `fn_currency_history` (`currency_id`, `regdate`, `cexchange`) VALUES
 (12, '2012-12-03 00:25:53', 3.7424),
 (9, '2012-12-03 00:25:53', 4.5059),
 (11, '2012-12-03 00:25:53', 5.5536),

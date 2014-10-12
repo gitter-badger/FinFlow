@@ -834,5 +834,21 @@ class fn_Util{
         return $value;
 
     }
+
+    public static function is_development_environment(){
+        return FN_ENVIRONMENT == 'development';
+    }
+
+    public static function is_unittest_environment(){
+        return FN_ENVIRONMENT == 'unittest';
+    }
+
+    public static function is_test_environment(){
+        return ( FN_ENVIRONMENT == 'unittest' ) or ( FN_ENVIRONMENT == 'test' );
+    }
+
+    public static function is_production_environment(){
+        return FN_ENVIRONMENT == 'production';
+    }
 	
 }

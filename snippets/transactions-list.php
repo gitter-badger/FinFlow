@@ -2,9 +2,9 @@
 
 <?php if ( count($Transactions) ): ?>
 
-    <?php echo fn_OP::get_filter_readable_string($filters); ?>
+    <?php echo fn_OP::get_filter_readable_string($filters, '<div class="alert transactions-filter-msg">', '</div>'); ?>
 
-    <table class="list report" border="1">
+    <table class="table table-striped list report">
         <tr>
             <td>Rulaj: </td>
             <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Total); ?></td>
@@ -33,7 +33,7 @@
 
     <br class="clear"/>
 
-    <table class="list transactions" border="1">
+    <table class="table table-striped list transactions">
         <tr>
             <th>ID</th>
             <th>Tip</th>
@@ -46,9 +46,7 @@
         <?php foreach ($Transactions as $transaction):  $k++; $trclass= ( $k%2 == 0) ? 'even' : 'odd'; $currency = fn_Currency::get($transaction->currency_id); ?>
             <tr class="<?php echo $trclass; ?>">
                 <td>#<?php echo $transaction->trans_id; ?></td>
-                <td>
-                    <img src="images/<?php echo $transaction->optype; ?>.png" title="<?php echo ($transaction->optype == FN_OP_IN) ? 'venit' : 'cheltuiala'; ?>" align="middle" alt="<?php echo $transaction->optype; ?>"/>
-                </td>
+                <td><?php fn_UI::transaction_icon( $transaction->optype ) ?></td>
                 <td><?php echo fn_Util::format_nr( $transaction->value ); ?></td>
                 <td><?php echo $currency->ccode; ?></td>
                 <td><?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, strtotime($transaction->sdate)) ); ?></td>
@@ -58,28 +56,29 @@
                     <?php endforeach; ?>
                 </td>
                 <td>
-                    <a class="btn" href="#nwhr" title="<?php echo fn_UI::esc_attr( $transaction->comments ); ?>" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>')">
-                        <span class="icon-info-sign"></span>
+                    <a class="btn btn-default" title="<?php echo fn_UI::esc_attr( $transaction->comments ); ?>" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>')">
+                        <span class="fa fa-info-circle"></span>
                     </a>
                     &nbsp;&nbsp;
-                    <button class="btn" onclick="confirm_delete('<?php fn_UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
-                        <span class="icon-remove"></span>
+                    <button class="btn btn-default" onclick="confirm_delete('<?php fn_UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
+                        <span class="fa fa-remove"></span>
                     </button>
                 </td>
             </tr>
         <?php endforeach; ?>
     </table>
 
-    <div class="pagination">
-        <?php $total = fn_OP::get_total($filters); if ( $total > $count ):?>
-            <ul><?php fn_UI::pagination($total, $count, $start, fn_UI::page_url('transactions', $pagevars, FALSE)); ?></ul>
+    <div class="pagination-bottom">
+        <?php $total = fn_OP::get_total($filters); if ( $total > $count ): ?>
+            <ul class="pagination"><?php fn_UI::pagination($total, $count, $start, fn_UI::page_url('transactions', $pagevars, FALSE)); ?></ul>
         <?php endif;?>
     </div>
 
 <?php else: $month = fn_UI::get_translated_month($month); if ($day > 0) $month = ($day . " {$month}"); ?>
 
-    <p class="msg note">
-        Nu am gasit tranzac&#355;ii pentru <?php echo $month; ?> <?php echo $year; ?>. <a href="<?php fn_UI::page_url('transactions', array('t'=>'add')); ?>">Adaug&#259; &rarr;</a>
-    </p>
+    <div class="alert alert-info">
+        Nu am gasit tranzac&#355;ii pentru <?php echo $month; ?> <?php echo $year; ?>.
+        <a href="<?php fn_UI::page_url('transactions', array('t'=>'add')); ?>">Adaug&#259; &rarr;</a> sau <a href="#">importa tranzactii</a>.
+    </div>
 
 <?php endif; ?>
