@@ -59,7 +59,6 @@
                     <a class="btn btn-default" title="<?php echo fn_UI::esc_attr( $transaction->comments ); ?>" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>')">
                         <span class="fa fa-info-circle"></span>
                     </a>
-                    &nbsp;&nbsp;
                     <button class="btn btn-default" onclick="confirm_delete('<?php fn_UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
                         <span class="fa fa-remove"></span>
                     </button>

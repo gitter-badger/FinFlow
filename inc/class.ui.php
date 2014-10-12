@@ -2,9 +2,10 @@
 
 class fn_UI{
 
-    public static $MSG_ERROR = 'error';
-    public static $MSG_NOTE  = 'note';
-    public static $MSG_WARN = 'warning';
+    public static $MSG_ERROR     = 'danger';
+    public static $MSG_NOTE      = 'info';
+    public static $MSG_WARN     = 'warning';
+    public static $MSG_SUCCESS = 'success';
 
     public static $pageNames = array(
         'index'            => 'Panou Principal',
@@ -22,8 +23,8 @@ class fn_UI{
 
     public static $transactionTypesNames = array(FN_OP_IN=>'venit', FN_OP_OUT=>'cheluial&#259;');
 
-	public static function msg($msg, $type="note"){
-		if ( strlen($msg) ) echo '<div class="alert alert-' . $type . '"> ' . $msg . ' </div>';
+	public static function msg($msg, $type="note", $dismissable=true){
+		if ( strlen($msg) ) echo '<div class="alert alert-' . $type . '"> ' . ( $dismissable ? '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">x</span></button>' : '' ) . $msg . ' </div>';
 	}
 	
 	public static function error_page_css(){ ?>
@@ -170,21 +171,21 @@ class fn_UI{
 	public static function show_errors($errors){
 
 		if ( is_array($errors) ) 
-			foreach ($errors as $msg) self::msg($msg, 'error');
+			foreach ($errors as $msg) self::msg($msg, self::$MSG_ERROR);
 		else 
 			self::msg($errors, 'error');
 	}
 	
 	public static function show_notes($notes){
 		if ( is_array($notes) )
-			foreach ($notes as $msg) self::msg($msg, 'note');
+			foreach ($notes as $msg) self::msg($msg, self::$MSG_NOTE);
 		else
 			self::msg($notes, 'note');
 	}
 
     public static function show_warnings($warnings){
         if ( is_array($warnings) )
-            foreach ($warnings as $msg) self::msg($msg, 'warning');
+            foreach ($warnings as $msg) self::msg($msg, self::$MSG_WARN);
         else
             self::msg($warnings, 'note');
     }

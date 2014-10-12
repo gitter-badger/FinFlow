@@ -596,7 +596,7 @@ class fn_Util{
             return str_replace(self::get_base_url(), FN_URL, $url);
     }
 
-    public static function format_nr($number, $decimals=2, $precision=FALSE){
+    public static function format_nr($number, $decimals=2, $precision=FALSE){ //TODO add international support
         $rmode     = PHP_ROUND_HALF_EVEN; if( !defined('PHP_ROUND_HALF_EVEN') ) $rmode = PHP_ROUND_HALF_DOWN;
         $precision = $precision > 0 ? $precision : $decimals;  $number = round(floatval($number), $precision, $rmode);  return number_format($number, $decimals, ",", ".");
     }

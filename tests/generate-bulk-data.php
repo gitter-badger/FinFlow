@@ -5,6 +5,7 @@
  */
 
 include_once '../inc/init.php';
+include_once ( '../inc/class.cronassistant.php' );
 
 set_time_limit(0);
 
@@ -28,9 +29,9 @@ function next_step(){
 define('FAKER_AUTOLOAD', 'faker/autoload.php');
 define('CURPATH', dirname(__FILE__));
 
-define('REF_AMOUNT', 3000);
+define('REF_AMOUNT', 500);
 
-if (ob_get_level() == 0) ob_start();
+if ( ob_get_level() == 0 ) ob_start();
 
 if( file_exists( FAKER_AUTOLOAD ) ) {
 
@@ -61,10 +62,6 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
     $db_currencies = fn_Currency::get_all(); $currencies = array(); if( count($db_currencies) ) foreach($db_currencies as $currency) $currencies[] = $currency->currency_id;
     //--- get the list of available currencies ---//
 
-    if( count($currencies) <= 1){
-        die("Please add some currencies before generating random transactions");
-    }
-
     //--- get the list of available labels ---//
     $db_labels = fn_Label::get_all(0, 9999); $labels = array(); if( count($db_labels) ) foreach($db_labels as $label) $labels[] = $label->label_id;
     //--- get the list of available labels ---//
@@ -72,6 +69,10 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
     //--- get the list of available accounts ---//
     $db_accounts = fn_Accounts::get_all(0, 9999); $accounts = array(); if( count($db_accounts) ) foreach($db_accounts as $account) $accounts[] = $account->account_id;
     //--- get the list of available accounts ---//
+
+    if( count($currencies) <= 1){
+        die("Please add some currencies before generating random transactions");
+    }
 
     if( $main_step == 2 ){
 
@@ -206,12 +207,12 @@ if( file_exists( FAKER_AUTOLOAD ) ) {
 
         for( $i=0; $i<$trans_amount; $i++ ){
 
-            $has_meta = $faker->boolean(50);
-            $has_account = $faker->boolean(50);
-            $has_labels = $faker->boolean(50);
+            $has_meta       = $faker->boolean(50);
+            $has_account   = $faker->boolean(50);
+            $has_labels     = $faker->boolean(70);
 
             $type = $faker->boolean(50) ? FN_OP_IN : FN_OP_OUT;
-            $value= $faker->randomFloat(2, 1, 99999);
+            $value= $faker->randomFloat(2, 1, 80);
 
             $recurring_n =  $faker->numberBetween(0, count($recurring_opts) -1); $recurring = $recurring_opts[$recurring_n];
 

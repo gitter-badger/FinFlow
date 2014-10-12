@@ -1,11 +1,11 @@
 <?php if( !defined('FNPATH') ) exit; include_once ( FNPATH . '/inc/class.captcha.php' ); fn_Captcha::init(); $captcha_url = ( FN_URL . '/snippets/captcha.php?o=1' ); ?>
-<div class="row content">
-	<div class="span2">&nbsp;</div>
+<div class="row">
 	
-	<div class="span8">
+	<div class="col-lg-6 col-lg-offset-2">
 	
 		<div class="inner-container container-login">
-			<h2 align="center" class="brand">FinFlow</h2>
+
+			<h2 class="brand align-center">FinFlow</h2>
 		
 			<?php 
 			
@@ -31,43 +31,55 @@
 					
 				}
 				
-				fn_UI::show_errors($errors); fn_UI::show_notes($notes);
-			?>
+				fn_UI::show_errors($errors); fn_UI::show_notes($notes); ?>
 			
 			<?php if (fn_User::is_authenticated() ): ?>
 				<script type="text/javascript">window.location.href='<?php fn_UI::page_url('dashboard'); ?>';</script>
 			<?php else:?>
 		
-			<form target="_self" method="post" name="settings-form" id="settingsForm">
-				<p align="center">
-					<label for="email">Email:</label>
-					<input type="text" size="45" maxlength="255" name="email" id="email" value="<?php echo fn_UI::extract_post_val('email');?>" />
-				</p>
-				<p align="center">
-					<label for="pass">Parola:</label>
-					<input type="password" size="45" maxlength="255" name="pass" id="pass" value="" />
-				</p>
+			<form class="form form-horizontal" target="_self" method="post" name="settings-form" id="settingsForm">
 
-                <p align="center">
-                    <label for="verify">Verificare:</label>
+                <div class="form-group">
+                    <label class="control-label col-lg-4" for="email">Email:</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" type="text" size="45" maxlength="255" name="email" id="email" value="<?php echo fn_UI::extract_post_val('email');?>" />
+                    </div>
+                </div>
 
-                    <?php if( fn_Captcha::supports_img() ): ?>
-                        <input type="text" style="width: 100px;" size="10" maxlength="255" name="verify" id="verify" value="" />
-                        <img id="captchaImg" onclick="fn_popup('<?php echo $captcha_url; ?>&mag=1&htmlmag=1');" src="<?php echo $captcha_url; ?>" align="absmiddle" height="30"/>
-                    <?php else: ?>
-                        <?php fn_Captcha::output_math(); ?> &nbsp;
-                        <input type="text" size="10" style="width: 27%;" maxlength="255" name="verify" id="verify" value="" />
-                    <?php endif;?>
-                </p>
+                <div class="form-group">
+                    <label class="control-label col-lg-4" for="pass">Parola:</label>
+                    <div class="col-lg-8">
+                        <input class="form-control" type="password" size="45" maxlength="255" name="pass" id="pass" value="" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-lg-4" for="verify">Verificare:</label>
+                    <div class="col-lg-8">
+                        <div class="input-group">
+                            <?php if( fn_Captcha::supports_img() ): ?>
+                                <span class="input-group-addon captcha-img-addon">
+                                    <img class="captcha-img" onclick="fn_popup('<?php echo $captcha_url; ?>&mag=1&htmlmag=1');" src="<?php echo $captcha_url; ?>" align="absmiddle" title="click pentru marire"/>
+                                </span>
+                                <input class="form-control" type="text" size="10" maxlength="255" name="verify" id="verify" value="" />
+                            <?php else: ?>
+                                <span class="input-group-addon"><?php fn_Captcha::output_math(); ?></span>
+                                <input class="form-control" type="text" size="10" maxlength="255" name="verify" id="verify" value="" />
+                            <?php endif;?>
+                        </div>
+                    </div>
+                </div>
+
 				
-				<p class="submit" align="center">
+				<div class="form-group align-center">
 					<button class="btn submit btn-primary" type="submit">Autentificare</button> &nbsp;&nbsp;&nbsp;&nbsp;
 					<button class="btn" type="button" onclick="window.location.href='index.php?p=pwreset';">Am uitat parola...</button>
-				</p>
+                </div>
+
 			</form>
+
 			<?php endif; ?>
 			
 		</div>
 	</div>
-	<div class="span2">&nbsp;</div>
 </div>

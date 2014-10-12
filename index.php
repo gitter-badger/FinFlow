@@ -44,7 +44,7 @@
 
 
     <!--- debug output --->
-    <?php if( defined('FN_DEBUG') and FN_DEBUG ) fn_Log::display(); ?>
+    <?php if( ( defined('FN_DEBUG') and FN_DEBUG ) or fn_Util::is_development_environment() ) fn_Log::display(); ?>
     <!--- debug output --->
 
     <script type="text/javascript" src="<?php fn_UI::asset_url('js/jquery.min.js'); ?>"></script>

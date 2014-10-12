@@ -33,6 +33,11 @@ body {
     overflow-y: scroll;
 }
 
+.align-center{
+    text-align: center;
+    vertical-align: middle;
+}
+
 .navbar.navbar-fixed-top,
 .navbar .navbar-right{
     font-size: 18px;
@@ -49,4 +54,13 @@ body {
 
 .container.main .nav-tabs{
     margin-bottom: 20px;
+}
+
+.input-group-addon.captcha-img-addon{
+    padding: 0px 12px;
+}
+
+.input-group-addon .captcha-img{
+    height: 30px;
+    cursor: pointer;
 }
