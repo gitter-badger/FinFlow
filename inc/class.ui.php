@@ -23,6 +23,12 @@ class fn_UI{
 
     public static $transactionTypesNames = array(FN_OP_IN=>'venit', FN_OP_OUT=>'cheluial&#259;');
 
+    protected static $js_assets  = array();
+    protected static $css_assets = array();
+
+    protected static $inline_js = array();
+    protected static $inline_css = array();
+
 	public static function msg($msg, $type="note", $dismissable=true){
 		if ( strlen($msg) ) echo '<div class="alert alert-' . $type . '"> ' . ( $dismissable ? '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">x</span></button>' : '' ) . $msg . ' </div>';
 	}
@@ -303,7 +309,7 @@ class fn_UI{
 			return $url;
 	}
 
-    public static function asset_url($asset, $version=null, $echo=true){
+    public static function asset_url($asset, $echo=true, $version=null){
         $version = empty($version) ? FN_VERSION : $version; $url = ( self::base_url($asset) . '?v' . $version ); if( $echo ) echo $url; else return $url;
     }
 
@@ -596,4 +602,40 @@ class fn_UI{
     public static function transaction_icon($type){
         ?><a class="fa fa-arrow-<?php echo $type == FN_OP_IN ? 'right' : 'left' ?> icon-transaction-<?php echo $type;  ?>" title="<?php echo self::$transactionTypesNames[$type]; ?>"></a><?php
     }
+
+    public static function enqueue_js($src){
+        if( ! in_array($src, self::$js_assets) ) self::$js_assets[] = ( fn_Util::str_startswith('//', $src, true) or fn_Util::str_startswith('http:', $src, true) ) ? $src : self::asset_url($src, false);
+    }
+
+    public static function enqueue_css($link){
+        if( ! in_array($link, self::$css_assets) ) self::$js_assets[] = ( fn_Util::str_startswith('//', $link, true) or fn_Util::str_startswith('http:', $link, true) ) ? $link : self::asset_url($link, false);
+    }
+
+    public static function enqueue_inline($data, $type='css'){
+        if( $type == 'css' )
+            self::$inline_css[] = $data;
+        else
+            self::$inline_js[] = $data;
+    }
+
+    public static function js(){
+        if( count(self::$js_assets) ) foreach (self::$js_assets as $asset_src) {
+           ?><script type="text/javascript" src="<?php echo $asset_src; ?>"></script><?php
+        }
+
+        if( count(self::$inline_js) ) foreach (self::$inline_js as $inline) {
+            ?><script type="text/javascript"><?php echo $inline; ?></script><?php
+        }
+    }
+
+    public static function css(){
+        if( count(self::$css_assets) ) foreach (self::$css_assets as $asset_link) {
+            ?><link rel="stylesheet" media="all" href="<?php echo $asset_link; ?>"/><?php
+        }
+
+        if( count(self::$inline_css) ) foreach (self::$inline_css as $inline) {
+            ?><style type="text/css" media="all"><?php echo $inline; ?></style><?php
+        }
+    }
+
 }

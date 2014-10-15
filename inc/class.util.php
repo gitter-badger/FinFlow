@@ -835,6 +835,25 @@ class fn_Util{
 
     }
 
+    /**
+     * Checks if $string starts with $needle
+     * @param $needle
+     * @param $string
+     * @return bool
+     */
+    public static function str_startswith($needle, $string, $ignorecase=false){
+
+        if( $ignorecase ) {
+
+            $string  = strtolower($string);
+            $needle= strtolower($needle);
+
+        }
+
+        return (strpos($string, $needle) === FALSE ? FALSE : (strpos($string, $needle) == 0));
+
+    }
+
     public static function is_development_environment(){
         return FN_ENVIRONMENT == 'development';
     }

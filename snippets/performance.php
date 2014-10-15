@@ -3,7 +3,7 @@
 global $fndb, $fnsql; $Currency = fn_Currency::get_default();
 
 include_once ( FNPATH . '/inc/transfilter-vars.php');
-include_once (FNPATH . '/inc/Highchart.php');
+include_once ( FNPATH . '/inc/Highchart.php');
 
 global $filters;
 
@@ -83,10 +83,13 @@ if( $tab == 'list2' ){
     //--- evolutie balanta ---//
 }
 
+fn_UI::enqueue_js('js/highcharts.js');
+fn_UI::enqueue_js('js/highcharts-exporting.js');
+
 ?>
 
 <div class="row content">
-	<div class="span10">
+	<div class="<?php fn_UI::main_container_grid_class(); ?>">
 
 		<ul class="nav nav-tabs">
 			<li class="dropdown <?php echo $activetab['list']; ?>">
@@ -120,35 +123,35 @@ if( $tab == 'list2' ){
 		</ul>
 
         <?php if( is_object($Chart) and is_object($Chart->series) ) : ?>
-
-            <script type="text/javascript" src="<?php echo FN_URL;?>/js/highcharts.js"></script>
-            <script type="text/javascript" src="<?php echo FN_URL;?>/js/highcharts-exporting.js"></script>
-
             <?php if ($tab == 'list'): ?>
 
-                <div class="chart" id="chartTransactionsGrowth"></div><script type="text/javascript"><?php echo $Chart->render("chartTransactionsGrowth");  ?></script>
+                <div class="chart" id="chartTransactionsGrowth"></div><?php fn_UI::enqueue_inline( $Chart->render("chartTransactionsGrowth" ), 'js'); ?>
 
             <?php endif;?>
 
             <?php if ($tab == 'list2'): ?>
 
-                <div class="chart" id="chartBalanceEvolution"></div><script type="text/javascript"><?php echo $Chart->render("chartBalanceEvolution");  ?></script>
+                <div class="chart" id="chartBalanceEvolution"></div><?php fn_UI::enqueue_inline($Chart->render("chartBalanceEvolution"), 'js'); ?>
 
             <?php endif;?>
 
             <br class="clear"/>
 
-            <form class="form-inline" id="granularitySelectForm" method="post" target="_self">
-                <label form="span">E&#351;antionare:</label>
-                <select name="span" id="span" onchange="document.getElementById('granularitySelectForm').submit();">
-                    <option value="monthly" <?php echo fn_UI::selected_or_not('monthly', $_POST['span']); ?>>lunar</option>
-                    <option value="yearly" <?php echo fn_UI::selected_or_not('yearly', $_POST['span']); ?>>anual</option>
-                    <option value="daily" <?php echo fn_UI::selected_or_not('daily', $_POST['span']); ?>>zilnic</option>
-                </select>
+            <form class="form form-horizontal" id="granularitySelectForm" method="post" target="_self">
+                <div class="form-group">
+                    <label class="control-label col-lg-3" for="span">E&#351;antionare:</label>
+                    <div class="col-lg-3">
+                        <select name="span" id="span" class="form-control" onchange="document.getElementById('granularitySelectForm').submit();">
+                            <option value="monthly" <?php echo fn_UI::selected_or_not('monthly', $_POST['span']); ?>>lunar</option>
+                            <option value="yearly" <?php echo fn_UI::selected_or_not('yearly', $_POST['span']); ?>>anual</option>
+                            <option value="daily" <?php echo fn_UI::selected_or_not('daily', $_POST['span']); ?>>zilnic</option>
+                        </select>
+                    </div>
+                </div>
             </form>
 
         <?php else: ?>
-            <p class="msg note">  Nu sunt date suficiente pentru afi&#351;area graficului.   </p>
+            <p class="alert alert-info">  Nu sunt date suficiente pentru afi&#351;area graficului.   </p>
         <?php endif; ?>
 
 	</div>

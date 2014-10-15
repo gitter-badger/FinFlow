@@ -2,24 +2,29 @@
 
 <?php fn_UI::show_errors($errors); fn_UI::show_notes($notices); fn_UI::show_warnings($warnings); ?>
 
-<form action="<?php fn_UI::page_url('transactions', array('t'=>'add')); ?>" method="post" name="add-transaction-form" id="addTransactionForm" enctype="multipart/form-data">
+<form class="form form-horizontal" action="<?php fn_UI::page_url('transactions', array('t'=>'add')); ?>" method="post" name="add-transaction-form" id="addTransactionForm" enctype="multipart/form-data">
 
-    <p>
-        <label for="date">Data:</label>
-        <input type="text" size="45" maxlength="255" name="date" id="date" value="<?php echo fn_UI::extract_post_val('date'); ?>" />
-    </p>
+    <div class="form-group">
+        <label class="control-label col-lg-3" for="date">Data:</label>
+        <div class="col-lg-3">
+            <input class="form-control" type="text" size="45" maxlength="255" name="date" id="date" value="<?php echo fn_UI::extract_post_val('date'); ?>" />
+        </div>
+    </div>
 
-    <p>
-        <label for="optype">Tip:</label>
-        <select name="optype" id="optype" style="float: left;">
-            <option value="<?php echo FN_OP_IN; ?>" <?php echo fn_UI::selected_or_not(FN_OP_IN, $_POST['optype']); ?>>venit</option>
-            <option value="<?php echo FN_OP_OUT; ?>" <?php echo fn_UI::selected_or_not(FN_OP_OUT, $_POST['optype']); ?>>cheltuial&#259;</option>
-        </select>
-        <label for="add_pending" class="wrap-input wrap-last" style="margin-left: 20px;">
-            <input type="checkbox" name="add_pending" id="add_pending" /> &#238;n a&#351;teptare
-        </label>
-        <br class="clear"/>
-    </p>
+    <div class="form-group">
+        <label class="control-label col-lg-3" for="optype">Tip:</label>
+        <div class="col-lg-3">
+            <select class="form-control" name="optype" id="optype">
+                <option value="<?php echo FN_OP_IN; ?>" <?php echo fn_UI::selected_or_not(FN_OP_IN, $_POST['optype']); ?>>venit</option>
+                <option value="<?php echo FN_OP_OUT; ?>" <?php echo fn_UI::selected_or_not(FN_OP_OUT, $_POST['optype']); ?>>cheltuial&#259;</option>
+            </select>
+        </div>
+        <div class="col-lg-4">
+            <label class="control-label" for="add_pending" style="margin-left: 20px;">
+                <input class="form-control" type="checkbox" name="add_pending" id="add_pending" /> &#238;n a&#351;teptare
+            </label>
+        </div>
+    </div>
 
     <p class="recurring-choices">
         <label for="value">Se repet&#259;:</label>

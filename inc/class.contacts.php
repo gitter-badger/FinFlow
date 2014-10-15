@@ -9,6 +9,10 @@ class fn_Contacts{
 
     public static $table  = 'fn_contacts';
 
+    public static function table(){
+        return ( FN_DB_PREFIX . self::$table );
+    }
+
     public static function add($data){
         //TODO
     }

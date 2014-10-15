@@ -137,7 +137,7 @@ foreach ($Cronjobs as $job){
 
 		<h4 class="page-heading">Ultimele actualiz&#259;ri f&#259;cute de cronjob-uri</h4>
 		
-		<table class="table table-responsive table-striped list report" border="1">
+		<table class="table table-responsive table-striped list report">
 			<tr>
 				<td>Actualizare curs:</td>
 				<td class="align-right"><?php echo $Cronupdates[0];  ?></td>

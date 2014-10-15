@@ -172,7 +172,5 @@ if( $unit and $unit_val ){
         </tr>
     </table>
 
-    <div class="clearfix"/>
-
 <?php endif;?>
 

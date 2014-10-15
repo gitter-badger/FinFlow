@@ -13,6 +13,7 @@
 <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/style.css'); ?>" />
 <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/responsive.css'); ?>" />
 <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/pikaday.css'); ?>"/>
+<?php fn_UI::css(); ?>
 </head>
 <body id="page-<?php echo fn_UI::esc_html( strtolower($_GET['p']) ); ?>" class="<?php echo fn_UI::get_body_class(); ?>" role="document">
 
@@ -50,6 +51,8 @@
     <script type="text/javascript" src="<?php fn_UI::asset_url('js/jquery.min.js'); ?>"></script>
     <script type="text/javascript" src="<?php fn_UI::asset_url('js/bootstrap.min.js'); ?>"></script>
     <script type="text/javascript" src="<?php fn_UI::asset_url('js/fn.js'); ?>"></script>
+
+    <?php fn_UI::js(); ?>
 
 </body>
 </html>
