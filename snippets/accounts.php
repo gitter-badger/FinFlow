@@ -4,10 +4,10 @@ $tab = isset($_GET['t']) ? urldecode($_GET['t']) : 'list'; $activetab = array();
 
 $account_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-if( count($_POST) ){
+$errors     = array();
+$notices   = false;
 
-    $errors     = array();
-    $notices   = false;
+if( count($_POST) ){
 
     //---- add/edit an account ---//
 

@@ -49,137 +49,112 @@ $backJS   = ( $backURL != '#' ) ? 'return true;' : 'window.history.back();return
 <head>
 <meta charset="UTF-8">
 <title>FinFlow | Vizualizare fi&#351;ier</title>
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/bootstrap.min.css" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/bootstrap-responsive.min.css" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/font-awesome.min.css" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/style.css" />
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo FN_URL; ?>/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="<?php echo FN_URL; ?>/js/fn.js"></script>
-<style type="text/css">
-    .navbar{
-        position: fixed;
-        box-shadow: 2px 2px 5px #333;
-        margin-top: -46px;
-    }
-
-    .navbar .navbar-inner {
-        padding: 0;
-        -webkit-border-radius: 0px;
-        -moz-border-radius: 0px;
-        border-radius: 0px;
-    }
-
-    .navbar .nav {
-        margin: 0;
-        display: table;
-        width: 100%;
-    }
-    .navbar .nav li {
-        display: table-cell;
-        width: 1%;
-        float: none;
-        font-size: 1.1em;
-        font-family: 'Verdana', Arial, sans-serif;
-        text-rendering: optimizelegibility;
-    }
-    .navbar .nav li a {
-        text-align: center;
-        border-left: 1px solid rgba(255,255,255,.75);
-        border-right: 1px solid rgba(0,0,0,.1);
-        line-height: normal;
-    }
-    .navbar .nav li:first-child a {
-        border-left: 0;
-        border-radius: 0px;
-    }
-    .navbar .nav li:last-child a {
-        border-right: 0;
-        border-radius: 0px;
-    }
-    .navbar .nav li:first-child a {
-        border-radius: 0px;
-    }
-    .navbar .nav li.filename{
-        font-size: 12px;
-        text-align: center;
-        color: #333;
-        font-weight: bold;
-    }
-
-    body{
-        padding-top: 45px;
-        overflow: auto;
-    }
-
-    #ajaxModalInfo{ z-index: 9999; }
-
-    iframe, .file-embed{ z-index: 1; }
-    .file-embed{ float: left; width: 100%; }
-</style>
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('/styles/bootstrap.min.css');; ?>" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/style.css'); ?>" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/font-awesome.min.css'); ?>" />
 </head>
-<body style="background: #FFF;">
+<body id="page-file-preview" class="file-preview" role="document">
 
     <?php if ( $exists ): ?>
-    <div class="navbar">
-        <div class="navbar-inner">
-            <div class="container">
-                <ul class="nav">
-                    <li><a href="<?php echo $backURL; ?>" onclick="<?php echo $backJS; ?>" title="Inapoi"><span class="icon-arrow-left"></span> </a> </li>
-                    <li><a href="#info" onclick="$('#ajaxModalInfo').modal(true);" title="Detalii fisier"><span class="icon-info-sign"></span></a> </li>
-                    <li><a href="<?php echo $download_url; ?>" title="Descarca"><span class="icon-download-alt"></span> </a> </li>
-                    <li><a href="#remove" onclick="confirm_delete('<?php echo $deleteurl; ?>');" title="Sterge"><span class="icon-remove"></span></a> </li>
-                </ul>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand">Fisier: <?php echo $filename;?></a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="<?php echo $backURL; ?>" onclick="<?php echo $backJS; ?>" title="Inapoi"><span class="fa fa-arrow-left"></span></a> </li>
+                        <li><a href="#info" onclick="jQuery('#ajaxModalInfo').modal(true);" title="Detalii fisier"><span class="fa fa-info"></span></a></li>
+                        <li><a href="<?php echo $download_url; ?>" title="Descarca"><span class="fa fa-download"></span></a> </li>
+                        <li><a href="#remove" onclick="confirm_delete('<?php echo $deleteurl; ?>');" title="Sterge"><span class="fa fa-remove"></span></a> </li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
 
-	<?php fn_UI::html_embed_file($url, $filename, $download_url); else: ?>
-	<p class="msg warn" style="margin: 25px;">
-        <a href="<?php echo $backURL; ?>" onclick="<?php echo $backJS; ?>" title="Inapoi"><span class="icon-arrow-left"></span> &#238;napoi</a>
-        Fi&#351;ierul nu poate fi afi&#351;at. Probabil c&#259; fost &#351;ters sau nu este accesibil.
-    </p>
-	<?php endif; ?>
+        <!-- Ajax File Details Modal -->
+        <div id="ajaxModalInfo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                        <h4 class="myriad"> Informa&#355;ii fi&#351;ier</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <tr style="border: none;">
+                                <td style="border: none;">Nume:</td>
+                                <td style="border: none;"><?php echo $filename; ?></td>
+                            </tr>
+                            <tr>
+                                <td>Director:</td>
+                                <td><?php echo $fileinfo['dirname']; ?></td>
+                            </tr>
+                            <tr>
+                                <td>Extensie:</td>
+                                <td>
+                                    <a href="http://www.fileinfo.com/extension/<?php echo strtolower( $fileinfo['extension'] ); ?>" title="informatii extensie" target="_blank">
+                                        <?php echo $fileinfo['extension']; ?>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Data ultimei modific&#259;ri:</td>
+                                <td><?php echo $fileinfo['mdate']; ?></td>
+                            </tr>
+                            <tr>
+                                <td>M&#259;rime:</td>
+                                <td><?php echo $fileinfo['size']; ?></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="pull-left">
+                            <button class="btn" aria-hidden="true"><i class="fa fa-download"></i> Descarca</button>
+                            <button class="btn" aria-hidden="true"><i class="fa fa-remove"></i> Sterge</button>
+                        </div>
 
-    <!-- Ajax Error Modal -->
-    <div id="ajaxModalInfo" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-            <h4 class="myriad"> Informa&#355;ii fi&#351;ier</h4>
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">&#206;nchide</button>
+
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-            <table class="table">
-                <tr style="border: none;">
-                    <td style="border: none;">Nume:</td>
-                    <td style="border: none;"><?php echo $filename; ?></td>
-                </tr>
-                <tr>
-                    <td>Director:</td>
-                    <td><?php echo $fileinfo['dirname']; ?></td>
-                </tr>
-                <tr>
-                    <td>Extensie:</td>
-                    <td>
-                        <a href="http://www.fileinfo.com/extension/<?php echo strtolower( $fileinfo['extension'] ); ?>" title="informatii extensie" target="_blank">
-                            <?php echo $fileinfo['extension']; ?>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Data ultimei modific&#259;ri:</td>
-                    <td><?php echo $fileinfo['mdate']; ?></td>
-                </tr>
-                <tr>
-                    <td>M&#259;rime:</td>
-                    <td><?php echo $fileinfo['size']; ?></td>
-                </tr>
-            </table>
+        <!-- Ajax File Details Modal -->
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default"><?php fn_UI::html_embed_file($url, $filename, $download_url); ?></div>
+                </div>
+            </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">&#206;nchide</button>
+
+    <?php else: ?>
+
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-warning" style="margin: 25px;">
+                    <a href="<?php echo $backURL; ?>" onclick="<?php echo $backJS; ?>" title="Inapoi"><span class="icon-arrow-left"></span> &#238;napoi</a>
+                    Fi&#351;ierul nu poate fi afi&#351;at. Probabil c&#259; fost &#351;ters sau nu este accesibil.
+                </div>
+            </div>
         </div>
-    </div>
-    <!-- Ajax Error Modal -->
+
+    <?php endif; ?>
+
+    <script type="text/javascript" src="<?php fn_UI::asset_url('js/jquery.min.js'); ?>"></script>
+    <script type="text/javascript" src="<?php fn_UI::asset_url('js/bootstrap.min.js'); ?>"></script>
+    <script type="text/javascript" src="<?php fn_UI::asset_url('js/fn.js'); ?>"></script>
 
 </body>
 </html>

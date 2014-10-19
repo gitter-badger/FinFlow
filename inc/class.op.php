@@ -53,22 +53,22 @@ class fn_OP{
 		
 		if ( count($filters) and is_array($filters)){
 			
-			if ( $filters['type'] ){
+			if ( isset($filters['type']) and $filters['type'] ){
 					
 				if ( !in_array($filters['type'], array(FN_OP_IN, FN_OP_OUT), TRUE) ) return array();
 					
 				$fnsql->condition('optype', '=', strtolower($filters['type']));
 			}
 			
-			if ( $filters['labels'] and is_array( $filters['labels']) and count($filters['labels']) ){
+			if ( isset($filters['labels']) and $filters['labels'] and is_array( $filters['labels']) and count($filters['labels']) ){
 				$llist = $fndb->escape(implode(",", $filters['labels'])); $fnsql->condition('label_id', "IN", "({$llist})", "AND", fn_Label::$table_assoc, FALSE);
 			}
 
-            if ( $filters['accounts'] and is_array( $filters['accounts']) and count($filters['accounts']) ){
+            if ( isset($filters['accounts']) and $filters['accounts'] and is_array( $filters['accounts']) and count($filters['accounts']) ){
                 $alist = $fndb->escape(implode(",", $filters['accounts'])); $fnsql->condition('account_id', "IN", "({$alist})", "AND", self::$table, FALSE);
             }
 
-            if( $filters['ignore_accounts'] ){
+            if( isset($filters['ignore_accounts']) and $filters['ignore_accounts'] ){
 
                 $act_group_id = 0; $act_sql_junction = "AND";
 
@@ -85,21 +85,21 @@ class fn_OP{
 
             }
 			
-			if ( $filters['startdate'] ){
+			if ( isset($filters['startdate']) and $filters['startdate'] ){
 				$startdate = $fndb->escape($filters['startdate']); $fnsql->condition('sdate', '>=', $startdate);
 			}
 			
-			if ( $filters['enddate'] ){
+			if ( isset($filters['enddate']) and $filters['enddate'] ){
 				$enddate = $fndb->escape($filters['enddate']); $fnsql->condition('sdate', '<=', $enddate);
 			}
 			
-			if ( $filters['currency_id'] ){
+			if ( isset($filters['currency_id']) and $filters['currency_id'] ){
 				$currency_id = $fndb->escape($filters['currency_id']); $fnsql->condition('currency_id', '=', $currency_id);
 			}
 
             //--- search filter ---//
-            if ( isset($filters['search']) ){
-                $keyword = trim( urldecode($filters['search']) ); //TODO add search support
+            if ( isset($filters['search']) ){ //TODO add search support
+                $keyword = trim( urldecode($filters['search']) );
             }
             //--- search filter ---//
 
@@ -353,7 +353,11 @@ class fn_OP{
 			$Groups = $fndb->get_rows( $fnsql->get_query() );
 			
 			if ( count($Groups) ) foreach ($Groups as $group){
-				
+
+                $group->year = isset($group->year) ? $group->year : '';
+                $group->month = isset($group->month) ? $group->month : '';
+                $group->day = isset($group->day) ? $group->day : '';
+
 				$sum = floatval($group->ctotal);
 				
 				if ( ( $sum > 0 ) and ( $currency_id !=  $row->currency_id) ) //convert it
@@ -362,13 +366,13 @@ class fn_OP{
 				$total = array('sum'=>$sum, 'year'=>$group->year);
 				$hash = ( $group->year . fn_Util::add_leading_zeros($group->month, 2, 1) . fn_Util::add_leading_zeros($group->day, 2, 1) );
 				
-				if ( isset($group->month) )
+				if ( isset($group->month) and strlen($group->month) )
 					$total['month'] = $group->month;
 				
-				if ( isset($group->day) )
+				if ( isset($group->day) and strlen($group->day))
 					$total['day'] = $group->day;
 				
-				if ( isset($Totals[$hash]) )
+				if ( strlen($hash) and isset($Totals[$hash]) )
 					$Totals[$hash]['sum']+= $total['sum'];
 				else 
 					$Totals[$hash] = $total;

@@ -260,6 +260,10 @@ function fn_check_safe_browser_file(fld) {
     $('.toobig-file-warn.' + alertcs).hide(); $(fld).next('.unsafe-file-warn.' + alertcs).hide(); return true;
 }
 
+function fn_resize_to_height(element, maxHeight){
+    $(element).css('height', maxHeight+'px');
+}
+
 $(document).ready(function(){
 	
 	//--- set default transactions filters ---//
@@ -320,5 +324,9 @@ $(document).ready(function(){
     //--- toggle transaction repeats input ---//
 
     $('#make_label').click(function(){ if($(this).is(':checked')) $('#labels').val(''); });
+
+    if( $('#page-file-preview .file-embed').length > 0 ){
+        $('#page-file-preview .file-embed').css({height: '200px'});
+    }
 
 });

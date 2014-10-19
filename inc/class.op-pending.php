@@ -462,7 +462,7 @@ class fn_OP_Pending{
 
         if ( count($filters) and is_array($filters)){
 
-            if ( $filters['type'] ){
+            if ( isset($filters['type']) and $filters['type'] ){
                 if ( !in_array($filters['type'], array(FN_OP_IN, FN_OP_OUT), TRUE) ) return array(); $fnsql->condition('optype', '=', strtolower($filters['type']));
             }
 
@@ -470,7 +470,7 @@ class fn_OP_Pending{
                 $fnsql->condition('root_id', '=', intval($filters['root_id']));
             }
 
-            if( $filters['recurring'] ){
+            if( isset($filters['recurring']) and $filters['recurring'] ){
 
                 if( !is_array($filters['recurring'] ) ) $filters['recurring']  = array($filters['recurring'] );//force to array
 
@@ -478,19 +478,19 @@ class fn_OP_Pending{
 
             }
 
-            if( $filters['currency_id'] ){
+            if( isset($filters['currency_id']) and $filters['currency_id'] ){
                 $fnsql->condition('currency_id', '=', $filters['currency_id']);
             }
 
-            if ( $filters['startdate'] ){
+            if ( isset($filters['startdate']) and $filters['startdate'] ){
                 $startdate = $fndb->escape($filters['startdate']); $fnsql->condition('fdate', '>=', $startdate);
             }
 
-            if ( $filters['enddate'] ){
+            if ( isset($filters['enddate']) and $filters['enddate'] ){
                 $enddate = $fndb->escape($filters['enddate']); $fnsql->condition('fdate', '<=', $enddate);
             }
 
-            if( $filters['recurring'] )
+            if( isset($filters['recurring'] ) and $filters['recurring'] )
                 $fnsql->conditions_ready(true); //Conditions ready
             else
                 $fnsql->conditions_ready();
@@ -526,14 +526,14 @@ class fn_OP_Pending{
 
         if ( count($filters) and is_array($filters)){
 
-            if ( $filters['type'] ){
+            if ( isset($filters['type']) and $filters['type'] ){
                 if ( !in_array($filters['type'], array(FN_OP_IN, FN_OP_OUT), TRUE) ) return false; $filters['type'] = $fndb->escape($filters['type']); $filters_sql[] = " AND `optype` = '{$filters['type']}' ";
             }
 
             if( isset($filters['root_id']) )
                 $filters_sql[] = (" AND `root_id`= " .  intval($filters['root_id']) );
 
-            if( $filters['recurring'] ){
+            if( isset($filters['recurring']) and $filters['recurring'] ){
 
                 if( !is_array($filters['recurring'] ) ) $filters['recurring']  = array($filters['recurring'] );//force to array
 
@@ -541,17 +541,17 @@ class fn_OP_Pending{
 
             }
 
-            if( $filters['currency_id'] ){
+            if( isset($filters['currency_id']) and $filters['currency_id'] ){
                 $filters_sql[] = (" AND `currency_id`= " .  intval($filters['currency_id']) );
             }
 
-            if ( $filters['startdate'] ){
+            if ( isset($filters['startdate']) and $filters['startdate'] ){
                 $filters['startdate'] = $fndb->escape($filters['startdate']); $filters_sql[] = (" AND `fdate`>= '{$filters['startdate']}'" );
 
                 $SQLTemplate = str_replace('{datestart}', $filters['startdate'], $SQLTemplate);
             }
 
-            if ( $filters['enddate'] ){
+            if ( isset($filters['enddate']) and $filters['enddate'] ){
                 $filters['enddate'] = $fndb->escape($filters['enddate']); $filters_sql[] = (" AND `fdate`<= '{$filters['enddate']}'"  );
                 $SQLTemplate = str_replace('{dateend}', $filters['enddate'], $SQLTemplate);
             }
@@ -581,8 +581,10 @@ class fn_OP_Pending{
                 $limit = " LIMIT {$start}, {$count}";
             }
 
-            $SQLTemplate = str_replace('{ordering}', $order, $SQLTemplate);
-            $SQLTemplate = str_replace('{limit}', $limit, $SQLTemplate);
+            $SQLTemplate = isset($order) ? str_replace('{ordering}', $order, $SQLTemplate) : str_replace('{ordering}', '', $SQLTemplate);
+
+            $SQLTemplate = isset($limit) ? str_replace('{limit}', $limit, $SQLTemplate) : str_replace('{limit}', '', $SQLTemplate) ;
+
 
             $SQLTemplate = str_replace('{table}', self::$table, $SQLTemplate);
 

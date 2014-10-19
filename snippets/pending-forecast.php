@@ -125,15 +125,16 @@ if( $unit and $unit_val ){
                             Disponibili: <?php echo fn_UI::format_money( $TotalIncome ); ?>
                         </div>
                     </div>
+
                 <?php else: $percent = $Outcome > 0 ? floatval( ( $TotalIncome * 100 ) / $TotalOutcome ) : 0; ?>
 
                     <h4 class="trans-readable-filter">
                         Balan&#355;a acoper&#259; <?php echo fn_UI::format_nr($percent); ?>% din cheltuieli
                     </h4>
 
-                    <div class="balance-required">
+                    <div class="progress balance-required">
                         <?php if( $percent > 0 ): ?>
-                            <div class="balance-available" style="width: <?php echo($percent) ?>%">
+                            <div class="progress-bar progress-bar-striped balance-available" style="width: <?php echo($percent) ?>%">
                                 <div class="indicator-title">Disponibili: <?php echo fn_UI::format_money( $TotalIncome ); ?></div>
                             </div>
                         <?php endif; ?>

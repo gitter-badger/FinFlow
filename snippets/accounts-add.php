@@ -1,4 +1,4 @@
-<?php if ( !defined('FNPATH') ) exit(); ?>
+<?php if ( !defined('FNPATH') ) exit(); if( ! isset( $_POST['account_currency_id']) ) $_POST['account_currency_id'] = 0; ?>
 
 <?php fn_UI::show_errors($errors); fn_UI::show_notes($notices); ?>
 

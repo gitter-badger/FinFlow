@@ -20,6 +20,23 @@ body {
     vertical-align: middle;
 }
 
+.progress{
+    height: 48px;
+    overflow: hidden;
+}
+
+.progress-bar{
+    font-size: 1em;
+}
+
+.progress .indicator-title{
+    text-align: center;
+    padding: 10px;
+    max-height: 48px;
+    height: auto;
+    font-size: 1.3em;
+}
+
 .sidebar .widget{
     clear: both;
     margin-bottom: 20px;
@@ -52,11 +69,34 @@ table td, .table>tbody>tr>td{
 
 body.transaction-details{
     padding: 0px;
+    padding-top: 70px;
     background: #ffffff;
 }
 
 .forecast-wrap .progress,
 .forecast-wrap .progress-bar{
-    font-size: 1.3em;
     line-height: normal;
+}
+
+.form-submit .btn{
+    margin-top: 20px;
+    margin-right:25px;
+}
+
+.icon-transaction-out,
+.icon-transaction-out:hover,
+.icon-transaction-in,
+.icon-transaction-in:hover {
+    text-decoration: none;
+}
+
+#displayWClock{
+    font-size: 3.5em;
+    background: #F8F8F8;
+    text-align: center;
+    border-radius: 4px;
+}
+
+.widget-wclock .form-group:last-child{
+    margin-bottom: 0px;
 }

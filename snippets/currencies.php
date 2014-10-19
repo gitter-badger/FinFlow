@@ -1,6 +1,6 @@
 <?php if( !defined('FNPATH') ) exit;
 
-$tab = isset($_GET['t']) ? urldecode($_GET['t']) : 'list'; $activetab = array(); $activetab[$tab] = 'active'; $errors = array();
+$tab = isset($_GET['t']) ? urldecode($_GET['t']) : 'list'; $activetab = array(); $activetab[$tab] = 'active'; $errors = array(); $notices= array();
 
 if ( isset($_GET['del']) ){
 	
@@ -22,8 +22,6 @@ $defaultCurrency = fn_Currency::get_default();
 if ( isset($_POST['cname']) ){
 
 	//--- adding a new currency ---//
-
-	$notices= array();
 
 	$exrate = floatval(str_replace(",", ".", $_POST['cexchange']));
 	$csymbol= isset($_POST['csymbol']) ? fn_UI::esc_html($_POST['csymbol']) : "";

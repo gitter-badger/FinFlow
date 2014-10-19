@@ -36,86 +36,127 @@ if( count($Transaction) and isset($Transaction->trans_id) ){
 <html>
 <head>
 <meta charset="UTF-8">
-<title>FinFlow | Detalii tranzac&#355;ie</title>
+<title>FinFlow | Detalii tranzac&#355;ie #<?php echo $Transaction->trans_id; ?></title>
 <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('/styles/bootstrap.min.css');; ?>" />
 <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/style.css'); ?>" />
+ <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/font-awesome.min.css'); ?>" />
 </head>
 <body id="page-transaction-details" class="transaction-details" role="document">
 
-    <h3 class="align-center"><em>Detalii tranzactie #<?php echo $Transaction->trans_id; ?></em></h3>
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand">Tranzactie #<?php echo $Transaction->trans_id;?></a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#"><i class="fa fa-chevron-left"></i></a></li>
+                <li><a href="#"><i class="fa fa-chevron-right"></i></a></li>
+                <li><a href="#" onclick="window.print();"><i class="fa fa-print"></i></a></li>
+                <li><a href="#">&nbsp;</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
 
-	<?php if (count($Transaction)): ?>
-        <table class="table table-striped list details">
-            <tr>
-                <td>Data:</td>
-                <td>
-                    <?php echo fn_UI::translate_date( date(FN_DATETIME_FORMAT, strtotime($Transaction->sdate)) ); ?>
-                </td>
-            </tr>
-            <tr>
-                <td>Valoare:</td>
-                <td><?php echo $currency->ccode; ?> <?php echo fn_Util::format_nr( $Transaction->value, 4 ); ?></td>
-            </tr>
+<div class="container-fluid">
 
-            <?php if (count($labels) ): ?>
-            <tr>
-                <td> Etichete: </td>
-                <td>
-                    <?php $dlabels=array(); foreach ($labels as $label) $dlabels[] = $label->title; echo @implode(", ", $dlabels); ?>
-                </td>
-            </tr>
-            <?php endif; ?>
+   <div class="row">
+       <div class="col-lg-12">
 
-            <?php if ( $account ): ?>
-            <tr>
-                <td> Cont: </td>
-                <td>
-                    <?php echo fn_UI::esc_html( $account->holder_name ); ?>
-                </td>
-            </tr>
-            <?php endif; ?>
 
-            <?php if ( !empty( $comments ) ): ?>
-            <tr>
-                <td>Comentarii: </td>
-                <td><?php echo fn_UI::esc_html( $comments ); ?></td>
-            </tr>
-            <?php endif;?>
+           <?php if (count($Transaction)): ?>
 
-            <?php if( is_array($attachments) and count($attachments) ): ?>
-            <tr>
-                <td>Fi&#351;iere ata&#351;ate:</td>
-                <td>
-                    <ul style="list-style-type: square;">
-                        <?php foreach($attachments as $attachment): $apath = fn_OP::get_attachment_path($attachment); $aname = $attachmentsNames[$a]; ?>
-                       <li>
-                           <a href="<?php echo fn_UI::get_file_preview_url($apath, array('name'=>$aname)); ?>" target="_self" title="previzualizare">
-                               <?php echo $aname; ?>
-                           </a>
-                           &nbsp;&nbsp;&nbsp;
-                           <small>
-                               <a href="<?php echo fn_UI::get_file_download_url($apath, false, $aname); ?>"><span class="icon-download"></span> descarc&#259;</a>
-                           </small>
-                       </li>
-                        <?php $a++; endforeach; ?>
-                    </ul>
-                </td>
-            </tr>
-            <?php endif;?>
+               <h4 class="visible-print">Tranzactie #<?php echo $Transaction->trans_id;?></h4>
 
-        </table>
+               <div class="panel panel-default">
 
-        <?php if ( !empty($details) ): ?>
-            <pre class="pre-scrollable"><?php echo fn_UI::esc_html( $details ); ?></pre>
-        <?php endif; ?>
+                   <table class="table table-striped list details">
 
-	<?php else: ?>
-	    <div class="alert alert-warning">Tranzactia nu exist&#259; sau a fost &#351;tears&#259;.</div>
-	<?php endif; ?>
+                       <tr>
+                           <td>Data:</td>
+                           <td>
+                               <?php echo fn_UI::translate_date( date(FN_DATETIME_FORMAT, strtotime($Transaction->sdate)) ); ?>
+                           </td>
+                       </tr>
+                       <tr>
+                           <td>Valoare:</td>
+                           <td><?php echo $currency->ccode; ?> <?php echo fn_Util::format_nr( $Transaction->value, 4 ); ?></td>
+                       </tr>
 
-    <script type="text/javascript" src="<?php fn_UI::asset_url('js/jquery.min.js'); ?>"></script>
-    <script type="text/javascript" src="<?php fn_UI::asset_url('js/bootstrap.min.js'); ?>"></script>
-    <script type="text/javascript" src="<?php fn_UI::asset_url('js/fn.js'); ?>"></script>
+                       <?php if (count($labels) ): ?>
+                           <tr>
+                               <td> Etichete: </td>
+                               <td>
+                                   <?php $dlabels=array(); foreach ($labels as $label) $dlabels[] = $label->title; echo @implode(", ", $dlabels); ?>
+                               </td>
+                           </tr>
+                       <?php endif; ?>
+
+                       <?php if ( $account ): ?>
+                           <tr>
+                               <td> Cont: </td>
+                               <td>
+                                   <?php echo fn_UI::esc_html( $account->holder_name ); ?>
+                               </td>
+                           </tr>
+                       <?php endif; ?>
+
+                       <?php if ( !empty( $comments ) ): ?>
+                           <tr>
+                               <td>Comentarii: </td>
+                               <td><?php echo fn_UI::esc_html( $comments ); ?></td>
+                           </tr>
+                       <?php endif;?>
+
+                       <?php if( is_array($attachments) and count($attachments) ): ?>
+                           <tr>
+                               <td>Fi&#351;iere ata&#351;ate:</td>
+                               <td>
+                                   <ul style="list-style-type: square;">
+                                       <?php foreach($attachments as $attachment): $apath = fn_OP::get_attachment_path($attachment); $aname = $attachmentsNames[$a]; ?>
+                                           <li>
+                                               <a href="<?php echo fn_UI::get_file_preview_url($apath, array('name'=>$aname)); ?>" target="_self" title="previzualizare">
+                                                   <?php echo $aname; ?>
+                                               </a>
+                                               &nbsp;&nbsp;&nbsp;
+                                               <small>
+                                                   <a href="<?php echo fn_UI::get_file_download_url($apath, false, $aname); ?>"><span class="icon-download"></span> descarc&#259;</a>
+                                               </small>
+                                           </li>
+                                           <?php $a++; endforeach; ?>
+                                   </ul>
+                               </td>
+                           </tr>
+                       <?php endif;?>
+
+                   </table>
+               </div>
+
+               <?php if ( !empty($details) ): ?>
+                   <div class="panel panel-default">
+                       <div class="panel-body">
+                           <?php echo fn_UI::esc_html( nl2br( strip_tags($details) ) ); ?>
+                       </div>
+                   </div>
+               <?php endif; ?>
+
+           <?php else: ?>
+               <div class="alert alert-warning">Tranzactia nu exist&#259; sau a fost &#351;tears&#259;.</div>
+           <?php endif; ?>
+       </div>
+   </div>
+</div>
+
+<script type="text/javascript" src="<?php fn_UI::asset_url('js/jquery.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php fn_UI::asset_url('js/bootstrap.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php fn_UI::asset_url('js/fn.js'); ?>"></script>
 
 </body>
 </html>

@@ -103,7 +103,7 @@ class fn_UI{
 		<?php 
 	}
 
-	public static function fatal_error($msg, $die=TRUE, $html=TRUE, $msgtype="error", $prefix="Eroare: ", $title="Eroare"){
+	public static function fatal_error($msg, $die=TRUE, $html=TRUE, $msgtype="danger", $prefix="Eroare: ", $title="Eroare"){
 		
 		if ( $html ): ?>
 			<html>
@@ -114,10 +114,15 @@ class fn_UI{
             <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/font-awesome.min.css'); ?>" />
             <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/style.css'); ?>" />
 			</head>
-			<body class="error">
-				<div class="wrap">
-					<div class="alert alert-<?php echo $msgtype; ?>"><strong><?php echo $prefix; ?> </strong><?php echo $msg; ?></div>
+			<body id="page-error" class="error">
+				<div class="wrap container-fluid">
+					<div class="row">
+                        <div class="col-lg-12"><div class="alert alert-<?php echo $msgtype; ?>"><strong><?php echo $prefix; ?> </strong><?php echo $msg; ?></div></div>
+					</div>
 				</div>
+                <script type="text/javascript" src="<?php fn_UI::asset_url('js/jquery.min.js'); ?>"></script>
+                <script type="text/javascript" src="<?php fn_UI::asset_url('js/bootstrap.min.js'); ?>"></script>
+                <script type="text/javascript" src="<?php fn_UI::asset_url('js/fn.js'); ?>"></script>
 			</body>
 			</html>
 		<?php 
@@ -251,13 +256,13 @@ class fn_UI{
 			$date = strtolower($date);			
 
 			if (count($months)) foreach ($months as $translated=>$m){
-				$date = str_replace($m[0], $translated, $date);
-				$date = str_replace($m[1], $translated, $date);
+				$date = isset($m[0]) ? str_replace($m[0], $translated, $date) : $date;
+				$date = isset($m[1]) ? str_replace($m[1], $translated, $date) : $date;
 			}
 			
 			if (count($days)) foreach ($days as $translated=>$d){
-				$date = str_replace($d[0], $translated, $date);
-				$date = str_replace($d[1], $translated, $date);
+				$date = isset($d[0]) ? str_replace($d[0], $translated, $date) : $date;
+				$date = isset($d[1]) ? str_replace($d[1], $translated, $date) : $date;
 			}
 			
 			$date = str_replace('of', "", $date);
@@ -574,26 +579,28 @@ class fn_UI{
         if( empty($display_filename) ) $display_filename = basename($file_url);
 
         $images = array('jpg', 'jpeg', 'gif', 'png');
-        $videos = array();
-        $sounds = array();
+        $videos = array('mp4', 'ogv');
+        $sounds = array('mp3', 'ogg');
 
         if( in_array($ext, $images) ) : /*it's an mage*/ ?>
-            <div class="file-embed image"><img src="<?php echo $file_url; ?>"/></div>
+            <div class="file-embed image embed-responsive-4by3"><img class="embed-responsive-item img-responsive" src="<?php echo $file_url; ?>"/></div>
         <?php return; endif;
 
         if( $ext == 'pdf' ) : /*it's a pdf file*/ ?>
-            <div class="file-embed pdf"><iframe src="<?php echo $file_url; ?>" scrolling="no" style="border: 0; width: 100%; height: 460px;" wmode="opaque"></iframe> </div>
+            <div class="file-embed pdf embed-responsive embed-responsive-4by3">
+                <iframe class="embed-responsive-item" src="<?php echo $file_url; ?>" scrolling="no" frameborder="0" wmode="opaque"></iframe>
+            </div>
             <?php return; endif;
 
         if( in_array($ext, $videos) ) : /*it's a video*/ ?>
-            <div class="file-embed">
-                <video width="100%" controls><source src="<?php echo $file_url; ?>" type="video/<?php echo $ext; ?>"></video>
+            <div class="file-embed embed-responsive embed-responsive-4by3">
+                <video width="100%" class="embed-responsive-item" controls><source src="<?php echo $file_url; ?>" type="video/<?php echo $ext; ?>"></video>
             </div>
         <?php return; endif;
 
         if( in_array($ext, $sounds) ) : /*it's a sound*/ ?>
-            <div class="file-embed">
-                <audio controls width="100%"><source src="<?php echo $file_url; ?>" type="audio/<?php echo $ext; ?>"></audio>
+            <div class="file-embed embed-responsive">
+                <audio class="embed-responsive-item" controls width="100%"><source src="<?php echo $file_url; ?>" type="audio/<?php echo $ext; ?>"></audio>
             </div>
         <?php return; endif;
 

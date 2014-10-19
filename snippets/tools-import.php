@@ -53,7 +53,7 @@ if( isset($_POST['import']) ){
 
 
     <div class="form-group">
-        <div class="col-lg-12 align-center">
+        <div class="col-lg-12 align-center form-submit">
             <input type="hidden" name="import" value="1"/>
             <button type="submit" class="btn btn-primary">Import&#259;</button>
         </div>

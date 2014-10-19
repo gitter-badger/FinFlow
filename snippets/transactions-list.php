@@ -49,8 +49,8 @@
                 <th>Etichete</th>
                 <th>&nbsp;</th>
             </tr>
-            <?php foreach ($Transactions as $transaction):  $k++; $trclass= ( $k%2 == 0) ? 'even' : 'odd'; $currency = fn_Currency::get($transaction->currency_id); ?>
-                <tr class="<?php echo $trclass; ?>">
+            <?php foreach ($Transactions as $transaction): $currency = fn_Currency::get($transaction->currency_id); ?>
+                <tr>
                     <td>#<?php echo $transaction->trans_id; ?></td>
                     <td><?php fn_UI::transaction_icon( $transaction->optype ) ?></td>
                     <td><?php echo fn_Util::format_nr( $transaction->value ); ?></td>

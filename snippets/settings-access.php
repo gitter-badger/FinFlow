@@ -115,7 +115,9 @@ $Users = fn_User::get_all(); ?>
             </div>
 
             <div class="form-group">
-                <div class="col-lg-12 align-center"><button class="btn btn-primary" type="submit">Salveaz&#259;</button></div>
+                <div class="col-lg-12 align-center form-submit">
+                    <button class="btn btn-primary" type="submit">Salveaz&#259;</button>
+                </div>
             </div>
 
         </form>
@@ -148,7 +150,7 @@ $Users = fn_User::get_all(); ?>
             </div>
 
             <div class="form-group">
-                <div class="col-lg-12 align-center"><button class="btn btn-primary" type="submit">Adaug&#259;</button></div>
+                <div class="col-lg-12 align-center form-submit"><button class="btn btn-primary" type="submit">Adaug&#259;</button></div>
             </div>
 
         </form>

@@ -58,7 +58,7 @@ if( $tab == 'exrparser' ) {
 			<li class="<?php echo $activetab['exrparser']; ?>"><a href="index.php?p=settings&t=exrparser"> Actualizare curs </a></li>
 			<li class="<?php echo $activetab['emailupdate']; ?>"><a href="index.php?p=settings&t=emailupdate"> Actualizare prin email </a></li>
             <li class="<?php echo $activetab['thresholds']; ?>"><a href="index.php?p=settings&t=thresholds"> Praguri  </a></li>
-            <li class="<?php echo $activetab['timezone']; ?>"><a href="index.php?p=settings&t=timezone"> Fus orar  </a></li>
+            <li class="<?php echo $activetab['timezone']; ?>"><a href="index.php?p=settings&t=timezone"> Personalizare  </a></li>
             <li class="<?php echo $activetab['myaccount']; ?>"><a href="index.php?p=settings&t=myaccount"> Acces  </a></li>
 		</ul>
 		
@@ -96,10 +96,8 @@ if( $tab == 'exrparser' ) {
                 </div>
 				
 				<div class="form-group">
-                    <div class="col-lg-6 align-center">
+                    <div class="col-lg-12 align-center form-submit">
                         <button class="btn" type="reset"> Anuleaz&#259; </button>
-                    </div>
-                    <div class="col-lg-6 align-center">
                         <button class="btn btn-primary" type="submit"> Salveaz&#259; </button>
                     </div>
 				</div>
@@ -237,7 +235,7 @@ if( $tab == 'exrparser' ) {
                     </div>
 					
 					<div class="form-group">
-                        <div class="col-lg-12 align-center">
+                        <div class="col-lg-12 align-center form-submit">
 
                             <div class="clearfix"/>
 

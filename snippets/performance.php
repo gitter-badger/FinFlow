@@ -86,7 +86,7 @@ if( $tab == 'list2' ){
 fn_UI::enqueue_js('js/highcharts.js');
 fn_UI::enqueue_js('js/highcharts-exporting.js');
 
-?>
+if( empty($_POST['span']) ) $_POST['span'] = null; ?>
 
 <div class="row content">
 	<div class="<?php fn_UI::main_container_grid_class(); ?>">

@@ -15,10 +15,6 @@ define('FN_MYSQL_DATE'			, 'Y-m-d H:i:s');
 
 define('FN_LOGFILE', (FNPATH . "/application.log"));
 
-define('FN_UPLOADS_DIR', (FNPATH . "/uploads"));
-define('FN_BACKUP_DIR'  , (FNPATH . "/uploads/backup"));
-define('FN_UPGRADE_DIR', (FNPATH . "/uploads/upgrade"));
-
 error_reporting(E_ALL ^ E_NOTICE);
 
 include_once ( FNPATH . '/inc/interface.exr.php' );
@@ -42,8 +38,8 @@ include_once ( FNPATH . '/inc/class.log.php' );
 @include_once ( FNPATH . '/config.php' );
 
 //--- init debug ---//
-if( defined('FN_DEBUG') and FN_DEBUG ) {
-    @ini_set('display_errors', 'On'); //TODO add error reporting level @error_reporting(E_ALL);
+if( ( defined('FN_DEBUG') and FN_DEBUG ) or fn_Util::is_development_environment() ) {
+    @ini_set('display_errors', 'On'); @error_reporting(E_ALL);
 }
 //--- init debug ---//
 
@@ -59,6 +55,8 @@ if( !defined('FN_URL') ){
 
 //--- setup uploads dir ---//
 define('FN_UPLOADS_DIR', ( FNPATH . DIRECTORY_SEPARATOR . 'uploads' ) );
+define('FN_BACKUP_DIR'  , ( FN_UPLOADS_DIR . "/backup") );
+define('FN_UPGRADE_DIR', ( FN_UPLOADS_DIR . "/upgrade") );
 //--- setup uploads dir ---//
 
 //--- check installation status ---//

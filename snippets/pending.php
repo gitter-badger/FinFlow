@@ -51,10 +51,6 @@ else:
 
     <?php if( count($Transactions) ): ?>
 
-        <h4>
-            <em>P&#226;n&#259; la <?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, $endtime) ); ?></em>
-        </h4>
-
         <?php include 'pending-period-list.php'; ?>
 
     <?php else: ?>

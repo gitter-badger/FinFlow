@@ -108,8 +108,8 @@ foreach ($Cronjobs as $job){
                     <th>&nbsp;</th>
                 </tr>
 
-                <?php foreach ($Transactions as $transaction):  $k++; $trclass= ( $k%2 == 0) ? 'even' : 'odd'; $currency = fn_Currency::get($transaction->currency_id); ?>
-                    <tr class="<?php echo $trclass; ?>">
+                <?php foreach ($Transactions as $transaction): $currency = fn_Currency::get($transaction->currency_id); ?>
+                    <tr>
                         <td>
                             <?php fn_UI::transaction_icon($transaction->optype); ?>
                         </td>
@@ -149,11 +149,11 @@ foreach ($Cronjobs as $job){
                 <table class="table table-responsive list report">
                     <tr>
                         <td>Actualizare curs:</td>
-                        <td class="align-right"><?php echo $Cronupdates[0];  ?></td>
+                        <td class="align-right"><?php echo isset($Cronupdates[0]) ? $Cronupdates[0] : '-';  ?></td>
                     </tr>
                     <tr>
                         <td>Actualizare tranzac&#355;ii prin email:</td>
-                        <td class="align-right"><?php echo $Cronupdates[1];  ?></td>
+                        <td class="align-right"><?php echo isset($Cronupdates[1]) ? $Cronupdates[1] : '-';  ?></td>
                     </tr>
                 </table>
 

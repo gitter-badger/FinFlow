@@ -4,11 +4,11 @@ if( !defined('FNPATH') ) exit;
 
 global $fndb, $fnsql;
 
-if ( count($_POST['title']) ){
+$errors 	= array();
+$notices = array();
+
+if ( isset($_POST['title']) and count($_POST['title']) ){
 	//--- add a new label ---//
-	
-	$errors 	= array();
-	$notices = array();
 	
 	$slug = fn_Label::get_slug($_POST['title']);
 	

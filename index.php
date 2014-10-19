@@ -1,4 +1,4 @@
-<?php include_once 'inc/init.php';  ?>
+<?php include_once 'inc/init.php'; if( empty($_GET['p']) ) $_GET['p'] = 'dashboard';  ?>
 <!DOCTYPE html>
 <html charset="utf-8">
 <head>
@@ -6,12 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 <title> FinFlow | <?php fn_UI::page_title($_GET['p']); ?></title>
 <meta name="generator" content="FinFlow <?php echo FN_VERSION; ?>" />
-<meta id="view" name="viewport" content="width=device-width, maximum-scale=1.0, minimum-scale=1.0, initial-scale=1" />
-<link rel="shortcut icon" href="<?php fn_UI::asset_url('/images/favicon.png'); ?>" type="image/x-icon">
-<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/bootstrap.min.css'); ?>" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/font-awesome.min.css'); ?>" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/style.css'); ?>" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/responsive.css'); ?>" />
+<meta id="view" name="viewport" content="width=device-width, maximum-scale=1.0, minimum-scale=1.0, initial-scale=1"/>
+<link rel="shortcut icon" href="<?php fn_UI::asset_url('/images/favicon.png'); ?>" type="image/x-icon"/>
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/bootstrap.min.css'); ?>"/>
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/font-awesome.min.css'); ?>"/>
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/style.css'); ?>"/>
 <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/pikaday.css'); ?>"/>
 <?php fn_UI::css(); ?>
 </head>

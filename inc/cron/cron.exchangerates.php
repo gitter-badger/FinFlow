@@ -67,10 +67,10 @@ if ( $fnexr->isServiceAvailable() ){
 	}
 	
 	if ( $testing )
-        fn_UI::fatal_error("Scriptul func&#355;ioneaz&#259; normal.", false, true, 'note', "Not&#259;: ", 'Not&#259;');
+        fn_UI::fatal_error("Scriptul func&#355;ioneaz&#259; normal.", false, true, fn_UI::$MSG_NOTE, "Not&#259;: ", 'Not&#259;');
 
     elseif( $in_window )
-        fn_UI::fatal_error("Ratele de schimb au fost actualizate.", false, true, 'note', "Not&#259;: ", 'Not&#259;');
+        fn_UI::fatal_error("Ratele de schimb au fost actualizate.", false, true, fn_UI::$MSG_NOTE, "Not&#259;: ", 'Not&#259;');
 	
 	fn_CronAssistant::release_lock(__FILE__);
 	

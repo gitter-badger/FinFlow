@@ -79,7 +79,7 @@
     </div>
 
     <div class="form-group">
-        <div class="col-lg-12 align-center">
+        <div class="col-lg-12 align-center form-submit">
             <button class="btn btn-primary" type="submit">Salveaz&#259;</button>
         </div>
     </div>

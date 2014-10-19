@@ -7,6 +7,8 @@
 $currmonthstart = ( date('Y-m') . "-01" );
 $labels 			   = array();
 $accounts         = array();
+$type               = false;
+$currency_id     = 0;
 
 $sdate = (date('Y-m') . "-01");
 $edate= (date('Y-m-') . date('t'));
@@ -70,12 +72,12 @@ else
 
 //--- prepare an array of pagevars, to be used for pagination ---//
 $pagevars = array(
-    'sdate'             => $filters['startdate'],
-    'edate'            => $filters['enddate'],
-    'labels'            => is_array($filters['labels']) ? @implode(',', $filters['labels']) : $filters['labels'],
-    'accounts'        => is_array($filters['accounts']) ? @implode(',', $filters['accounts']) : $filters['accounts'],
-    'currency_id'   => $filters['currency_id'],
-    'type'             => $filters['type']
+    'sdate'             => isset($filters['startdate']) ? $filters['startdate'] : '',
+    'edate'            => isset( $filters['enddate'] ) ? $filters['enddate'] : '',
+    'labels'            => isset( $filters['labels'] ) ?  ( is_array($filters['labels']) ? @implode(',', $filters['labels']) : $filters['labels'] ) : '',
+    'accounts'        => isset( $filters['accounts'] ) ? ( is_array($filters['accounts']) ? @implode(',', $filters['accounts']) : $filters['accounts'] ) : '',
+    'currency_id'   => isset($filters['currency_id']) ? $filters['currency_id'] : '',
+    'type'             => isset($filters['type']) ? $filters['type'] : ''
 );
 
 $pagevars = fn_Util::clean_array($pagevars);

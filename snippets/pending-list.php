@@ -2,6 +2,7 @@
 
 if( count($Transactions) ): ?>
 
+    <div class="panel"></div>
     <?php if( $list_report != 'no' ): ?>
         <table class="list report" border="1">
             <tr>
