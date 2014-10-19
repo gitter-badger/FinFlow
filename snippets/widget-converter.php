@@ -24,7 +24,7 @@ if ( empty($Currencies) ) $Currencies = fn_Currency::get_all();
 
 ?>
 
-<form class="form-horizontal" name="widget-currency-converter-form" id="widgetCurrencyConverterForm" target="_self" role="form">
+<form class="form form-horizontal" name="widget-currency-converter-form" id="widgetCurrencyConverterForm" target="_self" role="form">
     <div class="form-group">
         <label class="control-label col-sm-4" for="cc_sum">Suma:</label>
         <div class="col-sm-8">
@@ -55,7 +55,9 @@ if ( empty($Currencies) ) $Currencies = fn_Currency::get_all();
     </div>
 
     <div class="form-group">
-		<input class="form-control form-control-static" type="text" id="widgetCurrencyConverterResult" value="0.00"/>
+        <div class="col-sm-12">
+		    <input class="form-control form-control-static" type="text" id="widgetCurrencyConverterResult" value="0.00"/>
+        </div>
 	</div>
 
     <div class="form-group">

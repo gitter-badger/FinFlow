@@ -223,15 +223,15 @@ function fn_clock(){
 
 	var today	=	new Date();
 	
-	var h	 =    today.getHours();
+	var h	 = today.getHours();
 	var m = today.getMinutes();
 	var s	= today.getSeconds();
 	
 	h = fn_calculate_tz(h, tzoffset);
 	
-// add a zero in front of numbers<10
-	m =fn_prepend_zeros(m);
-	s  =fn_prepend_zeros(s);
+    // add a zero in front of numbers < 10
+	m = fn_prepend_zeros(m);
+	s  = fn_prepend_zeros(s);
 	
 	$(clockelemid).text(h+":"+m+":"+s);
 }
@@ -250,7 +250,7 @@ function fn_check_safe_browser_file(fld) {
     var alertcs= $(fld).data('alerts');
 
     if(!/(\.pdf|\.gif|\.jpg|\.jpeg|\.mp3|\.png|\.mp4|\.txt)$/i.test(fvalue)) {
-        //$(fld).next('.unsafe-file-warn.' + alertcs).show(); return false; //disabled alert
+        $('.unsafe-file-warn.' + alertcs).show(); return false;
     }
 
     if( (fld.files !== undefined) && fld.files.length && (fld.files[0].size >= max_filesize ) ) {
@@ -296,5 +296,29 @@ $(document).ready(function(){
     //--- cronjob line auto-select on click ---//
     $('code').click(function(){ select_eltext(this); });
     //--- cronjob line auto-select on click ---//
+
+    //--- autofill currency info ---//
+    $('#addCurrencyForm #ccode').change(function(){
+
+        var rate     = $(this).find('option:selected').data('rate');
+        var symbol = $(this).find('option:selected').data('symbol');
+        var cname   = $(this).find('option:selected').data('cname');
+
+        if( symbol.length > 0 )$('#csymbol').val(symbol);
+        if( cname.length > 0 )$('#cname').val(cname);
+        if( rate > 0 ) $('#cexchange').val(rate);
+
+    });
+
+    $('#ccode').trigger('change');
+    //--- autofill currency info ---//
+
+    //--- toggle transaction repeats input ---//
+    $('#add_pending').click(function(){
+        if( $(this).is(':checked') ) $('.recurring-choices').slideDown('fast'); else $('.recurring-choices').slideUp('fast');
+    });
+    //--- toggle transaction repeats input ---//
+
+    $('#make_label').click(function(){ if($(this).is(':checked')) $('#labels').val(''); });
 
 });

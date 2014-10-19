@@ -267,16 +267,11 @@ class fn_Util{
 	public static function cronjob($script, $minute="*", $hour="*", $day="*", $month="*", $days_of_week='*', $executable="php -q", $apply_server_offset=TRUE){
 		
 		if ( $apply_server_offset and ( $hour != '*' ) ) {
-			
-			$offset = self::get_server_timezone_offset(FN_TIMEZONE);
-				
-			$hour+= $offset;
-			
-			if ( $hour >= 24 ) $hour = $hour-24;
-			
+			$offset = self::get_server_timezone_offset(FN_TIMEZONE); $hour+= $offset; if ( $hour >= 24 ) $hour = $hour-24;
 		}
 		
 		return "{$minute} {$hour} {$day} {$month} {$days_of_week} {$executable} {$script}";
+
 	}
 
     public static function s_encrypt($input, $salt="salt"){
@@ -530,9 +525,9 @@ class fn_Util{
         $headers.= "Content-type: text/html\r\n";
         $headers.= "X-Mailer: PHP {$phpversion}\r\n";
 
-        if( @mail($to, $subject, $message, $headers) ) return TRUE;
+        if( @mail($to, $subject, $message, $headers) ) return true;
 
-        return FALSE;
+        return false;
 
     }
 

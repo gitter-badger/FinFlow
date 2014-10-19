@@ -92,62 +92,63 @@ if( $unit and $unit_val ){
 
 <?php else: $Currency = fn_Currency::get_default(); ?>
 
-    <h4>
-        <em>
-            Prognoza p&#226;n&#259; la <?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, $endtime) ); ?>
+<div class="panel panel-default">
 
-            <?php if( $exclude and ( $exclude != 'none' ) ): ?>
-                f&#259;ra <?php echo($exclude == FN_OP_IN) ? 'venit' : 'cheltuieli'; ?>
-            <?php endif; ?>
-        </em>
-    </h4>
+    <div class="panel-heading">
+        <h4>
+            <em>
+                Prognoza p&#226;n&#259; la <?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, $endtime) ); ?>
 
-    <div class="balance-forecast" id="balanceForecast">
-        <div class="forecast-wrap">
+                <?php if( $exclude and ( $exclude != 'none' ) ): ?>
+                    f&#259;ra <?php echo($exclude == FN_OP_IN) ? 'venit' : 'cheltuieli'; ?>
+                <?php endif; ?>
+            </em>
+        </h4>
+    </div>
+    <div class="panel-body">
+        <div class="balance-forecast" id="balanceForecast">
+            <div class="forecast-wrap">
 
-            <?php if( $Balance > 0 ): $percent = $Outcome > 0 ? floatval( ( $Outcome * 100 ) / $TotalIncome  ) : 0; ?>
+                <?php if( $Balance > 0 ): $percent = $Outcome > 0 ? floatval( ( $Outcome * 100 ) / $TotalIncome  ) : 0; ?>
 
-                <h4 class="trans-readable-filter">
-                    Cheltuielile reprezint&#259; <?php echo fn_UI::format_nr($percent); ?>% din balan&#355;&#259;
-                </h4>
+                    <h4 class="trans-readable-filter">
+                        Cheltuielile reprezint&#259; <?php echo fn_UI::format_nr($percent); ?>% din balan&#355;&#259;
+                    </h4>
 
-                <div class="balance-available">
-                    <?php if( $percent > 0 ): ?>
-                        <div class="balance-required" style="width: <?php echo($percent) ?>%">
-                            <div class="indicator-title">Necesari: <?php echo fn_UI::format_money( $Outcome ); ?></div>
+                    <div class="progress balance-available">
+                        <?php if( $percent > 0 ): ?>
+                            <div class="progress-bar progress-bar-striped balance-required" style="width: <?php echo($percent) ?>%">
+                                <div class="indicator-title">Necesari: <?php echo fn_UI::format_money( $Outcome ); ?></div>
+                            </div>
+                        <?php endif; ?>
+                        <div class="indicator-title">
+                            Disponibili: <?php echo fn_UI::format_money( $TotalIncome ); ?>
                         </div>
-                    <?php endif; ?>
-                    <div class="indicator-title">
-                        Disponibili: <?php echo fn_UI::format_money( $TotalIncome ); ?>
                     </div>
-                </div>
-            <?php else: $percent = $Outcome > 0 ? floatval( ( $TotalIncome * 100 ) / $TotalOutcome ) : 0; ?>
+                <?php else: $percent = $Outcome > 0 ? floatval( ( $TotalIncome * 100 ) / $TotalOutcome ) : 0; ?>
 
-                <h4 class="trans-readable-filter">
-                    Balan&#355;a acoper&#259; <?php echo fn_UI::format_nr($percent); ?>% din cheltuieli
-                </h4>
+                    <h4 class="trans-readable-filter">
+                        Balan&#355;a acoper&#259; <?php echo fn_UI::format_nr($percent); ?>% din cheltuieli
+                    </h4>
 
-                <div class="balance-required">
-                    <?php if( $percent > 0 ): ?>
-                        <div class="balance-available" style="width: <?php echo($percent) ?>%">
-                            <div class="indicator-title">Disponibili: <?php echo fn_UI::format_money( $TotalIncome ); ?></div>
+                    <div class="balance-required">
+                        <?php if( $percent > 0 ): ?>
+                            <div class="balance-available" style="width: <?php echo($percent) ?>%">
+                                <div class="indicator-title">Disponibili: <?php echo fn_UI::format_money( $TotalIncome ); ?></div>
+                            </div>
+                        <?php endif; ?>
+                        <div class="indicator-title">
+                            Necesari: <?php echo fn_UI::format_money( $Outcome ); ?>
                         </div>
-                    <?php endif; ?>
-                    <div class="indicator-title">
-                        Necesari: <?php echo fn_UI::format_money( $Outcome ); ?>
                     </div>
-                </div>
-            <?php endif; ?>
+                <?php endif; ?>
 
-            <br class="clearfix"/>
+            </div>
 
         </div>
-
-        <br class="clearfix"/>
-
     </div>
 
-    <table class="table table-striped list report">
+    <table class="table list report">
         <tr>
             <td>Rulaj: </td>
             <td class="align-right"><?php echo fn_UI::format_money( $Total ); ?></td>
@@ -172,5 +173,6 @@ if( $unit and $unit_val ){
         </tr>
     </table>
 
+  </div>
 <?php endif;?>
 

@@ -195,7 +195,7 @@ else
 		<ul class="nav nav-tabs" role="tablist">
 			<li class="dropdown <?php echo $activetab['list']; ?>">
 				<a href="<?php fn_UI::page_url('transactions', array('t'=>'list'))?>" class="dropdown-toggle" data-toggle="dropdown">
-                    Raport <?php echo $report_period; ?> <span class="caret"></span>
+                    Raport <span class="caret"></span>
                 </a>
 				<ul class="dropdown-menu" role="menu">
                 	<li><a href="<?php fn_UI::page_url('transactions', array('sdate'=>$currmonthstart)); ?>">Luna aceasta</a></li>
@@ -226,7 +226,8 @@ else
                 <a href="<?php fn_UI::page_url('transactions', array('t'=>'add'))?>"> Adaug&#259; </a>
             </li>
 		</ul>
-		
+
+
 		<?php if ( $tab == 'list' ) include_once ( 'transactions-list.php' ); ?>
 
 		<?php if ( $tab == 'pending' ) include_once ( 'pending.php' ); ?>

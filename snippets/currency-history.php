@@ -33,19 +33,15 @@ $Chart->xAxis->labels->style->font = "normal 12px Verdana, sans-serif";
 
 //--- plot currency history ---//
 
-?>
+fn_UI::enqueue_js('js/highcharts.js');
+fn_UI::enqueue_js('js/highcharts-exporting.js'); ?>
 
 <?php if( count($Currencies) ) : ?>
 
-<script type="text/javascript" src="<?php echo FN_URL;?>/js/highcharts.js"></script>
-<script type="text/javascript" src="<?php echo FN_URL;?>/js/highcharts-exporting.js"></script>
-
-<div class="chart" id="chartCurrenciesHistory"></div>
-
-<script type="text/javascript"><?php echo $Chart->render("chartCurrenciesHistory");  ?></script>
+<div class="chart" id="chartCurrenciesHistory"></div><?php fn_UI::enqueue_inline( $Chart->render("chartCurrenciesHistory"), 'js' ); ?>
 
 <?php else:
 
-    fn_UI::msg(sprintf("Nu sunt monede predefinite. Verific&#259; set&#259;rile pentru <a href=\"%1s\">parserul automat al cursului valutar</a> sau <a href=\"%2s\">adaug&#259; c&#226;teva monede</a> folosind formularul de ad&#259;ugare.", 'index.php?p=settings&t=exrparser', 'index.php?p=currencies&t=add'), fn_UI::$MSG_WARN);
+    fn_UI::msg( sprintf("Nu sunt monede predefinite. Verific&#259; set&#259;rile pentru <a href=\"%1s\">parserul automat al cursului valutar</a> sau <a href=\"%2s\">adaug&#259; c&#226;teva monede</a> folosind formularul de ad&#259;ugare.", 'index.php?p=settings&t=exrparser', 'index.php?p=currencies&t=add'), fn_UI::$MSG_WARN );
 
 endif; ?>

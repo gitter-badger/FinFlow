@@ -62,8 +62,8 @@ $Currencies = fn_Currency::get_all(TRUE);
 
 ?>
 
-<div class="row content">
-	<div class="span10">
+<div class="row">
+	<div class="<?php fn_UI::main_container_grid_class(); ?>">
 		
 		<ul class="nav nav-tabs">
 			<li class="<?php echo $activetab['list']; ?>"><a href="<?php fn_UI::page_url('currencies', array('t'=>'list'))?>">Lista</a></li>

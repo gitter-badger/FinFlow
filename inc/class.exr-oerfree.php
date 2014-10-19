@@ -13,7 +13,7 @@ class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements f
     const EndpointURL                       = 'http://openexchangerates.appspot.com/currency';
     const CurrenciesEndpointURL       = 'http://openexchangerates.appspot.com/currencies.json';
 
-    const defaultCurrency     = 'USD';
+    const defaultCurrency = 'USD';
 
 	/**
 	 * raw json document

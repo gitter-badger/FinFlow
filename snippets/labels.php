@@ -38,12 +38,10 @@ if ( isset($_GET['del']) ) fn_Label::remove($_GET['del']);
 $per_page= FN_RESULTS_PER_PAGE;
 $offset     = isset($_GET['pag']) ? fn_UI::pagination_get_current_offset($_GET['pag'], $per_page) : 0;
 
-$Labels = fn_Label::get_all($offset, $per_page);
+$Labels = fn_Label::get_all($offset, $per_page); ?>
 
-?>
-
-<div class="row content">
-	<div class="span10">
+<div class="row">
+	<div class="<?php fn_UI::main_container_grid_class(); ?>">
 		
 		<?php $tab = isset($_GET['t']) ? urldecode($_GET['t']) : 'list'; $activetab = array(); $activetab[$tab] = 'active'; ?>
 		
@@ -54,34 +52,37 @@ $Labels = fn_Label::get_all($offset, $per_page);
 		
 		<?php if ( $tab == 'list' ): ?>
 			<?php if (count($Labels) ) : $k=0; ?>
-			<table class="list labels" border="1">
-				<tr>
-					<th>Eticheta</th>
-					<th>Slug</th>
-					<th>Tranzac&#355;ii</th>
-					<th>&nbsp;</th>
-				</tr>
-				<?php foreach ($Labels as $label):  $k++; $trclass= ( $k%2 == 0) ? 'even' : 'odd'; ?>
-				<tr class="<?php echo $trclass; ?>">
-					<td>
-                        <a href="<?php fn_UI::page_url('transactions', array('labels'=>$label->label_id, 'sdate'=>'1970-01-01')); ?>" title="vezi toate tranzactiile cu aceasta eticheta">
-                            <?php echo fn_UI::esc_html($label->title); ?>
-                        </a>
-                    </td>
-					<td><?php echo $label->slug; ?></td>
-					<td><?php echo fn_Label::get_ops_count($label->label_id); ?></td>
-					<td class="align-center">
-						<button class="btn" onclick="confirm_delete('<?php fn_UI::page_url('labels', array('del'=>$label->label_id)); ?>')">
-							<span class="icon-remove"></span>
-						</button>
-					</td>
-				</tr>
-				<?php endforeach; ?>
-			</table>
+                <div class="panel panel-default">
+                    <table class="table table-striped table-responsive list labels">
+                        <tr>
+                            <th>Eticheta</th>
+                            <th>Slug</th>
+                            <th>Tranzac&#355;ii</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        <?php foreach ($Labels as $label):  ?>
+                        <tr>
+                            <td>
+                                <a href="<?php fn_UI::page_url('transactions', array('labels'=>$label->label_id, 'sdate'=>'1970-01-01')); ?>" title="vezi toate tranzactiile cu aceasta eticheta">
+                                    <?php echo fn_UI::esc_html($label->title); ?>
+                                </a>
+                            </td>
+                            <td><?php echo $label->slug; ?></td>
+                            <td><?php echo fn_Label::get_ops_count($label->label_id); ?></td>
+                            <td class="align-center">
+                                <button class="btn btn-default" onclick="confirm_delete('<?php fn_UI::page_url('labels', array('del'=>$label->label_id)); ?>')">
+                                    <span class="fa fa-remove"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </table>
 
-            <div class="pagination">
+                </div>
+
+                <div class="pagination-bottom">
                 <?php $total = fn_Label::get_total(); if ( $total > $per_page ):?>
-                <ul><?php fn_UI::pagination($total, $per_page, $offset, fn_UI::page_url('labels', array(), FALSE)); ?></ul>
+                    <ul class="pagination"><?php fn_UI::pagination($total, $per_page, $offset, fn_UI::page_url('labels', array(), FALSE)); ?></ul>
                 <?php endif;?>
             </div>
 

@@ -18,26 +18,28 @@
 <body id="page-<?php echo fn_UI::esc_html( strtolower($_GET['p']) ); ?>" class="<?php echo fn_UI::get_body_class(); ?>" role="document">
 
 	
-	<?php if ( fn_User::is_authenticated() ) include_once (FNPATH . '/snippets/header.php');?>
+	<?php if ( fn_User::is_authenticated() ) include_once ( FNPATH . '/snippets/header.php' ); ?>
 
-    <div class="container main">
+    <div class="main">
 
-        <?php
+        <div class="container">
+            <?php
 
-            $snip = NULL;
+                $snip = NULL;
 
-            if ( isset($_GET['p']) ) $snip = urldecode($_GET['p']);
+                if ( isset($_GET['p']) ) $snip = urldecode($_GET['p']);
 
-            if ( $snip ){
-                if ( file_exists(FNPATH . "/snippets/{$snip}.php") )
-                    include_once (FNPATH . "/snippets/{$snip}.php");
+                if ( $snip ){
+                    if ( file_exists(FNPATH . "/snippets/{$snip}.php") )
+                        include_once (FNPATH . "/snippets/{$snip}.php");
+                    else
+                        include_once (FNPATH . "/snippets/404.php");
+                }
                 else
-                    include_once (FNPATH . "/snippets/404.php");
-            }
-            else
-                include_once (FNPATH . "/snippets/dashboard.php");
+                    include_once (FNPATH . "/snippets/dashboard.php");
 
-        ?>
+            ?>
+        </div>
 
     </div>
 	

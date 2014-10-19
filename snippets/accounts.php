@@ -80,8 +80,9 @@ if( $tab == 'list' ){
 
 ?>
 
-<div class="row content">
-    <div class="span10">
+<div class="row">
+
+    <div class="<?php fn_UI::main_container_grid_class(); ?>">
 
         <ul class="nav nav-tabs">
             <li class="<?php echo $activetab['list']; ?>"><a href="<?php fn_UI::page_url('accounts', array('t'=>'list'))?>">Lista</a></li>
@@ -100,7 +101,3 @@ if( $tab == 'list' ){
     <?php include_once ( FNPATH . '/snippets/sidebar.php' ); ?>
 
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function(){ $('#make_label').click(function(){ if($(this).is(':checked')) $('#labels').val(''); }); });
-</script>

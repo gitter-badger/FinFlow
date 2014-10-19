@@ -1,46 +1,23 @@
 @CHARSET "UTF-8";
 
-@import url(https://fonts.googleapis.com/css?family=Ubuntu:400,700&subset=latin,latin-ext);
+html, body {
+    font-size: 100%;
+    font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+    font-weight: normal;
+    color: #000;
+}
 
 body {
-    padding-top: 70px;
+    padding-top: 60px;
     padding-bottom: 30px;
-
-    color: #000;
-    font-family: 'Ubuntu', Verdana, Arial, Helvetica, sans-serif;
-    font-size: 16px;
-    background-color: #e0e0e0;
-
-    background-image: linear-gradient(top, #FFFFFF 0%, #E3E5E6 67%, #E0E0E0 94%);
-    background-image: -o-linear-gradient(top, #FFFFFF 0%, #E3E5E6 67%, #E0E0E0 94%);
-    background-image: -moz-linear-gradient(top, #FFFFFF 0%, #E3E5E6 67%, #E0E0E0 94%);
-    background-image: -webkit-linear-gradient(top, #FFFFFF 0%, #E3E5E6 67%, #E0E0E0 94%);
-    background-image: -ms-linear-gradient(top, #FFFFFF 0%, #E3E5E6 67%, #E0E0E0 94%);
-
-    background-image: -webkit-gradient(
-            linear,
-            left top,
-            left bottom,
-            color-stop(0, #FFFFFF),
-            color-stop(0.67, #E3E5E6),
-            color-stop(0.94, #E0E0E0)
-    );
-
-    background-repeat:no-repeat;
-
-    background: #fff;
-
+    background-color: #fff;
     overflow-y: scroll;
 }
 
-.align-center{
+.align-center,
+.pagination-bottom{
     text-align: center;
     vertical-align: middle;
-}
-
-.navbar.navbar-fixed-top,
-.navbar .navbar-right{
-    font-size: 18px;
 }
 
 .sidebar .widget{
@@ -48,12 +25,16 @@ body {
     margin-bottom: 20px;
 }
 
-.sidebar .widget-content{
-
+.main .nav-tabs{
+    margin-bottom: 20px;
 }
 
-.container.main .nav-tabs{
-    margin-bottom: 20px;
+.balance{
+    margin-top: 10px;
+}
+
+table td, .table>tbody>tr>td{
+    line-height: 33px;
 }
 
 .input-group-addon.captcha-img-addon{
@@ -63,4 +44,19 @@ body {
 .input-group-addon .captcha-img{
     height: 30px;
     cursor: pointer;
+}
+
+.main{
+    background: #ffffff;
+}
+
+body.transaction-details{
+    padding: 0px;
+    background: #ffffff;
+}
+
+.forecast-wrap .progress,
+.forecast-wrap .progress-bar{
+    font-size: 1.3em;
+    line-height: normal;
 }

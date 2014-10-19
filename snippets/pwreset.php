@@ -60,13 +60,11 @@ if( count($_POST) ){
 
 }
 
-fn_Captcha::init(); $captcha_url = (FN_URL . '/snippets/captcha.php?o=1');
+fn_Captcha::init(); $captcha_url = (FN_URL . '/snippets/captcha.php?o=1'); ?>
 
-?>
 <div class="row content">
-    <div class="span2">&nbsp;</div>
 
-    <div class="span8">
+    <div class="col-lg-6 col-lg-offset-2">
 
         <div class="inner-container container-login">
             <h2 align="center" class="brand">FinFlow</h2>
@@ -77,33 +75,42 @@ fn_Captcha::init(); $captcha_url = (FN_URL . '/snippets/captcha.php?o=1');
 
                     <?php if($Success): ?>
 
-                        <p class="msg note">
+                        <div class="alert alert-info">
                             Un email cu informatii pentru resetarea parolei a fost trimis la <em><?php echo $_POST['email']; ?></em>.<br/><br/>
                             Verific&#259;-&#355;i dosarul Inbox, iar dac&#259; nu e acolo verific&#259; &#351;i dosarele de Spam &#351;i Trash.
-                        </p>
+                        </div>
 
                     <?php else: ?>
 
-                        <form target="_self" method="post" name="request-pw-form" id="requestPwForm">
-                            <p align="center">
-                                <label for="email">Email:</label>
-                                <input type="email" size="45" maxlength="255" name="email" id="email" value="<?php echo fn_UI::extract_post_val('email');?>" />
-                            </p>
-                            <p align="center">
-                                <label for="verify">Verificare:</label>
+                        <form class="form form-horizontal" target="_self" method="post" name="request-pw-form" id="requestPwForm">
+                            <div class="form-group">
+                                <label class="control-label col-lg-4" for="email">Email:</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control" type="email" size="45" maxlength="255" name="email" id="email" value="<?php echo fn_UI::extract_post_val('email');?>" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-lg-4" for="verify">Verificare:</label>
+                                <div class="col-lg-8">
+                                    <div class="input-group">
+                                        <?php if( fn_Captcha::supports_img() ): ?>
+                                            <span class="input-group-addon captcha-img-addon">
+                                                <img id="captchaImg" onclick="fn_popup('<?php echo $captcha_url; ?>&mag=1&htmlmag=1');" src="<?php echo $captcha_url; ?>" align="absmiddle"/>
+                                            </span>
+                                            <input class="form-control" type="text" size="10" maxlength="255" name="verify" id="verify" value=""/>
+                                        <?php else: ?>
+                                            <span class="input-group-addon"><?php fn_Captcha::output_math(); ?></span>
+                                            <input class="form-control" type="text" size="10" maxlength="255" name="verify" id="verify" value=""/>
+                                        <?php endif;?>
+                                    </div>
+                               </div>
+                            </div>
 
-                                <?php if( fn_Captcha::supports_img() ): ?>
-                                    <input type="text" style="width: 100px;" size="10" maxlength="255" name="verify" id="verify" value="" />
-                                    <img id="captchaImg" onclick="fn_popup('<?php echo $captcha_url; ?>&mag=1&htmlmag=1');" src="<?php echo $captcha_url; ?>" align="absmiddle" height="30"/>
-                                <?php else: ?>
-                                    <?php fn_Captcha::output_math(); ?> &nbsp;
-                                    <input type="text" size="10" style="width: 27%;" maxlength="255" name="verify" id="verify" value="" />
-                                <?php endif;?>
-                            </p>
-
-                            <p class="submit" align="center">
-                                <button class="btn btn-primary" type="submit">Trimite link de reset</button>
-                            </p>
+                            <div class="form-group align-center">
+                                <div class="col-lg-12">
+                                    <button class="btn btn-primary" type="submit">Trimite link de reset</button>
+                                </div>
+                            </div>
                         </form>
 
                     <?php endif;?>
@@ -112,39 +119,45 @@ fn_Captcha::init(); $captcha_url = (FN_URL . '/snippets/captcha.php?o=1');
 
                     <?php if( $user and isset($user->user_id) ): ?>
 
-                        <p class="align-center"> Email: <em><?php echo $user->email; ?></em> </p><br class="clear"/>
+                        <p class="align-center"> Email: <em><?php echo $user->email; ?></em> </p>
+
+                        <div class="clearfix"></div>
 
                         <?php if( $Success ): ?>
 
-                               <p class="msg note">
+                               <div class="alert alert-info">
                                    Parola a fost schimbata. <br/> Pentru a te autentifica <a href="<?php fn_UI::page_url('index', array('p'=>'login')); ?>">click aici</a>.
-                               </p>
+                               </div>
 
                         <?php else: ?>
 
-                            <form target="_self" method="post" name="reset-pw-form" id="resetPwForm">
-                                <p align="center">
-                                    <label for="password">Parola:</label>
-                                    <input type="password" size="45" maxlength="255" name="password" id="password" value="" />
-                                </p>
-                                <p align="center">
-                                    <label for="password2">Confirmare:</label>
-                                    <input type="password" size="45" maxlength="255" name="password2" id="password2" value="" />
-                                </p>
+                            <form class="form form-horizontal" target="_self" method="post" name="reset-pw-form" id="resetPwForm">
+                                <div class="form-group">
+                                    <label class="control-label col-lg-3" for="password">Parola:</label>
+                                    <div class="col-lg-8">
+                                        <input class="form-control" type="password" size="45" maxlength="255" name="password" id="password" value="" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-lg-4" for="password2">Confirmare:</label>
+                                    <div class="col-lg-8">
+                                        <input class="form-control" type="password" size="45" maxlength="255" name="password2" id="password2" value="" />
+                                    </div>
+                                </div>
 
-                                <p class="submit" align="center">
-                                    <button class="btn btn-primary" type="submit">Reseteaz&#259; parola</button>
-                                </p>
+                                <div class="form-group">
+                                    <div class="col-lg-12 align-center"><button class="btn btn-primary" type="submit">Reseteaz&#259; parola</button></div>
+                                </div>
                             </form>
 
                         <?php endif; ?>
 
                     <?php else: ?>
 
-                        <p class="msg warning">
+                        <div class="alert alert-warning">
                             Codul de resetare al parolei este incorect sau a fost deja utilizat. <br/>
                             Pentru a ob&#355;ine un nou cod acceseaz&#259; <a href="<?php fn_UI::page_url('index', array('p'=>'pwreset')); ?>">formularul de resetare al parolei</a> .
-                        </p>
+                        </div>
 
                     <?php endif; ?>
 
@@ -152,5 +165,4 @@ fn_Captcha::init(); $captcha_url = (FN_URL . '/snippets/captcha.php?o=1');
 
         </div>
     </div>
-    <div class="span2">&nbsp;</div>
 </div>

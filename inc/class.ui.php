@@ -29,21 +29,29 @@ class fn_UI{
     protected static $inline_js = array();
     protected static $inline_css = array();
 
-	public static function msg($msg, $type="note", $dismissable=true){
+    /**
+     * Returns an html formatted message
+     * @param $msg
+     * @param string $type
+     * @param bool $dismissable
+     * @param bool $translate
+     */
+	public static function msg($msg, $type="note", $dismissable=true, $translate=true){
 		if ( strlen($msg) ) echo '<div class="alert alert-' . $type . '"> ' . ( $dismissable ? '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">x</span></button>' : '' ) . $msg . ' </div>';
 	}
-	
+
+    /**
+     * Generates the css for the fatal error pages
+     */
 	public static function error_page_css(){ ?>
 		<style>
 		<!--
-		/*Import google web font*/
-		@import url(http://fonts.googleapis.com/css?family=Ubuntu:400,700&subset=latin,latin-ext);
 		
 		body{
 			margin: 0px;
 			padding: 0px;
 			color: #000;
-			font-family: 'Ubuntu', Verdana, Arial, Helvetica, sans-serif;
+			font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
 			font-size: 1.4em;
 			background: #F7F7F7;
 		}
@@ -102,11 +110,13 @@ class fn_UI{
 			<head>
 			<meta charset="utf-8" />
 			<title>FinFlow | <?php echo $title; ?> </title>
-			<?php fn_UI::error_page_css(); ?>
+            <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/bootstrap.min.css'); ?>" />
+            <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/font-awesome.min.css'); ?>" />
+            <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/style.css'); ?>" />
 			</head>
 			<body class="error">
 				<div class="wrap">
-					<p class="msg <?php echo $msgtype; ?>"><strong><?php echo $prefix; ?> </strong><?php echo $msg; ?></p>
+					<div class="alert alert-<?php echo $msgtype; ?>"><strong><?php echo $prefix; ?> </strong><?php echo $msg; ?></div>
 				</div>
 			</body>
 			</html>
@@ -405,7 +415,7 @@ class fn_UI{
         return ( $baseurl . http_build_query($setvars) );
     }
 
-	public static function pagination($total, $per_page=25, $current=0, $baseurl="?", $smartnav=15, $echo=TRUE, $bootstrap_compatible=TRUE){
+	public static function pagination($total, $per_page=25, $current=0, $baseurl="?", $smartnav=15, $echo=true, $bootstrap_compatible=true, $onpage_link=''){
 
         if (empty($per_page)) $per_page = intval($_GET['per_page']);
 

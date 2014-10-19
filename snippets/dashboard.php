@@ -50,14 +50,20 @@ foreach ($Cronjobs as $job){
 
 	<div class="<?php fn_UI::main_container_grid_class(); ?>">
 
-        <h4 class="balance treshold <?php echo $threshold_color; ?>">
-            Balan&#355;&#259;: <span class="value"> <?php echo $Currency->csymbol; ?> <?php echo fn_Util::format_nr($Balance); ?> </span>
-        </h4>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h3 class="balance treshold <?php echo $threshold_color; ?>">
+                    Balan&#355;&#259;: <span class="value"> <?php echo $Currency->csymbol; ?> <?php echo fn_Util::format_nr($Balance); ?> </span>
+                </h3>
+            </div>
+        </div>
 
-		<h4 class="page-heading">Raport pentru <?php echo fn_UI::translate_date(date(FN_MONTH_FORMAT)); ?></h4>
-		
-		<?php if ( count($Transactions) ): ?>
-			
+
+        <?php if ( count($Transactions) ): ?>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Raport pentru <?php echo fn_UI::translate_date(date(FN_MONTH_FORMAT)); ?></div>
+
 			<table class="table table-responsive table-bordered list report">
 				<tr>
 					<td>Rulaj: </td>
@@ -84,70 +90,74 @@ foreach ($Cronjobs as $job){
 				</tr>
 				<?php endif; ?>
 			</table>
-			
-			<br class="clear"/>
-			
-			<table class="table table-responsive table-striped table-bordered list transactions">
-				<tr>
-					<th>Tip</th>
-					<th>Suma</th>
-					<th>Moneda</th>
-					<th>Data</th>
-					<th>Etichete</th>
-					<th>&nbsp;</th>
-				</tr>
-				<?php foreach ($Transactions as $transaction):  $k++; $trclass= ( $k%2 == 0) ? 'even' : 'odd'; $currency = fn_Currency::get($transaction->currency_id); ?>
-				<tr class="<?php echo $trclass; ?>">
-					<td>
-                        <?php fn_UI::transaction_icon($transaction->optype); ?>
-                    </td>
-					<td><?php echo fn_Util::format_nr( $transaction->value ); ?></td>
-					<td><?php echo $currency->ccode; ?></td>
-					<td><?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, strtotime($transaction->sdate)) ); ?></td>
-					<td>
-						<?php $labels = fn_OP::get_labels($transaction->trans_id); $lc=0; if (count($labels))  foreach ($labels as $label): $lc++; ?>
-							<?php echo fn_UI::esc_html($label->title); ?><?php if ( $lc < count($labels) ) echo ", "; ?>
-						<?php endforeach;?>
-					</td>
-					<td class="align-center">
-                        <a class="btn btn-default" title="<?php echo fn_UI::esc_attr( $transaction->comments ); ?>" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>')">
-                            <span class="fa fa-info-circle"></span>
-                        </a>
-						<button class="btn btn-default" onclick="confirm_delete('<?php fn_UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
-							<span class="fa fa-remove"></span>
-						</button>
-					</td>
-				</tr>
-				<?php endforeach; ?>
-			</table>
-			
-			<p>
-				<a href="<?php fn_UI::page_url('transactions'); ?>">vezi toate tranzac&#355;iile &rarr;</a>
-			</p>
-			
-			<?php else: 
-			
-				fn_UI::msg(sprintf('Nu am g&#259;sit tranzac&#355;ii pentru luna curent&#259;. <a href="%s">Adaug&#259; tranzac&#355;ii &rarr;</a>', 'index.php?p=transactions&t=add'), fn_UI::$MSG_NOTE);
-				
-			endif; ?>
-		
-		<br class="clear"/>
+
+
+		</div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Ultimele tranzactii</div>
+
+            <table class="table table-responsive table-striped list transactions">
+
+                <tr>
+                    <th>Tip</th>
+                    <th>Suma</th>
+                    <th>Moneda</th>
+                    <th>Data</th>
+                    <th>Etichete</th>
+                    <th>&nbsp;</th>
+                </tr>
+
+                <?php foreach ($Transactions as $transaction):  $k++; $trclass= ( $k%2 == 0) ? 'even' : 'odd'; $currency = fn_Currency::get($transaction->currency_id); ?>
+                    <tr class="<?php echo $trclass; ?>">
+                        <td>
+                            <?php fn_UI::transaction_icon($transaction->optype); ?>
+                        </td>
+                        <td><?php echo fn_Util::format_nr( $transaction->value ); ?></td>
+                        <td><?php echo $currency->ccode; ?></td>
+                        <td><?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, strtotime($transaction->sdate)) ); ?></td>
+                        <td>
+                            <?php $labels = fn_OP::get_labels($transaction->trans_id); $lc=0; if (count($labels))  foreach ($labels as $label): $lc++; ?>
+                                <?php echo fn_UI::esc_html($label->title); ?><?php if ( $lc < count($labels) ) echo ", "; ?>
+                            <?php endforeach;?>
+                        </td>
+                        <td class="align-center">
+                            <a class="btn btn-default" title="<?php echo fn_UI::esc_attr( $transaction->comments ); ?>" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>')">
+                                <span class="fa fa-info-circle"></span>
+                            </a>
+                            <button class="btn btn-default" onclick="confirm_delete('<?php fn_UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
+                                <span class="fa fa-remove"></span>
+                            </button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </table>
+
+        </div>
+
+        <?php else:
+
+            fn_UI::msg(sprintf('Nu am g&#259;sit tranzac&#355;ii pentru luna curent&#259;. <a href="%s">Adaug&#259; tranzac&#355;ii &rarr;</a>', 'index.php?p=transactions&t=add'), fn_UI::$MSG_NOTE);
+
+        endif; ?>
 
         <?php if( count($Cronupdates) ): ?>
 
-		<h4 class="page-heading">Ultimele actualiz&#259;ri f&#259;cute de cronjob-uri</h4>
-		
-		<table class="table table-responsive table-striped list report">
-			<tr>
-				<td>Actualizare curs:</td>
-				<td class="align-right"><?php echo $Cronupdates[0];  ?></td>
-			</tr>
-			<tr>
-				<td>Actualizare tranzac&#355;ii prin email:</td>
-				<td class="align-right"><?php echo $Cronupdates[1];  ?></td>
-			</tr>
-		</table>
+            <div class="panel panel-default">
+                <div class="panel-heading">Ultimele actualiz&#259;ri f&#259;cute de cronjob-uri</div>
 
+                <table class="table table-responsive list report">
+                    <tr>
+                        <td>Actualizare curs:</td>
+                        <td class="align-right"><?php echo $Cronupdates[0];  ?></td>
+                    </tr>
+                    <tr>
+                        <td>Actualizare tranzac&#355;ii prin email:</td>
+                        <td class="align-right"><?php echo $Cronupdates[1];  ?></td>
+                    </tr>
+                </table>
+
+            </div>
         <?php endif; ?>
 		
 	</div>

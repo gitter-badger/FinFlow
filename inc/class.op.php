@@ -915,9 +915,7 @@ class fn_OP{
 
         }
 
-        $readable = ucfirst(trim($readable));
-
-        return strlen($readable) ? ( $before . '<h4 class="trans-readable-filter">' . $readable . '</h4>' . $after ) : "";
+        return strlen($readable) ? ( $before . trim($readable) . $after ) : "";
 
     }
 

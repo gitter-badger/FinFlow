@@ -4,14 +4,16 @@ $tab = isset($_GET['t']) ? urldecode($_GET['t']) : 'import'; $activetab = array(
 
 ?>
 
-<div class="row content">
-    <div class="span10">
+<div class="row">
+    <div class="<?php fn_UI::main_container_grid_class(); ?>">
 
         <ul class="nav nav-tabs">
             <li class="<?php echo $activetab['import']; ?>"><a href="<?php fn_UI::page_url('tools', array('t'=>'import'))?>">Import</a></li>
             <li class="<?php echo $activetab['export']; ?>"><a href="<?php fn_UI::page_url('tools', array('t'=>'export'))?>">Export </a></li>
             <!--- <li class="<?php echo $activetab['backup']; ?>"><a href="<?php fn_UI::page_url('tools', array('t'=>'backup'))?>">Backup </a></li> --->
         </ul>
+
+        <?php fn_UI::msg("Atentie! Aceasta catacteristica este experimentala.", fn_UI::$MSG_WARN); ?>
 
         <?php if ( $tab == 'import' ) include_once 'tools-import.php'; ?>
 

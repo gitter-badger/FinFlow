@@ -20,24 +20,24 @@
                     <li class="<?php echo $active['performance']; ?>"><a href="<?php fn_UI::page_url('performance'); ?>">Performan&#355;&#259;</a></li>
                     <li class="<?php echo $active['labels']; ?>"><a href="<?php fn_UI::page_url('labels'); ?>">Etichete</a></li>
                     <li class="<?php echo $active['accounts']; ?>"><a href="<?php fn_UI::page_url('accounts'); ?>">Conturi</a></li>
-                    <li class="<?php echo $active['contacts']; ?>"><a href="<?php fn_UI::page_url('contacts'); ?>">Contacte</a></li>
+                    <!--- <li class="<?php echo $active['contacts']; ?>"><a href="<?php fn_UI::page_url('contacts'); ?>">Contacte</a></li> --->
                     <li class="<?php echo $active['currencies']; ?>"><a href="<?php fn_UI::page_url('currencies'); ?>">Monede</a></li>
                     <li class="<?php echo $active['tools']; ?>"><a href="<?php fn_UI::page_url('tools'); ?>">Unelte</a></li>
                     <li class="<?php echo $active['settings']; ?>"><a href="<?php fn_UI::page_url('settings'); ?>">Set&#259;ri</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a class="btn pull-right logout" href="<?php fn_UI::page_url('logout'); ?>" title="de-autentificare">
+                        <a href="<?php fn_UI::page_url('logout'); ?>" title="de-autentificare">
                             <span class="fa fa-power-off"></span>
                         </a>
                     </li>
                     <li>
-                        <a class="btn pull-right default" onclick="fn_popup('<?php echo FN_URL; ?>/snippets/help.php?topic=<?php echo fn_UI::esc_html( $_GET['p'] ); ?>');" href="#help" title="ajutor">
+                        <a onclick="fn_popup('<?php echo FN_URL; ?>/help/<?php echo fn_UI::esc_html( urlencode( $_GET['p'] ) ); ?>.html#<?php echo urlencode($_GET['t']); ?>');" href="#help" title="ajutor">
                             <span class="fa fa-question-circle"></span>
                         </a>
                     </li>
                     <li>
-                        <a class="btn pull-right default" href="<?php echo fn_UI::get_file_url('/setup/upgrade.php', false); ?>" title="verifica actualizari">
+                        <a href="<?php echo fn_UI::get_file_url('/setup/upgrade.php', false); ?>" title="verifica actualizari">
                             <span class="fa fa-cloud-download"></span>
                         </a>
                     </li>
