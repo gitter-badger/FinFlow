@@ -12,10 +12,9 @@
                 <div class="panel-body">
                     <?php
 
-                        if (count($_POST)){
+                        $errors 	= $notices = array();
 
-                            $errors 	= 	array();
-                            $notice	=	array();
+                        if (count($_POST)){
 
                             if ( empty($_POST['email']) )  $errors[] = "Email-ul lipse&#351;te.";
                             if ( empty($_POST['pass']) )    $errors[] = "Parola lipse&#351;te.";
@@ -26,7 +25,7 @@
                             if ( empty($errors) ){
 
                                 if ( fn_User::authenticate($_POST['email'], $_POST['pass']) )
-                                    $notice[] = "Ai fost autentificat...";
+                                    $notices[] = "Ai fost autentificat...";
                                 else
                                     $errors[] = "Verific&#259; email-ul &#351;i parola. Cel pu&#355;in una dintre ele este gre&#351;it&#259;.";
 
@@ -34,7 +33,7 @@
 
                         }
 
-                        fn_UI::show_errors($errors); fn_UI::show_notes($notes); ?>
+                        fn_UI::show_errors($errors); fn_UI::show_notes($notices); ?>
 
                     <?php if (fn_User::is_authenticated() ): ?>
                         <script type="text/javascript">window.location.href='<?php fn_UI::page_url('dashboard'); ?>';</script>

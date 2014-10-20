@@ -348,7 +348,7 @@ class fn_OP_Pending{
 
         $transaction = self::get($transaction); $labels = array();
 
-        $metadata = @unserialize($transaction->metadata); if( count($metadata['labels']) ){
+        $metadata = @unserialize($transaction->metadata); if( isset($metadata['labels']) and count($metadata['labels']) ){
             foreach ($metadata['labels'] as $label_id) $labels[] = fn_Label::get_by($label_id, 'id');
         }
 
@@ -365,11 +365,18 @@ class fn_OP_Pending{
         return null;
     }
 
+    /**
+     * Extracts meta data for a transaction
+     * @param $transaction
+     * @param $key
+     * @param null $default
+     * @return array|null
+     */
     public static function get_metdata( $transaction, $key, $default=null ){
 
         $transaction = self::get($transaction); $metadata = @unserialize( $transaction->metadata );
 
-        $value = $metadata[$key];
+        $value = isset( $metadata[$key] ) ? $metadata[$key] : null;
 
         if( $key == 'attachments' )
             $value = @array_values( $metadata['files'] );

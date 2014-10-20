@@ -75,6 +75,11 @@ if ( !$fndb->connected and defined('FN_DB_HOST') )
 define('FN_TIMEZONE', fn_Settings::get('timezone', 'Europe/London')); date_default_timezone_set(FN_TIMEZONE);
 //--- setup timezone ---//
 
+//--- setup default vars ---//
+if( ! isset($_GET['p']) ) $_GET['p'] = 'dashboard';
+if( ! isset($_GET['t']) ) $_GET['t'] = null;
+//--- setup default vars ---//
+
 if( !defined('FN_IS_CRON') ) @session_start();
 
 $fnPublicPages = array('login', 'pwreset');

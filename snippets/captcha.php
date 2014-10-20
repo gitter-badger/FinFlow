@@ -25,7 +25,7 @@ function output_captcha($width, $height, $fontsize){
 
 if( fn_Captcha::is_initialized() ){
 
-    if( $_GET['mag'] ){
+    if( isset($_GET['mag']) and $_GET['mag'] ){
         if( isset($_GET['htmlmag']) ){ ?>
             <html>
                 <link rel="stylesheet" type="text/css" media="all" href="<?php echo FN_URL; ?>/styles/bootstrap.min.css" />

@@ -73,6 +73,12 @@ body.transaction-details{
     background: #ffffff;
 }
 
+body.error,
+body.loading{
+    padding-top: 20px;
+    font-size: 1.4em;
+}
+
 .forecast-wrap .progress,
 .forecast-wrap .progress-bar{
     line-height: normal;
@@ -99,4 +105,30 @@ body.transaction-details{
 
 .widget-wclock .form-group:last-child{
     margin-bottom: 0px;
+}
+
+.fn-log-messages{
+    display: block;
+    width: 100%;
+    margin: 0px auto;
+    margin-top: 40px;
+    clear: both;
+}
+
+.fn-log-messages > *{
+    margin: 0px auto;
+    width: 90%;
+    max-height: 400px;
+    display: block;
+    overflow: auto;
+    border: 2px solid #dddddd;
+    border-radius: 4px;
+    background: #000000;
+}
+
+.fn-log-messages pre{
+    border: none;
+    background: none;
+    color: #ffffff;
+    font-size: 1em;
 }

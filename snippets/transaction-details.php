@@ -39,7 +39,7 @@ if( count($Transaction) and isset($Transaction->trans_id) ){
 <title>FinFlow | Detalii tranzac&#355;ie #<?php echo $Transaction->trans_id; ?></title>
 <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('/styles/bootstrap.min.css');; ?>" />
 <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/style.css'); ?>" />
- <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/font-awesome.min.css'); ?>" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/font-awesome.min.css'); ?>" />
 </head>
 <body id="page-transaction-details" class="transaction-details" role="document">
 
@@ -150,6 +150,7 @@ if( count($Transaction) and isset($Transaction->trans_id) ){
            <?php else: ?>
                <div class="alert alert-warning">Tranzactia nu exist&#259; sau a fost &#351;tears&#259;.</div>
            <?php endif; ?>
+
        </div>
    </div>
 </div>

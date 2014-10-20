@@ -46,7 +46,7 @@ else:
     $Transactions    = fn_OP_Pending::get_period($cfilters);
     $Total              = fn_OP_Pending::get_period_sum($cfilters);
 
-    $Income   = fn_OP_Pending::get_period_sum( array_merge($cfilters, array('type'=>FN_OP_IN)) );
+    $Income    = fn_OP_Pending::get_period_sum( array_merge($cfilters, array('type'=>FN_OP_IN)) );
     $Outcome = fn_OP_Pending::get_period_sum( array_merge($cfilters, array('type'=>FN_OP_OUT)) ); ?>
 
     <?php if( count($Transactions) ): ?>

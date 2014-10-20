@@ -1,6 +1,5 @@
 <?php
 
-
 class fn_Util{
 
     /**

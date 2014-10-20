@@ -9,7 +9,6 @@ include_once (INCPATH . '/class.cronassistant.php');
 
 global $fnexr; $testing = isset($_GET['test']) ? TRUE : FALSE; $in_window = ( ( php_sapi_name() != 'cli' ) and strlen($_SERVER['REMOTE_ADDR']) );
 
-
 if ( $fnexr->isServiceAvailable() ){
 	
 	$defaultCurrency = fn_Currency::get_default();

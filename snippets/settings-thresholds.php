@@ -1,5 +1,8 @@
 <?php if ( !defined('FNPATH') ) exit;
 
+if( !isset($Errors) ) $Errors = array();
+if( !isset($Notices) ) $Notices = array();
+
 $Settings = array(
     'state'                        => trim(fn_Settings::get('beal_state')),
     'balance_tsh_green'    => trim(fn_Settings::get('balance_tsh_green')),

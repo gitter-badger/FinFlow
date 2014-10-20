@@ -149,7 +149,7 @@ class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements f
 
         $origCurrency = $this->origCurrency;
 
-        if( session_id() and session_start() ){
+        $session_started = session_id() ? true : session_start(); if( $session_started ){
 
             $base = isset($_SESSION[$hash . '_pbase']) ? $_SESSION[$hash . '_pbase'] : $base; $_SESSION[$hash . '_pbase'] = $base;
 
@@ -181,8 +181,8 @@ class OERFree_ExchangeRateParser extends fn_ExchangeRatesParserBase implements f
 
             $this->setBaseCurrency($origCurrency); //reset original currency
 
-            unset($_SESSION[$hash . '_pcurrencies']);
-            unset($_SESSION[$hash . '_pjson']);
+            unset( $_SESSION[$hash . '_pcurrencies'] );
+            unset( $_SESSION[$hash . '_pjson'] );
 
             $json['rates'] = $rates; $json = json_encode($json); $path = $this->getCacheFilePath();
 

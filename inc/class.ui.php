@@ -117,7 +117,9 @@ class fn_UI{
 			<body id="page-error" class="error">
 				<div class="wrap container-fluid">
 					<div class="row">
-                        <div class="col-lg-12"><div class="alert alert-<?php echo $msgtype; ?>"><strong><?php echo $prefix; ?> </strong><?php echo $msg; ?></div></div>
+                        <div class="col-lg-12">
+                            <div class="alert alert-<?php echo $msgtype; ?>"><strong><?php echo $prefix; ?> </strong><?php echo $msg; ?></div>
+                        </div>
 					</div>
 				</div>
                 <script type="text/javascript" src="<?php fn_UI::asset_url('js/jquery.min.js'); ?>"></script>
@@ -140,13 +142,23 @@ class fn_UI{
         <head>
             <meta charset="utf-8" />
             <title>FinFlow | loading </title>
-            <?php fn_UI::error_page_css(); ?>
+            <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/bootstrap.min.css'); ?>" />
+            <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/font-awesome.min.css'); ?>" />
+            <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/style.css'); ?>" />
         </head>
-        <body class="error">
-        <div class="wrap">
-            <p style="text-align: center"><img src="<?php echo FN_URL; ?>/images/preloader.gif" align="absmiddle"/></p>
-            <p class="msg" style="text-align: center;"></strong><?php echo $msg; ?></p>
-        </div>
+        <body id="page-loading" class="loading">
+            <div class="wrap container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p style="text-align: center">
+                            <img src="<?php echo FN_URL; ?>/images/preloader.gif" align="absmiddle"/><br/><br/>
+                        </p>
+                        <div class="clearfix"></div>
+                        <div class="alert alert-info" style="text-align: center;">
+                            <em><?php echo $msg; ?></em>
+                        </div>
+                    </div>
+            </div>
         </body>
         </html>
         <?php

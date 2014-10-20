@@ -1,6 +1,5 @@
 <?php
 
-
 //cron states
 define('FN_CRON_STATE_RUNNING'		, 'running');
 define('FN_CRON_STATE_FINISHED'		, 'finished');

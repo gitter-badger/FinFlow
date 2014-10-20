@@ -5,6 +5,10 @@
  * @version 1.0
  */
 
+/**
+ * Class fn_Base
+ * @deprecated
+ */
 class fn_Base{
 
     public static function db_table_name($name, $prefix=null){

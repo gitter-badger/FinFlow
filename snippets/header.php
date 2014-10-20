@@ -1,4 +1,4 @@
-<?php if ( !defined('FNPATH') ) exit(); $active=array(); if ( isset($_GET['p']) ): $active[urldecode($_GET['p'])] = 'active'; else: $active['index']='active'; endif; ?>
+<?php if ( !defined('FNPATH') ) exit(); $active=array(); if ( strlen($_GET['p']) ): $active[urldecode($_GET['p'])] = 'active'; else: $active['index']='active'; endif; ?>
 
 <div class="header">
     <div class="navbar navbar-default navbar-fixed-top" role="navigation">

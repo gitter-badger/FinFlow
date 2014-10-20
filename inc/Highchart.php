@@ -8,11 +8,12 @@
 *
 * @author Gonçalo Queirós <mail@goncaloqueiros.net>
 */
+
 include_once "HighchartOption.php";
 include_once "HighchartJsExpr.php";
 
-class Highchart implements ArrayAccess
-{
+class Highchart implements ArrayAccess{
+
     //The chart type.
     //A regullar higchart
     const HIGHCHART = 0;

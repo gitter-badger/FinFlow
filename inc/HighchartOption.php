@@ -8,8 +8,8 @@
 *
 * @author Gonçalo Queirós <mail@goncaloqueiros.net>
 */
-class HighchartOption implements ArrayAccess
-{
+
+class HighchartOption implements ArrayAccess{
     /**
      * An array of HighchartOptions
      *

@@ -9,15 +9,16 @@ class fn_Importer{
     private $XML       = NULL;
     private $filepath = 'export.xml';
 
-    /**
-     * List of supported versions
-     * @var array
-     */
-    public static $compatibility = array('0.7.2', '0.8.8', '0.9.2', FN_VERSION);
-
 
     public function __construct($filepath='finflow-export.data'){
         $this->filepath = trim($filepath);
+
+        //--- try to guess the file type based on file extension ---//
+        //--- try to guess the file type based on file extension ---//
+    }
+
+    public function determine_import_type(){
+        //TODO ...
     }
 
     /**
@@ -25,29 +26,46 @@ class fn_Importer{
      * @param string $type
      * @return bool|int
      */
-    public function import($type='mysqldump'){ //TODO add mysqldump support
+    public function import($type=false){ //TODO add mysqldump support
 
-        $contents = @file_get_contents($this->filepath);
+        switch($type){
+
+            case 'xml': return $this->import_xml();
+            case 'mysql': return $this->import_mysqldump();
+            case 'csv': return $this->import_csv();
+
+        }
+
+        return false; //no compatible file found
+
+    }
+
+
+    /**
+     * Imports data from a FinFlow export xml file
+     * @return bool|int
+     * @deprecated
+     */
+    public function import_xml(){
+
+        $contents = @file_get_contents( $this->filepath );
 
         if( $contents ){
-            if( strrpos($contents, '<FinFlowExportXML') === FALSE) //it is an encrypted file
+
+            if( strrpos($contents, '<FinFlowExportXML') === false ) //it is an encrypted file
                 $contentXML = fn_gCrypt::decrypt($contents);
             else
                 $contentXML = $contents;
 
-            return $this->import_xml($contentXML);
         }
-        else $this->Errors[] = "Fisierul pentru import, nu contine date sau este inaccesibil.";
+        else{
+            $this->Errors[] = "Fisierul pentru import, nu contine date sau este inaccesibil."; return false;
+        }
 
-        return FALSE;
-    }
 
+        libxml_use_internal_errors(true);
 
-    public function import_xml($xmlstring){
-
-        libxml_use_internal_errors(TRUE);
-
-        $this->XML = simplexml_load_string($xmlstring);
+        $this->XML = simplexml_load_string($contentXML);
 
         if( empty($this->XML) ){
 
@@ -66,37 +84,48 @@ class fn_Importer{
 
         $version = @$this->XML->attributes()->version;
 
-        if( in_array($version, self::$compatibility) ){
-            //--- import data ---//
+        //--- import data ---//
 
-            $data_count = 0;
+        $data_count = 0;
 
-            //settings
-            $scount = fn_Settings::import_osmxml( $this->XML->settings ); $data_count+= $scount;
+        //settings
+        $scount = fn_Settings::import_osmxml( $this->XML->settings ); $data_count+= $scount;
 
-            //currencies
-            $SyncCurrencies = fn_Currency::import_osmxml( $this->XML->currencies ); $data_count+= count($SyncCurrencies);
+        //currencies
+        $SyncCurrencies = fn_Currency::import_osmxml( $this->XML->currencies ); $data_count+= count($SyncCurrencies);
 
-            //currencies history
-            $hcount = fn_Currency::import_osmxml_history($this->XML->history, $SyncCurrencies); $data_count+= $hcount;
+        //currencies history
+        $hcount = fn_Currency::import_osmxml_history($this->XML->history, $SyncCurrencies); $data_count+= $hcount;
 
-            //labels
-            $SyncLabels = fn_Label::import_osmxml($this->XML->labels); $data_count+= count($SyncLabels);
+        //labels
+        $SyncLabels = fn_Label::import_osmxml($this->XML->labels); $data_count+= count($SyncLabels);
 
-            //accounts
-            $SyncAccounts = fn_Accounts::import_osmxml($this->XML->accounts, $SyncCurrencies); $data_count+= count($SyncAccounts);
+        //accounts
+        $SyncAccounts = fn_Accounts::import_osmxml($this->XML->accounts, $SyncCurrencies); $data_count+= count($SyncAccounts);
 
-            //transactions
-            $tcount = fn_OP::import_osmxml($this->XML->transactions, $SyncCurrencies, $SyncLabels, $SyncAccounts); $data_count+= $tcount;
+        //transactions
+        $tcount = fn_OP::import_osmxml($this->XML->transactions, $SyncCurrencies, $SyncLabels, $SyncAccounts); $data_count+= $tcount;
 
-            return $data_count; //how many records have been imported
+        return $data_count; //how many records have been imported
 
-            //--- import data ---//
-        }
-        else $this->Errors[] = "Versiunea fi&#351;ierului export nu este compatibil&#259; cu aceast&#259 versiune a FinFlow.";
+        //--- import data ---//
 
+    }
 
-        return false;
+    public function get_archived_file_extension(){
+        //TODO...
+    }
+
+    public function import_mysqldump(){
+        //TODO add support for mysqldump
+    }
+
+    public function import_csv(){
+        //TODO add support for mysqldump
+    }
+
+    public function guess_csv_fields(){
+        //TODO...
     }
 
     public function remove_file(){

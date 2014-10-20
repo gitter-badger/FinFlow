@@ -2,10 +2,10 @@
 
 include_once ( FNPATH . '/inc/class.importer.php' );
 
-if( isset($_POST['import']) ){
+$imported = false;
+$errors      = $notices = array();
 
-    $imported = false;
-    $errors      = array();
+if( isset($_POST['import']) ){
 
     if( strlen($_FILES['importfile']['name']) ){
 

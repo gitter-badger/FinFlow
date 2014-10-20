@@ -8,8 +8,8 @@
 *
 * @author Gonçalo Queirós <mail@goncaloqueiros.net>
 */
-class HighchartJsExpr
-{
+
+class HighchartJsExpr{
     /**
      * The javascript expression
      *

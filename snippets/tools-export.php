@@ -2,11 +2,14 @@
 
 include_once ( FNPATH . '/inc/class.exporter.php' );
 
+$exported = false;
+
+$errors = $notices = array();
+
 if( isset($_POST['export']) ){
 
     $encrypted = $_POST['encrypted'] == 0 ? false : true;
 
-    $exported   = false;
     $exportFile = $encrypted ? (FN_BACKUP_DIR . '/finflow-export-' . date('Y-m-d') . '.fdata' ) : (FN_BACKUP_DIR . '/finflow-export-' . date('Y-m-d') . '.xml' );
 
     $_SESSION['fn_exported_file'] = $exportFile;

@@ -125,7 +125,7 @@ class fn_Captcha{
 		$pos_x = ($width - $size * strlen($randomStr))/2;
 	
 		imagettftext($source, $size, 0, $pos_x, $pos_y, $font_color, $font, $randomStr);
-	
+
 		header('Content-Type: image/png');
 	
 		//Output the image

@@ -1,11 +1,8 @@
-<?php if ( !defined('FNPATH') ) exit();
+<?php if ( !defined('FNPATH') ) exit(); $tab = isset($_GET['t']) ? urldecode($_GET['t']) : 'mainccs'; $activetab = array(); $activetab[$tab] = 'active';
 
-$tab = isset($_GET['t']) ? urldecode($_GET['t']) : 'mainccs'; $activetab = array(); $activetab[$tab] = 'active';
+$errors 	= $notices = array();
 
 if ( count($_POST) and ( $tab != 'myaccount' ) ){
-
-	$errors 	= array();
-	$notices = array();
 
     $data = $_POST;
 
@@ -25,10 +22,10 @@ if ( count($_POST) and ( $tab != 'myaccount' ) ){
 if ( $tab == 'emailupdate' ){
 	
 	$Settings = array(
-			'state'			=> trim(fn_Settings::get('mup_state')),
+			'state'		=> trim(fn_Settings::get('mup_state')),
 			'host'			=> trim(fn_Settings::get('mup_host')),
 			'port'			=> intval(fn_Settings::get('mup_port')),
-			'encryption'	=> trim(fn_Settings::get('mup_encription')),
+			'encryption'=> trim(fn_Settings::get('mup_encription')),
 			'username'	=> trim(fn_Settings::get('mup_user')),
 			'password'	=> trim(fn_Settings::get('mup_password'))
 	);
@@ -153,7 +150,7 @@ if( $tab == 'exrparser' ) {
 		
 		<?php if ($tab == 'emailupdate'): ?>
 		
-			<?php fn_UI::show_errors( $errorMsg ); fn_UI::show_notes( $successMsg )?>
+			<?php fn_UI::show_errors( $errors ); fn_UI::show_notes( $notices )?>
 		
 			<form class="form form-horizontal" target="_self" method="post" name="settings-form" id="settingsForm">
 

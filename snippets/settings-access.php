@@ -1,4 +1,4 @@
-<?php if ( !defined('FNPATH') ) exit;
+<?php if ( !defined('FNPATH') ) exit; $Errors = $Notices = array();
 
 if( isset($_GET['edit']) ){
     $user_id = intval($_GET['edit']);  $User = fn_User::get($_GET['edit']); $formsubmitURL = fn_UI::page_url('settings', array('t'=>'myaccount', 'edit'=>$user_id), false);
@@ -10,9 +10,6 @@ else{
 if( isset($_GET['del']) ) fn_User::delete( $_GET['del'] );
 
 if( count($_POST) ){
-
-    $Errors     = array();
-    $Notices   = array();
 
     if( !fn_CheckValidityOf::stringlen($_POST['password'], 6))
         $Errors[] = "Parola trebuie sa aib&#259; minim 6 caractere";
