@@ -179,8 +179,19 @@ class fn_Util{
 		return $input;
 		
 	}
-	
-	
+
+    public static function get_input($key, $xss_filter=false){
+        $value = isset($_GET[$key]) ? $_GET[$key] : ( isset($_POST[$key]) ? $_POST[$key] : null ); if( $value ) return ( $xss_filter ? self::xss_filter($value) : $value ); return null;
+    }
+
+    public static function array_value($array, $key, $xss_filter=false){
+        $value = isset($array[$key]) ? $array[$key] : null; if( $value ) return ( $xss_filter ? self::xss_filter($value) : $value ); return null;
+    }
+
+    public static function xss_filter($input){
+        return filter_var($input, FILTER_SANITIZE_STRING);
+    }
+
 	public static function get_relative_time($days="", $months="", $years="", $relative=NULL, $past=TRUE, $format='Y-m-d'){
 		
 		if ( empty($relative) )
@@ -848,6 +859,15 @@ class fn_Util{
 
     }
 
+    /**
+     * Returns the full config file path
+     * @param string $default
+     * @return string
+     */
+    public static function cfg_file_path($default='/config.php'){
+        $env = FN_ENVIRONMENT; if( file_exists( FNPATH . "/config-{$env}.php") ) return ( FNPATH . "/config-{$env}.php" ); return ( FNPATH . $default );
+    }
+
     public static function is_development_environment(){
         return FN_ENVIRONMENT == 'development';
     }
@@ -856,8 +876,8 @@ class fn_Util{
         return FN_ENVIRONMENT == 'unittest';
     }
 
-    public static function is_test_environment(){
-        return ( FN_ENVIRONMENT == 'unittest' ) or ( FN_ENVIRONMENT == 'test' );
+    public static function is_staging_environment(){
+        return ( FN_ENVIRONMENT == 'staging' ) or ( FN_ENVIRONMENT == 'test' );
     }
 
     public static function is_production_environment(){

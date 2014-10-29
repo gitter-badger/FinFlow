@@ -36,5 +36,3 @@ if( $file ) {
 
 }
 else fn_UI::fatal_error("Fi&#351;ierul " . basename($file) . " nu poate fi g&#259;sit.");
-
-?>

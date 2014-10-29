@@ -260,8 +260,20 @@ function fn_check_safe_browser_file(fld) {
     $('.toobig-file-warn.' + alertcs).hide(); $(fld).next('.unsafe-file-warn.' + alertcs).hide(); return true;
 }
 
-function fn_resize_to_height(element, maxHeight){
-    $(element).css('height', maxHeight+'px');
+function fn_resize_to_height(element, paddingBottom){
+
+    var winHeight = $(window).height();
+    var offsetTop  = $(element).offset().top;
+
+    var elemHeight = $(element).height();
+
+    paddingBottom = (paddingBottom === undefined) ? 0 : parseInt(paddingBottom);
+
+    var maxHeight = ( winHeight - offsetTop - paddingBottom);
+
+    $(element).css({height: maxHeight + 'px'});
+
+    return maxHeight;
 }
 
 $(document).ready(function(){
@@ -323,10 +335,17 @@ $(document).ready(function(){
     });
     //--- toggle transaction repeats input ---//
 
-    $('#make_label').click(function(){ if($(this).is(':checked')) $('#labels').val(''); });
 
+    //--- resize file embed area to current window height ----//
     if( $('#page-file-preview .file-embed').length > 0 ){
-        $('#page-file-preview .file-embed').css({height: '200px'});
+
+        $(window).resize(function(){
+            if( appliedH = fn_resize_to_height('.file-embed iframe, .file-embed video, .file-embed audio, .file-embed img', 20) )
+                $('.embed-responsive').css('padding-bottom', appliedH + 'px');
+        });
+
+        $(window).resize();
     }
+    //--- resize file embed area to current window height ----//
 
 });

@@ -24,14 +24,15 @@ class fn_OP{
      * @param null $date
      * @return bool
      */
-    public static function add($type, $value=1, $currency_id=1, $comments="", $date=NULL){
+    public static function add($type, $value=1, $currency_id=1, $comments="", $date=null){
+
         global $fndb, $fnsql;
 
-        $type = $type == FN_OP_IN ? FN_OP_IN : FN_OP_OUT;
-        $value= floatval( $value );
-        $date = empty($date) ? date(FN_MYSQL_DATE) : date(FN_MYSQL_DATE, @strtotime($date));
+        $type         = $type == FN_OP_IN ? FN_OP_IN : FN_OP_OUT;
+        $value        = floatval( $value );
+        $date         = empty($date) ? date(FN_MYSQL_DATE) : date(FN_MYSQL_DATE, @strtotime($date));
 
-        $flow = fn_OP::consistent_flow($type, $value, $currency_id, $date);
+        $preflow = array('currency_id'=>$currency_id, 'value'=>$value); $flow = fn_OP::consistent_flow($type, $value, $currency_id, $date);
 
         extract($flow);
 
@@ -39,9 +40,20 @@ class fn_OP{
 
         $fnsql->insert(self::$table, array('optype'=>$type, 'value'=>$value, 'currency_id'=>$currency_id, 'comments'=>$comments, 'sdate'=>$date) );
 
-        if( $fndb->execute_query( $fnsql->get_query() ) ) return $fndb->last_insert_id;
+        if( $fndb->execute_query( $fnsql->get_query() ) ) {
 
-        return FALSE;
+            $trans_id = $fndb->last_insert_id;
+
+            if( $preflow['currency_id'] != $currency_id ) {
+                self::save_metadata($trans_id, 'initial_currency_id', $preflow['currency_id']);
+                self::save_metadata($trans_id, 'initial_value', $preflow['value']);
+            }
+
+            return $trans_id;
+
+        }
+
+        return false;
 
     }
 	
@@ -176,9 +188,14 @@ class fn_OP{
 		return $fndb->get_rows( $fnsql->get_query() );
 		
 	}
-	
-	
+
+    /**
+     * Returns transaction labels
+     * @param $trans_id
+     * @return array|null
+     */
 	public static function get_labels($trans_id){
+
 		global $fndb, $fnsql;
 		
 		$trans_id = intval($trans_id);
@@ -288,7 +305,7 @@ class fn_OP{
 		$fnsql->group_by($fields);
 		
 	}
-	
+
 	
 	public static function get_timely_sum($filters, $span="monthly"){
 		
@@ -300,7 +317,7 @@ class fn_OP{
 			$currency_id = intval($filters['currency_id']);
 		}
 		else {
-			$currency = fn_Currency::get_default(); $currency_id = $currency->currency_id;
+			$currency = fn_Currency::get_default(); $currency_id = is_object($currency) ? $currency->currency_id : 0;
 		}
 		
 		//--- first selet sum in all diferent currencies available ---//
@@ -389,63 +406,60 @@ class fn_OP{
 	
 	
 	public static function get_sum($filters){
-		
-		global $fndb, $fnsql;
 
-		$Total = 0;
-		
-		//--- first select sums in all different currencies available ---//
-		
-		if ( isset($filters['currency_id']) ){
-			$currency_id = intval($filters['currency_id']);
-		}
-		else {
-			$currency = fn_Currency::get_default(); $currency_id = $currency->currency_id;
-		}
-		
-		$sumbycc = array();
-		
-		$fnsql->init(SQLStatement::$SELECT);
-		$fnsql->table(self::$table);
-		$fnsql->distinct('currency_id');
-		$fnsql->from();
-		
-		if ( isset($filters['labels']) or isset($filters['ignore_labels']) )
-			$fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
-		
-		self::apply_filters($filters);
-		
-		$Rows = $fndb->get_rows( $fnsql->get_query() );
-		
-		if ( count($Rows) ) foreach ($Rows as $row){
-			
-			//--- now get the value of the transactions in this one currency ---//
-			$fnsql->init(SQLStatement::$SELECT);
-			$fnsql->table(self::$table);
-			$fnsql->sum('value', 'ctotal');
-			$fnsql->from();
-			
-			if ( isset($filters['labels']) )
-				$fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
-			
-			self::apply_filters( array_merge($filters, array('currency_id'=>$row->currency_id)) );
+        global $fndb, $fnsql;
 
-			$sum = $fndb->get_row( $fnsql->get_query() );
-			$sum = floatval($sum->ctotal);
-			
-			if ( ( $sum > 0 ) and ( $currency_id !=  $row->currency_id) ) //convert it
-				$sum = fn_Currency::convert($sum, $row->currency_id, $currency_id, 'id');
-			
-			$Total+= $sum;
-			
-			//--- now get the value of the transactions in this one currency ---//
-		}
+        $Total = 0;
 
         //--- first select sums in all different currencies available ---//
-		
-		return $Total;
-		
-		
+
+        if ( isset($filters['currency_id']) ){
+            $currency_id = intval($filters['currency_id']);
+        }
+        else {
+            $currency = fn_Currency::get_default(); $currency_id = is_object( $currency ) ? $currency->currency_id : 0;
+        }
+
+        $fnsql->init(SQLStatement::$SELECT);
+        $fnsql->table(self::$table);
+        $fnsql->distinct('currency_id');
+        $fnsql->from();
+
+        if ( isset($filters['labels']) or isset($filters['ignore_labels']) )
+            $fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
+
+        self::apply_filters($filters);
+
+        $Rows = $fndb->get_rows( $fnsql->get_query() );
+
+        if ( count($Rows) ) foreach ($Rows as $row){
+
+            //--- now get the value of the transactions in this one currency ---//
+            $fnsql->init(SQLStatement::$SELECT);
+            $fnsql->table(self::$table);
+            $fnsql->sum('value', 'ctotal');
+            $fnsql->from();
+
+            if ( isset($filters['labels']) )
+                $fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
+
+            self::apply_filters( array_merge($filters, array('currency_id'=>$row->currency_id)) );
+
+            $sum = $fndb->get_row( $fnsql->get_query() );
+            $sum = floatval($sum->ctotal);
+
+            if ( ( $sum > 0 ) and ( $currency_id !=  $row->currency_id) ) //convert it
+                $sum = fn_Currency::convert($sum, $row->currency_id, $currency_id, 'id');
+
+            $Total+= $sum;
+
+            //--- now get the value of the transactions in this one currency ---//
+        }
+
+        //--- first select sums in all different currencies available ---//
+
+        return $Total;
+
 	}
 
     public static function get_balance($filters=NULL, $include_accounts=TRUE){
@@ -467,7 +481,7 @@ class fn_OP{
             if( isset($filters['currency_id']) )
                 $currency_id = $filters['currency_id'];
             else{
-                $Currency = fn_Currency::get_default(); $currency_id= $Currency->currency_id;
+                $Currency = fn_Currency::get_default(); $currency_id = is_object($Currency) ? $Currency->currency_id : 0;
             }
 
             $Income+= fn_Accounts::get_total_balance($currency_id);
@@ -524,7 +538,8 @@ class fn_OP{
      */
     public static function consistent_flow_by_account($account_id, $value, $currency_id, $date=FALSE){
 
-        $account = fn_Accounts::get( $account_id );
+        $account   = fn_Accounts::get( $account_id );
+        $defaultCC = fn_Currency::get_default();
 
         if( $account ) {
 
@@ -647,7 +662,7 @@ class fn_OP{
 		$key	  		= $fndb->escape($key);
 		$value	 	= $fndb->escape($value);
 		
-		$fnsql->select('meta_id,meta_value', self::$table_meta, array('meta_key'=>$key, 'trans_id'=>$trans_id));
+		$fnsql->select('meta_id, meta_value', self::$table_meta, array('meta_key'=>$key, 'trans_id'=>$trans_id));
 		
 		$exists      = $fndb->get_row( $fnsql->get_query() );
         $mvalue    = FALSE;
@@ -711,16 +726,17 @@ class fn_OP{
 		
 		$type = strtolower($type);
 		
-		$currency = fn_Currency::get_by_code($ccode);
-		$value	  = floatval($value);
-		$type      = in_array($type, array(FN_OP_IN, FN_OP_OUT)) ? $type : FALSE;
-        $date      = empty($timestamp) ? date(FN_MYSQL_DATE) : date(FN_MYSQL_DATE, $timestamp);
+		$currency      = fn_Currency::get_by_code($ccode);
+		$value	       = floatval($value);
+		$type           = in_array($type, array(FN_OP_IN, FN_OP_OUT)) ? $type : FALSE;
+        $date           = empty($timestamp) ? date(FN_MYSQL_DATE) : date(FN_MYSQL_DATE, $timestamp);
 
         $currency_id = isset($currency->currency_id) ? $currency->currency_id : 0;
 
 		if ( $currency and isset($currency->currency_id) and $type and $value){
-			
-			$flow = self::consistent_flow($type, $value, $currency->currency_id, $date);
+
+            $preflow = array('currency_id'=>$currency_id, 'value'=>$value);
+            $flow      = self::consistent_flow($type, $value, $currency->currency_id, $date);
 			
 			extract($flow); //import vars
 			
@@ -730,6 +746,13 @@ class fn_OP{
 				
 				$trans_id = $fndb->last_insert_id;
 				$labelsIds= array();
+
+                //--- set original currency id ---//
+                if( $preflow['currency_id'] != $currency_id ) {
+                    self::save_metadata($trans_id, 'initial_currency_id', $preflow['currency_id']);
+                    self::save_metadata($trans_id, 'initial_value', $preflow['value']);
+                }
+                //--- set original currency id ---//
 
 				//--- add labels and set associations ---//
 				if ( count($labels) ) foreach ($labels as $label){
@@ -799,7 +822,7 @@ class fn_OP{
 		}
 		
 		
-		return NULL;
+		return null;
 	}
 
     public static function update($trans_id, $data){

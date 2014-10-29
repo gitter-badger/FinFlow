@@ -46,8 +46,8 @@ $Labels = fn_Label::get_all($offset, $per_page); ?>
 		<?php $tab = isset($_GET['t']) ? urldecode($_GET['t']) : 'list'; $activetab = array(); $activetab[$tab] = 'active'; ?>
 		
 		<ul class="nav nav-tabs">
-			<li class="<?php echo $activetab['list']; ?>"><a href="<?php fn_UI::page_url('labels', array('t'=>'list'))?>">Lista</a></li>
-			<li class="<?php echo $activetab['add']; ?>"><a href="<?php fn_UI::page_url('labels', array('t'=>'add'))?>"> Adaug&#259; </a></li>
+			<li class="<?php echo av($activetab, 'list'); ?>"><a href="<?php fn_UI::page_url('labels', array('t'=>'list'))?>">Lista</a></li>
+			<li class="<?php echo av($activetab, 'add'); ?>"><a href="<?php fn_UI::page_url('labels', array('t'=>'add'))?>"> Adaug&#259; </a></li>
 		</ul>
 		
 		<?php if ( $tab == 'list' ): ?>

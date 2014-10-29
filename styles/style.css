@@ -8,7 +8,7 @@ html, body {
 }
 
 body {
-    padding-top: 60px;
+    padding-top: 75px;
     padding-bottom: 30px;
     background-color: #fff;
     overflow-y: scroll;
@@ -63,14 +63,24 @@ table td, .table>tbody>tr>td{
     cursor: pointer;
 }
 
+.form-group.recurring-choices{
+    display: none;
+}
+
 .main{
     background: #ffffff;
 }
 
-body.transaction-details{
+body.transaction-details,
+body.file-preview{
     padding: 0px;
     padding-top: 70px;
     background: #ffffff;
+    overflow: auto;
+}
+
+body.file-preview .panel{
+    margin-bottom: 0px;
 }
 
 body.error,
@@ -107,28 +117,59 @@ body.loading{
     margin-bottom: 0px;
 }
 
-.fn-log-messages{
-    display: block;
+/*** Console Styling ***/
+.fn-log-messages {
+    width: 100%;
+    height: auto;
+    min-height: 50px;
+    position: fixed;
+    background: #ffffff;
+    z-index: 99999;
+    border: 2px solid #ffffff;
+    border-radius: 4px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+.fn-log-messages .heading {
+    font-size: 1.2em;
+    padding: 10px 10px 0px 10px;
+}
+
+.fn-log-messages .console {
     width: 100%;
     margin: 0px auto;
-    margin-top: 40px;
     clear: both;
-}
-
-.fn-log-messages > *{
-    margin: 0px auto;
-    width: 90%;
-    max-height: 400px;
-    display: block;
+    background: #333;
+    box-shadow: inset 1px 1px 3px #000;
+    color: #ffffff;
+    padding: 10px;
+    height: 150px;
     overflow: auto;
-    border: 2px solid #dddddd;
-    border-radius: 4px;
-    background: #000000;
 }
 
-.fn-log-messages pre{
-    border: none;
+.fn-log-messages .console pre{
     background: none;
     color: #ffffff;
     font-size: 1em;
+    padding: 0px;
+    border: none;
+}
+
+.fn-log-messages.mini {
+    width: 155px;
+    right: 0px;
+    border-top-right-radius: 0px;
+}
+.fn-log-messages.mini .console {
+    display: none;
+}
+.fn-log-messages.bottom {
+    bottom: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+.fn-log-messages.top {
+    top: 0px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
 }

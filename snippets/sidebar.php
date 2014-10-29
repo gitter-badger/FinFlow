@@ -27,6 +27,11 @@
         </div>
     </div>
 
+    <div class="widget panel panel-default widget-calculator">
+        <div class="widget-title panel-heading">Calculator</div>
+        <div class="widget-content panel-body"><?php include_once 'widget-calculator.php';?></div>
+    </div>
+
     <div class="widget panel panel-default widget-wclock">
         <div class="widget-title panel-heading">Ceas</div>
         <div class="widget-content panel-body"><?php include_once 'widget-wclock.php';?></div>

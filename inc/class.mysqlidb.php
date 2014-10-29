@@ -80,6 +80,10 @@ class MySQLiDB{
 		return $this->connected;
 		
 	}
+
+    public function disconnect(){
+        return @mysqli_close($this->connectionId);
+    }
 	
 	public function set_charset($charset, $collation ){
 	
@@ -121,6 +125,7 @@ class MySQLiDB{
         $mixed = @strval($mixed);
 
 		return mysqli_real_escape_string($this->connectionId, $mixed);
+
 	}
 	
 	/**

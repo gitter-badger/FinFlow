@@ -14,7 +14,7 @@
 <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/pikaday.css'); ?>"/>
 <?php fn_UI::css(); ?>
 </head>
-<body id="page-<?php echo fn_UI::esc_html( strtolower($_GET['p']) ); ?>" class="<?php echo fn_UI::get_body_class(); ?>" role="document">
+<body id="page-<?php echo get('p'); ?>" class="<?php echo fn_UI::get_body_class(); ?>" role="document">
 
 	
 	<?php if ( fn_User::is_authenticated() ) include_once ( FNPATH . '/snippets/header.php' ); ?>

@@ -7,13 +7,20 @@ class fn_Settings{
 	public static function get($key, $default=FALSE, $multiple=FALSE){
 		
 		global $fndb, $fnsql;
-		
-		$value = NULL;
+
+        if( ! $fndb->connected ) return $default;
+
+		$value = null;
+        $key    = $fndb->escape($key);
 		
 		if( strlen($key) ){
-			$fnsql->select('setting_val', self::$table, array('setting_key'=>trim($key))); $row = $fndb->get_row( $fnsql->get_query() );
+
+			$fnsql->select('setting_val', self::$table, array('setting_key'=>trim($key)) );
+
+            $row = $fndb->get_row( $fnsql->get_query() );
 
 			if ( $row and isset($row->setting_val) ) $value = $multiple ? unserialize( $row->setting_val ) : $row->setting_val;
+
 		}
 		
 		return empty($value) ? $default : $value;

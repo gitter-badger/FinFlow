@@ -1,5 +1,4 @@
-<?php if ( !defined('FNPATH') ) include_once '../inc/init.php'; ?>
-<?php if ( !fn_User::is_authenticated() ) exit();
+<?php if ( !defined('FNPATH') ) include_once '../inc/init.php'; if ( !fn_User::is_authenticated() ) exit();
 
 $dtimezones = array(
     'Europe/Bucharest'      => 'Bucure&#351;ti',
@@ -21,6 +20,7 @@ if( array_key_exists(FN_TIMEZONE, $dtimezones) ); else {
     <div class="form-group">
         <label class="sr-only">Alege oras</label>
         <select name="clock_tz" id="clock_tz" class="form-control">
+            <option value="0">Ora locala</option>
             <?php foreach($dtimezones as $tz=>$city): ?>
                 <option value="<?php echo fn_Util::get_timezone_offset($tz, FN_TIMEZONE); ?>" <?php echo fn_UI::selected_or_not($tz, FN_TIMEZONE); ?>>
                     <?php echo $city; ?>

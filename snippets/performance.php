@@ -68,17 +68,21 @@ if( $tab == 'list2' ){
         $elem = $sum; $elem['sum'] = (-1 * floatval($elem['sum'])); if( !isset($Incomes[$dt]) ) $Sums[$dt] = $elem;
     }
 
-    ksort($Sums);
+    if( count($Sums) ){
 
-    $vars = fn_Util::highchart_prepare_data($Sums, $Currency->ccode); @extract($vars);
+        ksort($Sums);
 
-    $Chart = fn_Util::highchart('chartBalanceEvolution', 'line', "Evolutie balanta: {$chartdtspan}", $categories, "Suma ({$Currency->ccode})", $series, TRUE);
+        $vars = fn_Util::highchart_prepare_data($Sums, $Currency->ccode); @extract($vars);
 
-    $Chart->chart->zoomType = 'x';
-    $Chart->xAxis->labels->rotation 	= -45;
-    $Chart->xAxis->labels->align 		= "right";
+        $Chart = fn_Util::highchart('chartBalanceEvolution', 'line', "Evolutie balanta: {$chartdtspan}", $categories, "Suma ({$Currency->ccode})", $series, TRUE);
 
-    $Chart->xAxis->labels->style->font = "normal 14px Verdana, sans-serif";
+        $Chart->chart->zoomType         = 'x';
+        $Chart->xAxis->labels->rotation 	= -45;
+        $Chart->xAxis->labels->align 		= "right";
+
+        $Chart->xAxis->labels->style->font = "normal 14px Verdana, sans-serif";
+
+    }
 
     //--- evolutie balanta ---//
 }
@@ -86,13 +90,13 @@ if( $tab == 'list2' ){
 fn_UI::enqueue_js('js/highcharts.js');
 fn_UI::enqueue_js('js/highcharts-exporting.js');
 
-if( empty($_POST['span']) ) $_POST['span'] = null; ?>
+if( ! isset($_POST['span']) or empty($_POST['span']) ) $_POST['span'] = null; ?>
 
 <div class="row content">
 	<div class="<?php fn_UI::main_container_grid_class(); ?>">
 
 		<ul class="nav nav-tabs">
-			<li class="dropdown <?php echo $activetab['list']; ?>">
+			<li class="dropdown <?php echo av($activetab, 'list'); ?>">
 				<a href="<?php fn_UI::page_url('performance', array('t'=>'list')); ?>" class="dropdown-toggle" data-toggle="dropdown">Rulaj <b class="caret"></b></a>
 				<ul class="dropdown-menu">
                   	<li><a href="<?php fn_UI::page_url('performance', array('sdate'=>fn_Util::get_relative_time(0, 3, 0, $currmonthstart)) ); ?>">Ultimele 3 luni</a></li>
@@ -104,7 +108,7 @@ if( empty($_POST['span']) ) $_POST['span'] = null; ?>
                 </ul>
 			</li>
 
-			<li class="dropdown <?php echo $activetab['list2']; ?>">
+			<li class="dropdown <?php echo av($activetab, 'list2'); ?>">
 				<a href="<?php fn_UI::page_url('performance', array('t'=>'list2')); ?>" class="dropdown-toggle" data-toggle="dropdown">Evolu&#355;ie balan&#355;&#259; <b class="caret"></b></a>
 				<ul class="dropdown-menu">
                   	<li><a href="<?php fn_UI::page_url('performance', array('t'=>'list2', 'sdate'=>fn_Util::get_relative_time(0, 3, 0, $currmonthstart)) ); ?>">Ultimele 3 luni</a></li>
@@ -117,7 +121,7 @@ if( empty($_POST['span']) ) $_POST['span'] = null; ?>
 			</li>
 
             <!---
-            <li class="<?php echo $activetab['generator']; ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'generator'))?>"> Generator raport  </a></li>
+            <li class="<?php echo av($activetab, 'generator'); ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'generator'))?>"> Generator raport  </a></li>
             --->
 
 		</ul>

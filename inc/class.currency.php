@@ -66,7 +66,9 @@ class fn_Currency{
 		}
 		
 		if ( empty($from) or empty($to) ) return 0;
-		
+
+        self::log_exchange($from, $to, array(__CLASS__, __FUNCTION__));
+
 		return  ( $value * floatval($from->cexchange) ) / floatval($to->cexchange);
 		
 	}
@@ -84,6 +86,8 @@ class fn_Currency{
 
         if ( empty($from) or empty($to) ) return 0;
 
+        self::log_exchange($from, $to, array(__CLASS__, __FUNCTION__));
+
         return  ( $value * floatval($from->cexchange) ) / floatval($to->cexchange);
 
     }
@@ -100,8 +104,8 @@ class fn_Currency{
         }
 
         if ( $field == 'id' ){
-            $from = self::get($from, 'currency_id');
-            $to	 = self::get($to, 'currency_id');
+            $from = self::get($from);
+            $to	 = self::get($to);
         }
 
         if ( isset($from->currency_id) and isset($to->currency_id) ); else return 0;
@@ -116,11 +120,13 @@ class fn_Currency{
             $from = $defaultCC;
 
         if( $to->currency_id != $defaultCC->currency_id )
-            $to     = self::get_closest_historic_record($to->currency_id, $date);
+            $to = self::get_closest_historic_record($to->currency_id, $date);
         else
             $to = $defaultCC;
 
         //--- get the most closest value to the specified date ---//
+
+        self::log_exchange($from, $to, array(__CLASS__, __FUNCTION__));
 
         return  ( $value * floatval($from->cexchange) ) / floatval($to->cexchange);
 
@@ -150,7 +156,7 @@ class fn_Currency{
 		
 		$fnsql->select('*', self::$table, array('cexchange'=>1)); 
 		
-		return  $fndb->get_row( $fnsql->get_query() );
+		return $fndb->get_row( $fnsql->get_query() );
 		
 	}
 
@@ -232,18 +238,24 @@ class fn_Currency{
 
         return $fndb->execute_query( $fnsql->get_query() );
     }
-	
-	
+
+    /**
+     * Retunrs an array of historical records for a currency
+     * @param $currency_id
+     * @param null $startdate
+     * @param null $enddate
+     * @return array|null
+     */
 	public static function get_currency_history($currency_id, $startdate=NULL, $enddate=NULL){
 		
 		global $fndb, $fnsql;
 		
 		$currency_id = intval($currency_id);
 		
-		if(empty($startdate)) 
+		if( empty($startdate) )
 			$startdate = fn_Util::get_relative_time(0, 1); //from one month ago
 		
-		if (empty($enddate))
+		if ( empty($enddate) )
 			$enddate = date(FN_MYSQL_DATE);
 		
 		$startdate  = $fndb->escape($startdate);
@@ -265,6 +277,13 @@ class fn_Currency{
 		
 	}
 
+    /**
+     * Finds the closest exchange rate to the specified date for the currency_id
+     * @param $currency_id
+     * @param $date
+     * @param int $rlevel
+     * @return null
+     */
     public static function get_closest_historic_record($currency_id, $date, $rlevel=0){
 
         global $fndb, $fnsql;
@@ -277,7 +296,7 @@ class fn_Currency{
         $fnsql->resetGroupIndex();
 
         $fnsql->table(self::$table_history);
-        $fnsql->fields('cexchange, regdate');
+        $fnsql->fields('currency_id, cexchange, regdate');
         $fnsql->from();
 
         $fnsql->condition('currency_id', '=', $currency_id);
@@ -300,7 +319,7 @@ class fn_Currency{
         if( $Row and isset($Row->cexchange) )
             return $Row;
         else if( $rlevel > 0 ){ //no recorded data for the currency found
-            fn_Log::to_file("Nu exista inregistrare in istoric pentru moneda " . $currency_id, "Alerta:"); return 0;
+            fn_Log::to_file("Nu exista inregistrare in istoric pentru moneda " . $currency_id, "Alerta:"); return self::get($currency_id);
         }
 
         return self::get_closest_historic_record($currency_id, $date, ++$rlevel);
@@ -342,6 +361,34 @@ class fn_Currency{
         return false;
     }
 
+    /**
+     * Logs an exchange operation
+     */
+    public static function log_exchange($from, $to, $func=null){
+
+        $func = empty($func) ? (__CLASS__ . '::' . __FUNCTION__) : ( is_array($func) ? implode('::', $func) : $func );
+
+        if( ! isset($from->ccode) ){
+            $from = is_object($from) ? self::get($from->currency_id) : ( empty($from) ? self::get_default() : self::get($from) );
+        }
+
+        if( ! isset($to->ccode) ){
+            $to = is_object($to) ? self::get($to->currency_id) : ( empty($to) ? self::get_default() : self::get($to) );
+        }
+
+        if( fn_Util::is_unittest_environment() ){
+            fn_Log::to_file( "{$func} Converting {$from->ccode} to {$to->ccode} at {$from->cexchange} / {$to->cexchange}");
+        }
+        else {
+            fn_Log::to_screen("{$func}  Converting {$from->ccode} to {$to->ccode} at {$from->cexchange} / {$to->cexchange}");
+        }
+
+    }
+
+    /**
+     * @deprecated
+     * @return array
+     */
     public static function get_currencies_export_array(){
 
         global $fndb, $fnsql;
@@ -366,6 +413,10 @@ class fn_Currency{
 
     }
 
+    /**
+     * @deprecated
+     * @return array
+     */
     public static function get_currencies_history_export_array(){
 
         global $fndb, $fnsql;
@@ -392,6 +443,7 @@ class fn_Currency{
     /**
      * Imports data from the array into the currencies table. Existing data won't be overwritten.
      * @param array $Currencies an array of SimpleXMLElement objects
+     * @deprecated
      * @return bool
      */
     public static function import_osmxml($Currencies){
@@ -422,6 +474,7 @@ class fn_Currency{
      * Imports data from the array into the currencies history table. Existing data won't be overwritten.
      * @param array $History an array of SimpleXMLElement objects
      * @param array $currenciesIDs  a list of synchronized currencies ID from a previous currency import
+     * @deprecated
      * @return bool
      */
     public static function import_osmxml_history($History, $currenciesIDs=array()){

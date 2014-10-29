@@ -1,4 +1,11 @@
-<?php if ( !defined('FNPATH') ) exit(); if( !isset($_POST['date']) ) $_POST['date'] = date('Y-m-d'); ?>
+<?php if ( !defined('FNPATH') ) exit();
+
+if( empty($_POST) ){
+    $_POST['date'] = date('Y-m-d'); $_POST['optype'] = $_POST['currency_id'] = $_POST['contact_id'] = $_POST['account_id'] = $_POST['labels'] = null;
+}
+
+
+?>
 
 <?php fn_UI::show_errors($errors); fn_UI::show_notes($notices); fn_UI::show_warnings($warnings); ?>
 

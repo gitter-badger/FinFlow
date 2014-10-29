@@ -53,7 +53,7 @@ foreach ($Cronjobs as $job){
         <div class="panel panel-default">
             <div class="panel-body">
                 <h3 class="balance treshold <?php echo $threshold_color; ?>">
-                    Balan&#355;&#259;: <span class="value"> <?php echo $Currency->csymbol; ?> <?php echo fn_Util::format_nr($Balance); ?> </span>
+                    Balan&#355;&#259;: <span class="value"> <?php echo is_object($Currency) ? $Currency->csymbol : ''; ?> <?php echo fn_Util::format_nr($Balance); ?> </span>
                 </h3>
             </div>
         </div>

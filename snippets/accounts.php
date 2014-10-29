@@ -85,9 +85,9 @@ if( $tab == 'list' ){
     <div class="<?php fn_UI::main_container_grid_class(); ?>">
 
         <ul class="nav nav-tabs">
-            <li class="<?php echo $activetab['list']; ?>"><a href="<?php fn_UI::page_url('accounts', array('t'=>'list'))?>">Lista</a></li>
-            <?php if($tab == 'edit'): ?><li class="<?php echo $activetab['edit']; ?>"><a> Modific&#259; cont </a></li><?php endif; ?>
-            <li class="<?php echo $activetab['add']; ?>"><a href="<?php fn_UI::page_url('accounts', array('t'=>'add'))?>"> Adaug&#259; cont </a></li>
+            <li class="<?php echo av($activetab, 'list'); ?>"><a href="<?php fn_UI::page_url('accounts', array('t'=>'list'))?>">Lista</a></li>
+            <?php if($tab == 'edit'): ?><li class="<?php echo av($activetab, 'edit'); ?>"><a> Modific&#259; cont </a></li><?php endif; ?>
+            <li class="<?php echo av($activetab, 'add'); ?>"><a href="<?php fn_UI::page_url('accounts', array('t'=>'add'))?>"> Adaug&#259; cont </a></li>
         </ul>
 
         <?php if ( $tab == 'list' ) include_once 'accounts-list.php'; ?>

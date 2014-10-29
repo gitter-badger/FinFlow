@@ -1,4 +1,4 @@
-<?php if ( !defined('FNPATH') ) exit;
+<?php if ( !defined('FNPATH') ) exit; $errors = $warnings = $notices = array();
 
 if ( isset($_GET['del']) ){
 	//--- remove a transaction ---//
@@ -9,11 +9,7 @@ if ( isset($_GET['del']) ){
 if ( isset($_POST['add']) ){
 
     //--- add a transaction ---//
-	
-	$errors 		= array();
-	$notices  	= array();
-    $warnings  = array();
-	
+
 	$value = floatval($_POST['value']);
     $date  = $_POST['date'];
 
@@ -193,7 +189,7 @@ else
 	<div class="<?php fn_UI::main_container_grid_class(); ?>">
 		
 		<ul class="nav nav-tabs" role="tablist">
-			<li class="dropdown <?php echo $activetab['list']; ?>">
+			<li class="dropdown <?php echo av($activetab, 'list'); ?>">
 				<a href="<?php fn_UI::page_url('transactions', array('t'=>'list'))?>" class="dropdown-toggle" data-toggle="dropdown">
                     Raport <span class="caret"></span>
                 </a>
@@ -207,8 +203,8 @@ else
                  	<li><a href="<?php fn_UI::page_url('transactions', array('sdate'=>'1970-01-01')); ?>">Toate</a></li>
                 </ul>
 			</li>
-			<li class="<?php echo $activetab['generator']; ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'generator'))?>"> Generator raport  </a></li>
-			<li class="dropdown <?php echo $activetab['pending']; ?>">
+			<li class="<?php echo av($activetab, 'generator'); ?>"><a href="<?php fn_UI::page_url('transactions', array('t'=>'generator'))?>"> Generator raport  </a></li>
+			<li class="dropdown <?php echo av($activetab, 'pending'); ?>">
                 <a href="<?php fn_UI::page_url('transactions', array('t'=>'pending'))?>"  class="dropdown-toggle" data-toggle="dropdown">
                     &#206;n a&#351;teptare <span class="caret"></span>
                 </a>
@@ -222,7 +218,7 @@ else
                     <li><a href="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'forecast'=>'1')); ?>">Prognoza</a></li>
                 </ul>
             </li>
-			<li class="<?php echo $activetab['add']; ?>">
+			<li class="<?php echo av($activetab, 'add'); ?>">
                 <a href="<?php fn_UI::page_url('transactions', array('t'=>'add'))?>"> Adaug&#259; </a>
             </li>
 		</ul>

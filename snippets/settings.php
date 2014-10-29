@@ -51,12 +51,12 @@ if( $tab == 'exrparser' ) {
 	<div class="<?php fn_UI::main_container_grid_class(); ?>">
 		
 		<ul class="nav nav-tabs">
-			<li class="<?php echo $activetab['mainccs']; ?>"><a href="index.php?p=settings&t=mainccs"> Conversii automate </a></li>
-			<li class="<?php echo $activetab['exrparser']; ?>"><a href="index.php?p=settings&t=exrparser"> Actualizare curs </a></li>
-			<li class="<?php echo $activetab['emailupdate']; ?>"><a href="index.php?p=settings&t=emailupdate"> Actualizare prin email </a></li>
-            <li class="<?php echo $activetab['thresholds']; ?>"><a href="index.php?p=settings&t=thresholds"> Praguri  </a></li>
-            <li class="<?php echo $activetab['timezone']; ?>"><a href="index.php?p=settings&t=timezone"> Personalizare  </a></li>
-            <li class="<?php echo $activetab['myaccount']; ?>"><a href="index.php?p=settings&t=myaccount"> Acces  </a></li>
+			<li class="<?php echo av($activetab, 'mainccs'); ?>"><a href="index.php?p=settings&t=mainccs"> Conversii automate </a></li>
+			<li class="<?php echo av($activetab, 'exrparser'); ?>"><a href="index.php?p=settings&t=exrparser"> Actualizare curs </a></li>
+			<li class="<?php echo av($activetab, 'emailupdate'); ?>"><a href="index.php?p=settings&t=emailupdate"> Actualizare prin email </a></li>
+            <li class="<?php echo av($activetab, 'thresholds'); ?>"><a href="index.php?p=settings&t=thresholds"> Praguri  </a></li>
+            <li class="<?php echo av($activetab, 'timezone'); ?>"><a href="index.php?p=settings&t=timezone"> Personalizare  </a></li>
+            <li class="<?php echo av($activetab, 'myaccount'); ?>"><a href="index.php?p=settings&t=myaccount"> Acces  </a></li>
 		</ul>
 		
 		<?php if ( $tab == 'mainccs' ): ?>
@@ -85,7 +85,7 @@ if( $tab == 'exrparser' ) {
                     <div class="col-lg-4">
                         <select class="form-control" name="op_ccs_out" id="op_ccs_out" disabled>
                             <?php if (count($defaultCC)): ?>
-                                <option value="<?php echo $defaultCC->id; ?>"> <?php echo $defaultCC->ccode; ?> </option>
+                                <option value="<?php echo $defaultCC->currency_id; ?>"> <?php echo $defaultCC->ccode; ?> </option>
                             <?php endif; ?>
                         </select>
                         <span class="help-block">Toate tranzactiile OUT (cheltuieli) sunt convertite la aceasta moned&#259; (implicit&#259;).</span>

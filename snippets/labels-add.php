@@ -16,7 +16,7 @@
             <select class="form-control" name="parent_id" id="parent_id">
                 <option value="0">- fara - </option>
                 <?php if( count($Parents) ) foreach($Parents as $parent): ?>
-                    <option value="<?php echo $parent->label_id; ?>" <?php echo fn_UI::selected_or_not($parent->label_id, $_POST['parent_id']) ?>>
+                    <option value="<?php echo $parent->label_id; ?>" <?php echo fn_UI::selected_or_not($parent->label_id, post('parent_id')); ?>>
                         <?php echo fn_UI::esc_html($parent->title); ?>
                     </option>
                 <?php endforeach; ?>

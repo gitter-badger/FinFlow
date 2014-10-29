@@ -57,27 +57,29 @@ if( count($Transaction) and isset($Transaction->trans_id) ){
 </head>
 <body id="page-transaction-details" class="transaction-details" role="document">
 
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand">Tranzactie #<?php echo $Transaction->trans_id;?></a>
-        </div>
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#"><i class="fa fa-chevron-left"></i></a></li>
-                <li><a href="#"><i class="fa fa-chevron-right"></i></a></li>
-                <li><a href="#" onclick="window.print();"><i class="fa fa-print"></i></a></li>
-                <li><a href="#">&nbsp;</a></li>
-            </ul>
+<?php if ( count($Transaction) ): ?>
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand">Tranzactie #<?php echo $Transaction->trans_id;?></a>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#"><i class="fa fa-chevron-left"></i></a></li>
+                    <li><a href="#"><i class="fa fa-chevron-right"></i></a></li>
+                    <li><a href="#" onclick="window.print();"><i class="fa fa-print"></i></a></li>
+                    <li><a href="#">&nbsp;</a></li>
+                </ul>
+            </div>
         </div>
     </div>
-</div>
+<?php endif; ?>
 
 <div class="container-fluid">
 
@@ -225,6 +227,9 @@ if( count($Transaction) and isset($Transaction->trans_id) ){
             <?php else: ?>
                 <div class="col-lg-12">
                     <div class="alert alert-warning">Tranzactia nu exist&#259; sau a fost &#351;tears&#259;.</div>
+                    <p>
+                        <a class="btn btn-default" onclick="window.history.back();return false;"><i class="fa fa-arrow-left"></i> inapoi</a>
+                    </p>
                 </div>
             <?php endif; ?>
 

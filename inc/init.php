@@ -3,8 +3,6 @@
 define('FN_VERSION'     , '1.2.3');
 define('FN_DB_VERSION', '1.3');
 
-define('FN_ENVIRONMENT', ( defined('FN_ENVIRONMENT') ? FN_ENVIRONMENT : ( isset($_SERVER['ENVIRONMENT']) ? $_SERVER['ENVIRONMENT'] : 'production' ) ) );
-
 define('FNPATH', rtrim(str_replace(basename(dirname(__FILE__)), '', dirname(__FILE__)), DIRECTORY_SEPARATOR));
 
 define('FN_OP_IN'		, 'in');
@@ -14,8 +12,6 @@ define('FN_SERVER_TIMEZONE'	, date_default_timezone_get());
 define('FN_MYSQL_DATE'			, 'Y-m-d H:i:s');
 
 define('FN_LOGFILE', (FNPATH . "/application.log"));
-
-error_reporting(E_ALL ^ E_NOTICE);
 
 include_once ( FNPATH . '/inc/interface.exr.php' );
 
@@ -35,7 +31,19 @@ include_once ( FNPATH . '/inc/class.util.php' );
 include_once ( FNPATH . '/inc/class.user.php' );
 include_once ( FNPATH . '/inc/class.log.php' );
 
-@include_once ( FNPATH . '/config.php' );
+include_once ( FNPATH . '/inc/helpers.php' );
+
+//--- set environment ---//
+
+@include_once ( FNPATH . '/environment.php' );
+
+if( !defined('FN_ENVIRONMENT') ) define('FN_ENVIRONMENT', ( isset($_SERVER['ENVIRONMENT']) ? $_SERVER['ENVIRONMENT'] : 'production' ) );
+
+//--- set environment ---//
+
+//--- include config ---//
+@include_once ( fn_Util::cfg_file_path() );
+//--- include config ---//
 
 //--- init debug ---//
 if( ( defined('FN_DEBUG') and FN_DEBUG ) or fn_Util::is_development_environment() ) {
@@ -65,8 +73,13 @@ if( !defined('FN_DB_HOST') and ( strpos($_SERVER['REQUEST_URI'], '/setup') === f
 }
 //--- check installation status ---//
 
-$fnsql= new SQLStatement();
+$fnsql = new SQLStatement();
 $fndb = new MySQLiDB(FN_DB_HOST, FN_DB_USER, FN_DB_PASS, FN_DB_NAME);
+
+//--- phptestunit globals workaround ---// //TODO add phpunit config
+$GLOBALS['fndb'] = $fndb;
+$GLOBALS['fnsql'] = $fnsql;
+//--- phptestunit globals workaround ---//
 
 if ( !$fndb->connected and defined('FN_DB_HOST') )
     fn_UI::fatal_error("Nu se poate realiza conexiunea cu baza de date pe " . FN_DB_HOST);
@@ -77,7 +90,7 @@ define('FN_TIMEZONE', fn_Settings::get('timezone', 'Europe/London')); date_defau
 
 //--- setup default vars ---//
 if( ! isset($_GET['p']) ) $_GET['p'] = 'dashboard';
-if( ! isset($_GET['t']) ) $_GET['t'] = null;
+if( ! isset($_GET['t']) )  $_GET['t'] = null;
 //--- setup default vars ---//
 
 if( !defined('FN_IS_CRON') ) @session_start();

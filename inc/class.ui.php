@@ -104,7 +104,9 @@ class fn_UI{
 	}
 
 	public static function fatal_error($msg, $die=TRUE, $html=TRUE, $msgtype="danger", $prefix="Eroare: ", $title="Eroare"){
-		
+
+        if( defined('FN_BYPASS_UI_FATAL_ERRORS') and FN_BYPASS_UI_FATAL_ERRORS ) return false;
+
 		if ( $html ): ?>
 			<html>
 			<head>
@@ -171,7 +173,7 @@ class fn_UI{
 	}
 	
 	public static function esc_attr( $input ){
-		return htmlspecialchars( stripslashes($input) , ENT_NOQUOTES, 'UTF-8' );
+		return htmlspecialchars( stripslashes( fn_Util::xss_filter($input) ) , ENT_NOQUOTES, 'UTF-8' );
 	}
 	
 	public static function extract_post_val($key, $default="", $escape=FALSE){
@@ -386,9 +388,9 @@ class fn_UI{
 		else
 			$classes[] = "logged-out";
 	
-		if( isset($_GET['p']) )
-			$classes[] = ( "page-" . self::esc_html( strtolower( urldecode($_GET['p'] ) ) ) );
-		else{
+		if( isset($_GET['p']) ) {
+            $classes[] = ( 'page-' . get('p') ); if( isset($_GET['t']) ) $classes[] = ( 'page-' . get('p') . '-' .  get('t') ); else $classes[] =   ( 'page-' . get('p') . '-index' );
+        }else{
 			if ( fn_User::is_authenticated() )
 				$classes[] = "dashboard";
 			else

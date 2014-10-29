@@ -56,17 +56,15 @@ if ( isset($_POST['cname']) ){
 
 }
 
-$Currencies = fn_Currency::get_all(TRUE);
-
-?>
+$Currencies = fn_Currency::get_all(TRUE); ?>
 
 <div class="row">
 	<div class="<?php fn_UI::main_container_grid_class(); ?>">
 		
 		<ul class="nav nav-tabs">
-			<li class="<?php echo $activetab['list']; ?>"><a href="<?php fn_UI::page_url('currencies', array('t'=>'list'))?>">Lista</a></li>
-			<li class="<?php echo $activetab['history']; ?>"><a href="<?php fn_UI::page_url('currencies', array('t'=>'history'))?>">Istoric</a></li>
-			<li class="<?php echo $activetab['add']; ?>"><a href="<?php fn_UI::page_url('currencies', array('t'=>'add'))?>"> Adaug&#259; moned&#259; </a></li>
+			<li class="<?php echo av($activetab, 'list'); ?>"><a href="<?php fn_UI::page_url('currencies', array('t'=>'list'))?>">Lista</a></li>
+			<li class="<?php echo av($activetab, 'history'); ?>"><a href="<?php fn_UI::page_url('currencies', array('t'=>'history'))?>">Istoric</a></li>
+			<li class="<?php echo av($activetab, 'add'); ?>"><a href="<?php fn_UI::page_url('currencies', array('t'=>'add'))?>"> Adaug&#259; moned&#259; </a></li>
 		</ul>
 		
 		<?php if ( $tab == 'list' ) include_once 'currencies-list.php'; ?>
