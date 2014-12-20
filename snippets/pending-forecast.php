@@ -53,7 +53,7 @@ if( $unit and $unit_val ){
 
 ?>
 
-<?php if( empty($unit_val) ):  ?>
+<?php if( empty($unit_val) ): $unit = av($_GET, 'unit'); $exclude = av($_GET, 'exclude'); ?>
 
 <form class="form form-horizontal forecast" action="<?php fn_UI::page_url('transactions', array('t'=>'pending', 'forecast'=>1)); ?>" name="forecast-balance-form" id="forecastBalanceForm" method="get">
 
@@ -66,9 +66,9 @@ if( $unit and $unit_val ){
         </div>
         <div class="col-lg-4">
             <select class="form-control" name="unit" id="unit">
-                <option value="days" <?php echo fn_UI::selected_or_not('days', $_GET['unit']); ?>>zile</option>
-                <option value="months" <?php echo fn_UI::selected_or_not('months', $_GET['unit']); ?>>luni</option>
-                <option value="years" <?php echo fn_UI::selected_or_not('years', $_GET['unit']); ?>>ani</option>
+                <option value="days" <?php echo fn_UI::selected_or_not('days', $unit); ?>>zile</option>
+                <option value="months" <?php echo fn_UI::selected_or_not('months', $unit); ?>>luni</option>
+                <option value="years" <?php echo fn_UI::selected_or_not('years', $unit); ?>>ani</option>
             </select>
         </div>
     </div>
@@ -78,8 +78,8 @@ if( $unit and $unit_val ){
         <div class="col-lg-6">
             <select class="form-control" name="exclude" id="exclude">
                 <option value="none"> - f&#259;ra excluderi - </option>
-                <option value="<?php echo FN_OP_IN; ?>" <?php echo fn_UI::selected_or_not(FN_OP_IN, $_GET['exclude']); ?>>venit</option>
-                <option value="<?php echo FN_OP_OUT; ?>" <?php echo fn_UI::selected_or_not(FN_OP_OUT, $_GET['exclude']); ?>>cheltuieli</option>
+                <option value="<?php echo FN_OP_IN; ?>" <?php echo fn_UI::selected_or_not(FN_OP_IN, $exclude); ?>>venit</option>
+                <option value="<?php echo FN_OP_OUT; ?>" <?php echo fn_UI::selected_or_not(FN_OP_OUT, $exclude); ?>>cheltuieli</option>
             </select>
         </div>
     </div>
