@@ -24,7 +24,7 @@ define('FN_PW_SALT'	, '{secret}');
 /** Setari de pentru formatul datelor afisate, vezi http://php.net/manual/en/function.date.php */
 define('FN_DATETIME_FORMAT', 'l, jS F Y h:i:s A');
 
-define('FN_DAY_FORMAT'		    , 'jS \of F Y');
+define('FN_DAY_FORMAT'		, 'jS \of F Y');
 define('FN_MONTH_FORMAT'	, 'F Y');
 define('FN_YEAR_FORMAT'		, 'Y');
 

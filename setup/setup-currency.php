@@ -6,8 +6,6 @@
  */
 
 
-
-
 include_once 'header.php';
 include_once '../inc/class.currency.php';
 include_once '../inc/exr-init.php';
@@ -50,7 +48,7 @@ if( $fnexr::id == OER_ExchangeRateParser::id and !$fnexr->setBaseCurrency('EUR')
 
     <?php fn_UI::show_errors( $errors ); ?>
 
-    <?php if( !$success ): ?>
+    <?php if( !$success ): $currency_default = av($_POST, 'currency_default');?>
         <form name="setup-default-currency" id="setupDefaultCurrency" method="post" target="_self">
             <p>
                 <label for="currency_default">Moneda implicit&#259;:</label>
@@ -58,7 +56,7 @@ if( $fnexr::id == OER_ExchangeRateParser::id and !$fnexr->setBaseCurrency('EUR')
                 <?php if( $choiceDefaultCurrency ): ?>
                 <select name="currency_default" id="currency_default">
                     <?php foreach($currencies as $code): ?>
-                    <option value="<?php echo $code; ?>" <?php fn_UI::selected_or_not($_POST['currency_default'], $code) ?>><?php echo $code; ?></option>
+                    <option value="<?php echo $code; ?>" <?php fn_UI::selected_or_not($currency_default, $code) ?>><?php echo $code; ?></option>
                     <?php endforeach; ?>
                 </select>
                 <?php else: ?>

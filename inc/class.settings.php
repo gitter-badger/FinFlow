@@ -6,9 +6,7 @@ class fn_Settings{
 	
 	public static function get($key, $default=FALSE, $multiple=FALSE){
 		
-		global $fndb, $fnsql;
-
-        if( ! $fndb->connected ) return $default;
+		global $fndb, $fnsql; if( ! $fndb or ! $fndb->connected ) return $default;
 
 		$value = null;
         $key    = $fndb->escape($key);

@@ -85,7 +85,6 @@ CREATE TABLE `fn_op` (
   `trans_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `optype` enum('in','out') NOT NULL DEFAULT 'out',
   `value` float NOT NULL,
-  `value_cdf` float NOT NULL DEFAULT '1',
   `currency_id` int(11) NOT NULL DEFAULT '1',
   `account_id` int(11) NOT NULL DEFAULT '0',
   `contact_id` int(11) NOT NULL DEFAULT '0',
@@ -144,4 +143,4 @@ CREATE TABLE `fn_users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2014-10-30 11:36:28
+-- 2014-12-20 19:16:33

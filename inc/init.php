@@ -13,7 +13,7 @@ define('FN_MYSQL_DATE'			, 'Y-m-d H:i:s');
 
 define('FN_LOGFILE', (FNPATH . "/application.log"));
 
-include_once ( FNPATH . '/inc/interface.exr.php' );
+include_once ( FNPATH . '/inc/interface.exr.php' ); //TODO switch to autoloader and namespaces
 
 include_once ( FNPATH . '/inc/class.pop3.php' );
 include_once ( FNPATH . '/inc/class.mysqlidb.php' );
@@ -58,6 +58,7 @@ if( !defined('FN_URL') ){
         define('FN_URL', fn_Util::get_base_url( false, false, '/setup/'));
     else
         define('FN_URL', fn_Util::get_base_url( false, ( defined('FN_FORCE_HTTPS') and FN_FORCE_HTTPS ) ));
+
 }
 //--- setup base url ---//
 
@@ -73,15 +74,16 @@ if( !defined('FN_DB_HOST') and ( strpos($_SERVER['REQUEST_URI'], '/setup') === f
 }
 //--- check installation status ---//
 
-$fnsql = new SQLStatement();
-$fndb = new MySQLiDB(FN_DB_HOST, FN_DB_USER, FN_DB_PASS, FN_DB_NAME);
+if( defined('FN_DB_HOST') ){
+	$fnsql = new SQLStatement(); $fndb = new MySQLiDB(FN_DB_HOST, FN_DB_USER, FN_DB_PASS, FN_DB_NAME);
+}
 
 //--- phptestunit globals workaround ---// //TODO add phpunit config
 $GLOBALS['fndb'] = $fndb;
 $GLOBALS['fnsql'] = $fnsql;
 //--- phptestunit globals workaround ---//
 
-if ( !$fndb->connected and defined('FN_DB_HOST') )
+if ( $fndb and !$fndb->connected )
     fn_UI::fatal_error("Nu se poate realiza conexiunea cu baza de date pe " . FN_DB_HOST);
 
 //--- setup timezone ---//

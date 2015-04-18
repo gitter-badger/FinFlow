@@ -566,7 +566,6 @@ class fn_Util{
         if( ( $_SERVER['SERVER_PORT'] != '80' ) and ( $_SERVER['SERVER_PORT'] != '443' ) ) //not standard http(s) ports
             $url.= ( ':' . $_SERVER['SERVER_PORT'] );
 
-
         $docroot = rtrim($_SERVER['DOCUMENT_ROOT'], DIRECTORY_SEPARATOR);
 
         if( strpos(FNPATH, $docroot) === false ){

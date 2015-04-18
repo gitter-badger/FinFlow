@@ -2,7 +2,7 @@
 
 include_once 'header.php';
 
-$enabled = true; $saved = false;
+$enabled = true; $saved = false; $errors = $notes = array();
 
 $Users = fn_User::get_all(); if( count($Users) ) $enabled = false;
 

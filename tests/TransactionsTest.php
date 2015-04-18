@@ -21,14 +21,15 @@ class TransactionsTest extends UnitTestBase{
 
         $transaction = new stdClass();
 
-        $transaction->optype = FN_OP_IN;
-        $transaction->value   = strval(986.54);
+        $transaction->optype      = FN_OP_IN;
+        $transaction->value       = strval(986.54);
         $transaction->currency_id = $defaultCC->currency_id;
-        $transaction->comments   = ( 'Transaction added from UnitTest  ' . __CLASS__ . '::' . __FUNCTION__ );
-        $transaction->sdate          = date('Y-m-d H:i:s', strtotime('-7 days'));
-        $transaction->mdate         = null;
-        $transaction->account_id= 0;
-        $transaction->contact_id = 0;
+        $transaction->comments    = ( 'Transaction added from UnitTest  ' . __CLASS__ . '::' . __FUNCTION__ );
+        $transaction->sdate       = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $transaction->mdate       = null;
+        $transaction->account_id  = 0;
+        $transaction->user_id     = 0;
+        $transaction->contact_id  = 0;
 
         $trans_id = fn_OP::add($transaction->optype, $transaction->value, $transaction->currency_id, $transaction->comments, $transaction->sdate);
 

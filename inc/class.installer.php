@@ -40,14 +40,17 @@ class fn_Installer{
         return @file_exists( FNPATH . DIRECTORY_SEPARATOR . 'config.php' );
     }
 
-    public static function setup_cache_folder($folder){
+    public static function setup_cache_folder( $folder ){
 
         $folder = rtrim($folder, DIRECTORY_SEPARATOR); $cachepath = FNPATH;
 
-        if( strpos($folder, DIRECTORY_SEPARATOR) === false ){ //simple path
+        if( strpos($folder, DIRECTORY_SEPARATOR) === false ){  //simple path
             $cachepath = ( FNPATH . DIRECTORY_SEPARATOR . $folder );
         }
-        else {
+        elseif( ( strpos($folder, FNPATH) !== false ) and ( strpos($folder, FNPATH) == 0 )  ){ //relative to BASEPATH
+	        $cachepath = $folder;
+        }
+        else { //complex path
             $parts = @explode(DIRECTORY_SEPARATOR, $folder); if( count($parts) ) foreach($parts as $part){
                 if( strlen($part) and ( $part != '.' ) ){
                     if( $part == '..' ) //upper directory
