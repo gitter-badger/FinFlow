@@ -1,19 +1,19 @@
 <?php
 
-define('FN_VERSION'     , '1.2.3');
-define('FN_DB_VERSION', '1.3');
+define('FN_VERSION'   , '0.7.1');
+define('FN_DB_VERSION', '1');
 
 define('FNPATH', rtrim(str_replace(basename(dirname(__FILE__)), '', dirname(__FILE__)), DIRECTORY_SEPARATOR));
 
-define('FN_OP_IN'		, 'in');
+define('FN_OP_IN'	, 'in');
 define('FN_OP_OUT'	, 'out');
 
 define('FN_SERVER_TIMEZONE'	, date_default_timezone_get());
-define('FN_MYSQL_DATE'			, 'Y-m-d H:i:s');
+define('FN_MYSQL_DATE'		, 'Y-m-d H:i:s');
 
 define('FN_LOGFILE', (FNPATH . "/application.log"));
 
-include_once ( FNPATH . '/inc/interface.exr.php' ); //TODO switch to autoloader and namespaces
+include_once ( FNPATH . '/system/library/interface.exr.php' ); //TODO switch to autoloader and namespaces
 
 include_once ( FNPATH . '/inc/class.pop3.php' );
 include_once ( FNPATH . '/inc/class.mysqlidb.php' );
@@ -90,9 +90,9 @@ if ( $fndb and !$fndb->connected )
 define('FN_TIMEZONE', fn_Settings::get('timezone', 'Europe/London')); date_default_timezone_set(FN_TIMEZONE);
 //--- setup timezone ---//
 
-//--- setup default vars ---//
+//--- setup default vars ---// //TODO add router support
 if( ! isset($_GET['p']) ) $_GET['p'] = 'dashboard';
-if( ! isset($_GET['t']) )  $_GET['t'] = null;
+if( ! isset($_GET['t']) ) $_GET['t'] = null;
 //--- setup default vars ---//
 
 if( !defined('FN_IS_CRON') ) @session_start();

@@ -1,4 +1,8 @@
-<?php include_once 'inc/init.php'; if( empty($_GET['p']) ) $_GET['p'] = 'dashboard';  ?>
+<?php include_once 'system/init.php';
+
+//System::start();
+
+if( empty($_GET['p']) ) $_GET['p'] = 'dashboard';  ?>
 <!DOCTYPE html>
 <html charset="utf-8">
 <head>
