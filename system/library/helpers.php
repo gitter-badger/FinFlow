@@ -49,3 +49,17 @@ function post($key, $xss_filter=true){
 function get($key, $xss_filter=true){
     return fn_Util::array_value($_GET, $key, $xss_filter);
 }
+
+/**
+ * Returns the url of an asset
+ * @param string $relative_url
+ * @param bool $echo
+ * @param string $version
+ * @return string
+ */
+function asset_url($relative_url, $echo=true, $version=null){
+	if( $echo )
+		fn_UI::asset_url($relative_url,true, $version);
+	else
+		return fn_UI::asset_url($relative_url, false, $version);
+}

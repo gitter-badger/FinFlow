@@ -180,9 +180,13 @@ class fn_Util{
 		
 	}
 
-    public static function get_input($key, $xss_filter=false){
+    public static function get_input($key, $xss_filter=true){
         $value = isset($_GET[$key]) ? $_GET[$key] : ( isset($_POST[$key]) ? $_POST[$key] : null ); if( $value ) return ( $xss_filter ? self::xss_filter($value) : $value ); return null;
     }
+
+	public static function get_arg($index, $xss_filter=false){
+		//TODO...
+	}
 
     public static function array_value($array, $key, $xss_filter=false){
         $value = isset($array[$key]) ? $array[$key] : null; if( $value ) return ( $xss_filter ? self::xss_filter($value) : $value ); return null;

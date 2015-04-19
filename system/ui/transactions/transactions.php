@@ -224,13 +224,13 @@ else
 		</ul>
 
 
-		<?php if ( $tab == 'list' ) include_once ( 'transactions-list.php' ); ?>
+		<?php if ( $tab == 'list' ) include_once( 'transactions-list.php' ); ?>
 
 		<?php if ( $tab == 'pending' ) include_once( 'pending.php' ); ?>
 
-		<?php if ( $tab == 'generator' ) include_once ( 'transactions-filter.php' ); ?>
+		<?php if ( $tab == 'generator' ) include_once( 'transactions-filter.php' ); ?>
 		
-		<?php if ( $tab == 'add' ) include_once ( 'transactions-add.php' ); ?>
+		<?php if ( $tab == 'add' ) include_once( 'transactions-add.php' ); ?>
 		
 	</div>
 	

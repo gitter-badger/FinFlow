@@ -84,6 +84,10 @@ class fn_Settings{
 		
 	}
 
+	/**
+	 * @return array
+	 * @deprecated
+	 */
     public static function get_export_array(){
 
         global $fndb, $fnsql;
@@ -111,6 +115,7 @@ class fn_Settings{
      * Imports data from the array into the settings table. Existing data won't be overwritten.
      * @param array $Settings an array of SimpleXMLElement objects
      * @return bool
+     * @deprecated
      */
     public static function import_osmxml($Settings){
 

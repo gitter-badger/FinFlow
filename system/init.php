@@ -93,16 +93,12 @@ if ( $fndb and !$fndb->connected )
     fn_UI::fatal_error("Nu se poate realiza conexiunea cu baza de date pe " . FN_DB_HOST);
 
 //--- setup timezone ---//
-define('FN_TIMEZONE', fn_Settings::get('timezone', 'Europe/London')); date_default_timezone_set(FN_TIMEZONE);
+define('FN_TIMEZONE', fn_Settings::get('timezone', 'Europe/London') ); date_default_timezone_set(FN_TIMEZONE);
 //--- setup timezone ---//
-
-//--- setup default vars ---// //TODO add router support
-if( ! isset($_GET['p']) ) $_GET['p'] = 'dashboard';
-if( ! isset($_GET['t']) ) $_GET['t'] = null;
-//--- setup default vars ---//
 
 if( !defined('FN_IS_CRON') ) @session_start();
 
 $fnPublicPages = array('login', 'pwreset');
+$page          = get('p');
 
-if ( !fn_User::is_authenticated() and !in_array($_GET['p'], $fnPublicPages)) $_GET['p'] = 'login';
+if ( !fn_User::is_authenticated() and !in_array($page, $fnPublicPages) ) $page = 'public/login';

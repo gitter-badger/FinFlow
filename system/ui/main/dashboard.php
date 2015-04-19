@@ -2,7 +2,7 @@
 
 if( !defined('FNPATH') ) exit;
 
-include_once ( FNPATH . '/inc/class.cronassistant.php' );
+include_once ( FNPATH . '/system/library/class.cronassistant.php' );
 
 //---- calculate balance ---//
 $sdate = (date('Y-m') . "-01");
@@ -15,10 +15,10 @@ $Outcome	= fn_OP::get_sum(array_merge($filters, array('type'=>FN_OP_OUT)));
 $Balance = fn_OP::get_balance();
 
 $Thresholds = array(
-    'red' => fn_Settings::get('balance_tsh_red', 0),
+    'red'    => fn_Settings::get('balance_tsh_red', 0),
     'yellow' => fn_Settings::get('balance_tsh_yellow', 0),
-    'blue' => fn_Settings::get('balance_tsh_blue', 0),
-    'green' => fn_Settings::get('balance_tsh_green', 0)
+    'blue'   => fn_Settings::get('balance_tsh_blue', 0),
+    'green'  => fn_Settings::get('balance_tsh_green', 0)
 );
 
 $threshold_color = fn_Util::get_array_key_by_value_thresholds($Thresholds, $Balance);
@@ -27,7 +27,7 @@ $threshold_color = $threshold_color ? $threshold_color : '';
 //---- calculate balance ---//
 
 //---- get latest transactions ---//
-$offset      = 0;
+$offset   = 0;
 $per_page = FN_RESULTS_PER_PAGE;
 
 $Transactions = fn_OP::get_operations($filters, $offset, $per_page);

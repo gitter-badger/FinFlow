@@ -8,16 +8,16 @@ class fn_UI{
     public static $MSG_SUCCESS = 'success';
 
     public static $pageNames = array(
-        'index'            => 'Panou Principal',
-        'dashboard'     =>  'Panou Principal',
-        'transactions'   => 'Tranzac&#355;ii',
-        'performance'  => 'Performan&#355;&#259;',
-        'labels'            => 'Etichete',
-        'accounts'       => 'Conturi',
-        'currencies'     => 'Monede',
-        'tools'            => 'Unelte',
-        'settings'        => 'Set&#259;ri',
-        'login'            => 'Autentificare',
+        'index'         => 'Panou Principal',
+        'dashboard'     => 'Panou Principal',
+        'transactions'  => 'Tranzac&#355;ii',
+        'performance'   => 'Performan&#355;&#259;',
+        'labels'        => 'Etichete',
+        'accounts'      => 'Conturi',
+        'currencies'    => 'Monede',
+        'tools'         => 'Unelte',
+        'settings'      => 'Set&#259;ri',
+        'login'         => 'Autentificare',
         'pwreset'       => 'Recuperare parol&#259;'
     );
 
@@ -26,7 +26,7 @@ class fn_UI{
     protected static $js_assets  = array();
     protected static $css_assets = array();
 
-    protected static $inline_js = array();
+    protected static $inline_js  = array();
     protected static $inline_css = array();
 
     /**
@@ -167,7 +167,20 @@ class fn_UI{
 
         if( $die ) die();
     }
-	
+
+	public static function start(){
+		return file_exists(FNPATH . '/system/ui/main/main.php') ? include_once ( FNPATH . '/system/ui/main/main.php' ) : include_once ( FNPATH . '/system/ui/errors/404.php' );
+	}
+
+	/**
+	 * Includes a ui component with desired variables
+	 * @param $template
+	 * @param array $vars
+	 */
+	public static function component($template, $vars=array()){
+		global $fndb, $fnsql; @extract($vars, EXTR_SKIP); $anon_tpl_path = ( FNPATH . '/system/ui/' . fn_Util::xss_filter( trim( $template ) ) . '.php' ); if( file_exists( $anon_tpl_path ) ) include $anon_tpl_path; else self::msg("UI Template {$anon_tpl_path} not found... .");
+	}
+
 	public static function esc_html( $input ){
 		return htmlentities( stripslashes($input) , ENT_NOQUOTES, 'UTF-8' );
 	}
@@ -228,18 +241,18 @@ class fn_UI{
 	
 	public static function get_translated_strings($what='months'){
 			$months = array(
-				'Ianuarie'		=>array('january', 'jan'),
+				'Ianuarie'	   =>array('january', 'jan'),
 				'Februarie'	   =>array('february', 'feb'),
-				'Martie'		  =>array('march', 'mar'),
-				'Aprilie'		 =>array('april', 'apr'),
-				'Mai'			 =>array('may'),
-				'Iunie'	     =>array('june', 'jun'),
-				'Iulie'			    =>array('july', 'jul'),
-				'August'		  =>array('august', 'aug'),
-				'Septembrie'=>array('september', 'sep'),
-				'Octombrie'	=>array('october', 'oct'),
-				'Noiembrie'	=>array('november', 'nov'),
-				'Decembrie'	=>array('december', 'dec')
+				'Martie'	   =>array('march', 'mar'),
+				'Aprilie'	   =>array('april', 'apr'),
+				'Mai'		   =>array('may'),
+				'Iunie'	       =>array('june', 'jun'),
+				'Iulie'		   =>array('july', 'jul'),
+				'August'	   =>array('august', 'aug'),
+				'Septembrie'   =>array('september', 'sep'),
+				'Octombrie'	   =>array('october', 'oct'),
+				'Noiembrie'	   =>array('november', 'nov'),
+				'Decembrie'	   =>array('december', 'dec')
 		);
 		
 		$days	= array(
@@ -339,7 +352,7 @@ class fn_UI{
 	}
 
     public static function asset_url($asset, $echo=true, $version=null){
-        $version = empty($version) ? FN_VERSION : $version; $url = ( self::base_url($asset) . '?v' . $version ); if( $echo ) echo $url; else return $url;
+        $version = empty($version) ? FN_VERSION : $version; $url = ( self::base_url($asset) . '?v=' . $version ); if( $echo ) echo $url; else return $url;
     }
 
     public static function page_title($page, $echo=true){
@@ -422,7 +435,7 @@ class fn_UI{
         return $baseurl;
 
         $stdvars = array('p', 't', 'sdate', 'edate', 'labels', 'accounts', 'currency_id', 'type'); //TODO add standard supported GET vars
-        $setvars= array();
+        $setvars = array();
 
         foreach($stdvars as $var) if ( isset($_GET[$var]) ) $setvars[$var] = urlencode($_GET[$var]);
 
@@ -442,16 +455,16 @@ class fn_UI{
         $lastPage  = $total%$per_page;
 
         $nav  	 = "";
-        $jPage 	= 0;
-        $i     		= 1;
+        $jPage 	 = 0;
+        $i     	 = 1;
         $starter = 0;
-        $finisher =0;
+        $finisher=0;
 
         $before_a = $after_a =  $before_current = "";
 
         if ($bootstrap_compatible){
-            $before_a 			= '<li>';
-            $after_a	   			= '</li>';
+            $before_a 		= '<li>';
+            $after_a	   	= '</li>';
             $before_current	= '<li class="active">';
         }
 
@@ -570,10 +583,13 @@ class fn_UI{
 
         $vars = "";
 
-        if( $remove_after_download ) $vars.="&del=1";
-        if( $custom_filename ) $vars.= "&name=" . urlencode($custom_filename);
+        if( $remove_after_download )
+	        $vars.="&del=1";
 
-        return ( FN_URL . "/snippets/file-download.php?file=" . $file . $vars );
+        if( $custom_filename )
+	        $vars.= "&name=" . urlencode($custom_filename);
+
+        return ( FN_URL . "/system/ui/extras/file-download.php?file=" . $file . $vars );
 
     }
 
@@ -583,7 +599,7 @@ class fn_UI{
 
         $query = ""; if( count($vars) ){ $query = http_build_query($vars); $query = ('&' . $query); }
 
-        return ( FN_URL . "/snippets/file-preview.php?file=" . $file . $query );
+        return ( FN_URL . "/system/ui/extras/file-preview.php?file=" . $file . $query );
     }
 
 	public static function html_embed_file($file_url, $display_filename=null, $download_url=null){
