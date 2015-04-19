@@ -1,6 +1,6 @@
 <?php
 
-include_once ('class.gcrypt.php');
+include_once( 'class.gcrypt.php' );
 
 class fn_Importer{
 

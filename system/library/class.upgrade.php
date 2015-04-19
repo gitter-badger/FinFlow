@@ -155,11 +155,11 @@ class fn_Upgrader{
         <br class="clear"/>
 
         <p class="align-center">
-            <button class="btn" id="btnBack" onclick="window.location.href='../index.php';">
+            <button class="btn" id="btnBack" onclick="window.location.href='../../index.php';">
                 <span class="icon-arrow-left"></span> &#206;napoi
             </button>
 
-            <button class="btn btn-primary" id="btnContinue" style="display: none; margin-left: 50px;" onclick="window.location.href='../index.php';">
+            <button class="btn btn-primary" id="btnContinue" style="display: none; margin-left: 50px;" onclick="window.location.href='../../index.php';">
                  Ce mai a&#351;tep&#355;i! Vezi noua versiune <span class="icon-arrow-right"></span>
             </button>
         </p>
