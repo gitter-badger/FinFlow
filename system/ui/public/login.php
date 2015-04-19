@@ -76,7 +76,7 @@
                         <div class="form-group align-center">
                             <div class="col-lg-12 form-submit">
                                 <button class="btn submit btn-primary" type="submit">Autentificare</button>
-                                <button class="btn" type="button" onclick="window.location.href='index.php?p=pwreset';">Am uitat parola...</button>
+                                <button class="btn" type="button" onclick="window.location.href='../../../index.php';">Am uitat parola...</button>
                             </div>
                         </div>
 

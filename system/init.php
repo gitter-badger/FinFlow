@@ -15,29 +15,33 @@ define('FN_LOGFILE', (FNPATH . "/application.log"));
 
 include_once ( FNPATH . '/system/library/interface.exr.php' ); //TODO switch to autoloader and namespaces
 
-include_once ( FNPATH . '/inc/class.pop3.php' );
-include_once ( FNPATH . '/inc/class.mysqlidb.php' );
-include_once ( FNPATH . '/inc/class.sqlstatement.php' );
-include_once ( FNPATH . '/inc/class.ui.php' );
-include_once ( FNPATH . '/inc/class.op.php' );
-include_once ( FNPATH . '/inc/class.op-pending.php' );
-include_once ( FNPATH . '/inc/class.settings.php' );
-include_once ( FNPATH . '/inc/class.validate.php' );
-include_once ( FNPATH . '/inc/class.currency.php' );
-include_once ( FNPATH . '/inc/class.accounts.php' );
-include_once ( FNPATH . '/inc/class.contacts.php' );
-include_once ( FNPATH . '/inc/class.label.php' );
-include_once ( FNPATH . '/inc/class.util.php' );
-include_once ( FNPATH . '/inc/class.user.php' );
-include_once ( FNPATH . '/inc/class.log.php' );
+include_once ( FNPATH . '/system/library/class.pop3.php' );
+include_once ( FNPATH . '/system/library/class.mysqlidb.php' );
+include_once ( FNPATH . '/system/library/class.sqlstatement.php' );
+include_once ( FNPATH . '/system/library/class.ui.php' );
+include_once ( FNPATH . '/system/library/class.op.php' );
+include_once ( FNPATH . '/system/library/class.op-pending.php' );
+include_once ( FNPATH . '/system/library/class.settings.php' );
+include_once ( FNPATH . '/system/library/class.validate.php' );
+include_once ( FNPATH . '/system/library/class.currency.php' );
+include_once ( FNPATH . '/system/library/class.accounts.php' );
+include_once ( FNPATH . '/system/library/class.contacts.php' );
+include_once ( FNPATH . '/system/library/class.label.php' );
+include_once ( FNPATH . '/system/library/class.util.php' );
+include_once ( FNPATH . '/system/library/class.user.php' );
+include_once ( FNPATH . '/system/library/class.log.php' );
 
-include_once ( FNPATH . '/inc/helpers.php' );
+include_once ( FNPATH . '/system/library/helpers.php' );
 
 //--- set environment ---//
 
-@include_once ( FNPATH . '/environment.php' );
+if( file_exists( FNPATH . '/environment.php' ) )
+	@include_once ( FNPATH . '/environment.php' );
 
-if( !defined('FN_ENVIRONMENT') ) define('FN_ENVIRONMENT', ( isset($_SERVER['ENVIRONMENT']) ? $_SERVER['ENVIRONMENT'] : 'production' ) );
+if( file_exists( FNPATH . '/config/environment.php' ) )
+	@include_once ( FNPATH . '/config/environment.php' );
+
+if( !defined('FN_ENVIRONMENT') ) define('FN_ENVIRONMENT', ( isset($_SERVER['APP_ENV']) ? $_SERVER['APP_ENV'] : 'production' ) );
 
 //--- set environment ---//
 
@@ -69,9 +73,11 @@ define('FN_UPGRADE_DIR', ( FN_UPLOADS_DIR . "/upgrade") );
 //--- setup uploads dir ---//
 
 //--- check installation status ---//
+/*
 if( !defined('FN_DB_HOST') and ( strpos($_SERVER['REQUEST_URI'], '/setup') === false ) ){
-    header("Location: " . FN_URL . '/setup/install.php');
+    header("Location: " . FN_URL . '/setup/install.php'); //TODO add setup check
 }
+*/
 //--- check installation status ---//
 
 if( defined('FN_DB_HOST') ){
@@ -79,7 +85,7 @@ if( defined('FN_DB_HOST') ){
 }
 
 //--- phptestunit globals workaround ---// //TODO add phpunit config
-$GLOBALS['fndb'] = $fndb;
+$GLOBALS['fndb']  = $fndb;
 $GLOBALS['fnsql'] = $fnsql;
 //--- phptestunit globals workaround ---//
 

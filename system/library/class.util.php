@@ -864,7 +864,7 @@ class fn_Util{
      * @return string
      */
     public static function cfg_file_path($default='/config.php'){
-        $env = FN_ENVIRONMENT; if( file_exists( FNPATH . "/config-{$env}.php") ) return ( FNPATH . "/config-{$env}.php" ); return ( FNPATH . $default );
+        $env = FN_ENVIRONMENT; if( file_exists( FNPATH . "/config/config-{$env}.php") ) return ( FNPATH . "/config-{$env}.php" ); return ( FNPATH . $default );
     }
 
     public static function is_development_environment(){
@@ -878,6 +878,10 @@ class fn_Util{
     public static function is_staging_environment(){
         return ( FN_ENVIRONMENT == 'staging' ) or ( FN_ENVIRONMENT == 'test' );
     }
+
+	public static function is_demo_environment(){
+		return ( FN_ENVIRONMENT == 'demo' );
+	}
 
     public static function is_production_environment(){
         return FN_ENVIRONMENT == 'production';
