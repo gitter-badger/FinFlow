@@ -1,5 +1,7 @@
 <?php
 
+namespace FinFlow;
+
 /**
  * Implements the Open exchange rates API
  * Class OER_ExchangeRateParser

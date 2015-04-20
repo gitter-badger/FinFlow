@@ -1,6 +1,8 @@
 <?php
 
-class fn_Captcha{
+namespace FinFlow;
+
+class Captcha{
 
     public static $fonts_dir = "/ttf";
 

@@ -1,10 +1,12 @@
 <?php
 
-class fn_UI{
+namespace FinFlow;
 
-    public static $MSG_ERROR     = 'danger';
-    public static $MSG_NOTE      = 'info';
-    public static $MSG_WARN     = 'warning';
+class UI{
+
+    public static $MSG_ERROR   = 'danger';
+    public static $MSG_NOTE    = 'info';
+    public static $MSG_WARN    = 'warning';
     public static $MSG_SUCCESS = 'success';
 
     public static $pageNames = array(

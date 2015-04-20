@@ -1,0 +1,111 @@
+[
+    {
+        "name": "monolog/monolog",
+        "version": "1.1.0",
+        "version_normalized": "1.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Seldaek/monolog.git",
+            "reference": "abc80e0db8ad31c03b373977fc997e980800f9c2"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Seldaek/monolog/zipball/abc80e0db8ad31c03b373977fc997e980800f9c2",
+            "reference": "abc80e0db8ad31c03b373977fc997e980800f9c2",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "mlehner/gelf-php": "1.0.*"
+        },
+        "suggest": {
+            "mlehner/gelf-php": "Allow sending log messages to a GrayLog2 server"
+        },
+        "time": "2012-04-23 16:27:40",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Monolog": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jordi Boggiano",
+                "email": "j.boggiano@seld.be",
+                "homepage": "http://seld.be",
+                "role": "Developer"
+            }
+        ],
+        "description": "Logging for PHP 5.3",
+        "homepage": "http://github.com/Seldaek/monolog",
+        "keywords": [
+            "log",
+            "logging"
+        ]
+    },
+    {
+        "name": "klein/klein",
+        "version": "v2.1.0",
+        "version_normalized": "2.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/chriso/klein.php.git",
+            "reference": "5dc073f05adb67ee09680545b4cc7b0590d2559e"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/chriso/klein.php/zipball/5dc073f05adb67ee09680545b4cc7b0590d2559e",
+            "reference": "5dc073f05adb67ee09680545b4cc7b0590d2559e",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "require-dev": {
+            "phpunit/php-code-coverage": "1.2.x",
+            "phpunit/phpunit": "3.7.x",
+            "squizlabs/php_codesniffer": "1.4.8"
+        },
+        "time": "2014-11-07 07:35:23",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Klein\\": "src/Klein/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Chris O'Hara",
+                "email": "cohara87@gmail.com",
+                "homepage": "http://chris6f.com/",
+                "role": "Creator/Developer"
+            },
+            {
+                "name": "Trevor Suarez",
+                "email": "rican7@gmail.com",
+                "homepage": "http://about.me/tnsuarez",
+                "role": "Contributor/Developer"
+            }
+        ],
+        "description": "A lightning fast router for PHP",
+        "homepage": "https://github.com/chriso/klein.php",
+        "keywords": [
+            "boilerplate",
+            "router",
+            "routing",
+            "sinatra"
+        ]
+    }
+]

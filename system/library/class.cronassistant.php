@@ -1,11 +1,13 @@
 <?php
 
+namespace FinFlow;
+
 //cron states
-define('FN_CRON_STATE_RUNNING'		, 'running');
-define('FN_CRON_STATE_FINISHED'		, 'finished');
+define('FN_CRON_STATE_RUNNING'	, 'running');
+define('FN_CRON_STATE_FINISHED'	, 'finished');
 define('FN_CRON_STATE_UNKONWN'	, 'unknown');
 
-class fn_CronAssistant{
+class CronAssistant{
 	
 	public static function may_cron_run($cron){
 

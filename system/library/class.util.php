@@ -867,7 +867,7 @@ class fn_Util{
      * @param string $default
      * @return string
      */
-    public static function cfg_file_path($default='/config.php'){
+    public static function cfg_file_path($default='/config/config.php'){
         $env = FN_ENVIRONMENT; if( file_exists( FNPATH . "/config/config-{$env}.php") ) return ( FNPATH . "/config-{$env}.php" ); return ( FNPATH . $default );
     }
 

@@ -5,7 +5,9 @@
  * @version 1.0
  */
 
-class fn_Cache{
+namespace FinFlow;
+
+class Cache{
 
     public static $file_engine = 'file';
 

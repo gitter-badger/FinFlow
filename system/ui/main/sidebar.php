@@ -27,19 +27,21 @@
         </div>
     </div>
 
+	<!--
     <div class="widget panel panel-default widget-calculator">
         <div class="widget-title panel-heading">Calculator</div>
-        <div class="widget-content panel-body"><?php include_once 'widget-calculator.php';?></div>
+        <div class="widget-content panel-body"><?php fn_UI::component('widgets/widget-calculator'); ?></div>
     </div>
+    -->
 
     <div class="widget panel panel-default widget-wclock">
         <div class="widget-title panel-heading">Ceas</div>
-        <div class="widget-content panel-body"><?php include_once 'widget-wclock.php';?></div>
+        <div class="widget-content panel-body"><?php fn_UI::component('widgets/widget-wclock'); ?></div>
     </div>
 
     <div class="widget panel panel-default widget-converter">
         <div class="widget-title panel-heading">Convertor valutar</div>
-        <div class="widget-content panel-body"><?php include_once 'widget-converter.php';?></div>
+        <div class="widget-content panel-body"><?php fn_UI::component('widgets/widget-converter'); ?></div>
 	</div>
 	
 </div>

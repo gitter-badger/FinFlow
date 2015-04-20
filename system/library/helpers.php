@@ -15,7 +15,7 @@ function get_input($key, $xss_filter=false){ //TODO add cli support
  * @param bool $xss_filter
  * @return mixed|null
  */
-function i($key, $xss_filter=false){
+function in($key, $xss_filter=false){
     return fn_Util::get_input($key, $xss_filter);
 }
 
@@ -57,7 +57,7 @@ function get($key, $xss_filter=true){
  * @param string $version
  * @return string
  */
-function asset_url($relative_url, $echo=true, $version=null){
+function _url($relative_url, $echo=true, $version=null){
 	if( $echo )
 		fn_UI::asset_url($relative_url,true, $version);
 	else

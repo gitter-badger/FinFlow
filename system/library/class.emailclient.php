@@ -5,7 +5,9 @@
  * @version 1.0
  */
 
-class fn_MailClient{
+namespace FinFlow;
+
+class MailClient{
 
     protected $is_imap = false;
     protected $is_pop3 = false;

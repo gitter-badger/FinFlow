@@ -162,6 +162,6 @@ foreach ($Cronjobs as $job){
 		
 	</div>
 	
-	<?php include_once ( FNPATH . '/snippets/sidebar.php' ); ?>
+	<?php fn_UI::component('main/sidebar'); ?>
 	
 </div>

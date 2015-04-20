@@ -1,9 +1,10 @@
 <?php
 
+namespace FinFlow;
 
-class fn_Currency{
+class Currency{
 	
-	public static $table 			= 'fn_currency';
+	public static $table 	     = 'fn_currency';
 	public static $table_history = 'fn_currency_history';
 
 

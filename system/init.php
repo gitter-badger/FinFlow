@@ -33,6 +33,8 @@ include_once ( FNPATH . '/system/library/class.log.php' );
 
 include_once ( FNPATH . '/system/library/helpers.php' );
 
+require_once ( FNPATH . '/system/thirdparty/autoload.php');
+
 //--- set environment ---//
 
 if( file_exists( FNPATH . '/environment.php' ) )
@@ -46,7 +48,7 @@ if( !defined('FN_ENVIRONMENT') ) define('FN_ENVIRONMENT', ( isset($_SERVER['APP_
 //--- set environment ---//
 
 //--- include config ---//
-@include_once ( fn_Util::cfg_file_path() );
+$cfg_path = fn_Util::cfg_file_path(); @include_once ( $cfg_path );
 //--- include config ---//
 
 //--- init debug ---//
@@ -67,9 +69,8 @@ if( !defined('FN_URL') ){
 //--- setup base url ---//
 
 //--- setup uploads dir ---//
-define('FN_UPLOADS_DIR', ( FNPATH . DIRECTORY_SEPARATOR . 'uploads' ) );
-define('FN_BACKUP_DIR'  , ( FN_UPLOADS_DIR . "/backup") );
-define('FN_UPGRADE_DIR', ( FN_UPLOADS_DIR . "/upgrade") );
+define('FN_UPLOADS_DIR'   , ( FNPATH . '/uploads' ) );
+define('FN_DOWNLOADS_DIR' , ( FNPATH . '/downloads') );
 //--- setup uploads dir ---//
 
 //--- check installation status ---//
@@ -80,16 +81,24 @@ if( !defined('FN_DB_HOST') and ( strpos($_SERVER['REQUEST_URI'], '/setup') === f
 */
 //--- check installation status ---//
 
+$fnsql = $fndb = null;
+
 if( defined('FN_DB_HOST') ){
-	$fnsql = new SQLStatement(); $fndb = new MySQLiDB(FN_DB_HOST, FN_DB_USER, FN_DB_PASS, FN_DB_NAME);
+
+	$fnsql = new SQLStatement();
+	$fndb = new MySQLiDB(FN_DB_HOST, FN_DB_USER, FN_DB_PASS, FN_DB_NAME);
+
+}
+else{
+	fn_UI::fatal_error("Fisierul de configurare {$cfg_path} nu poate fi incarcat.");
 }
 
-//--- phptestunit globals workaround ---// //TODO add phpunit config
+//--- phptestunit globals workaround ---//
 $GLOBALS['fndb']  = $fndb;
 $GLOBALS['fnsql'] = $fnsql;
 //--- phptestunit globals workaround ---//
 
-if ( $fndb and !$fndb->connected )
+if ( $fndb and ! $fndb->connected )
     fn_UI::fatal_error("Nu se poate realiza conexiunea cu baza de date pe " . FN_DB_HOST);
 
 //--- setup timezone ---//
@@ -102,3 +111,7 @@ $fnPublicPages = array('login', 'pwreset');
 $page          = get('p');
 
 if ( !fn_User::is_authenticated() and !in_array($page, $fnPublicPages) ) $page = 'public/login';
+
+$router = new \Klein\Klein();
+
+//TODO enable router

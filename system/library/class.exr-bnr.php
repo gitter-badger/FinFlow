@@ -1,12 +1,14 @@
 <?php
 
+namespace FinFlow;
+
 class BNR_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_ExchangeRatesParser{
 
-    const name                      = 'Curs valutar BNR';
-    const id                           = 'bnr';
-    const EndpointURL          = 'http://www.bnr.ro/nbrfxrates.xml';
-    const websiteURL            = 'http://www.bnr.ro/';
-    const defaultCurrency     = 'RON';
+    const name            = 'Curs valutar BNR';
+    const id              = 'bnr';
+    const EndpointURL     = 'http://www.bnr.ro/nbrfxrates.xml';
+    const websiteURL      = 'http://www.bnr.ro/';
+    const defaultCurrency = 'RON';
 
 	/**
 	 * xml document

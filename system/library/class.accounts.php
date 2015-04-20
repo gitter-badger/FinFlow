@@ -1,11 +1,12 @@
 <?php
 
+namespace FinFlow;
 
-class fn_Accounts{
+class Accounts{
 
     public static $table = 'fn_accounts';
 
-    public static function  get_all($offset=0, $limit=25){
+    public static function get_all($offset=0, $limit=25){
 
         global $fndb, $fnsql;
 

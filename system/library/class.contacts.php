@@ -5,7 +5,9 @@
  * @version 1.0
  */
 
-class fn_Contacts{
+namespace FinFlow;
+
+class Contacts{
 
     public static $table  = 'fn_contacts';
 
