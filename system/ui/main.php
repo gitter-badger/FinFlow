@@ -6,6 +6,7 @@
 	use FinFlow\Log;
 
 	$component = empty($component) ? 'main/dashboard' : ( strpos($component, '/') === false ? ( $component . DIRECTORY_SEPARATOR . $component ) : $component );
+	$ui_class  = str_replace('/', '-', Util::xss_filter( trim($component, '/') ));
 
 ?>
 <!DOCTYPE html>
@@ -30,19 +31,19 @@
 	<link rel="stylesheet" type="text/css" media="all" href="<?php UI::asset_url('/assets/css/pikaday.css'); ?>"/>
 	<?php UI::css(); ?>
 </head>
-<body id="page-<?php echo Util::xss_filter($component); ?>" class="<?php echo UI::get_body_class(); ?>" role="document">
+<body id="page-<?php echo $ui_class; ?>" class="<?php echo UI::get_body_class($component); ?>" role="document">
 
-<?php if ( User::is_authenticated() ) UI::component('main/header'); ?>
+<div class="wrapper">
 
-<div class="main">
+	<?php if ( User::is_authenticated() ) UI::component('main/header'); ?>
 
-	<div class="container">
+	<div class="container container-fluid container-<?php echo $ui_class; ?>" role="main">
 		<?php UI::component( $component ); ?>
 	</div>
 
-</div>
+	<?php if ( User::is_authenticated() ) UI::component('main/footer'); ?>
 
-<?php if ( User::is_authenticated() ) UI::component('main/footer'); ?>
+</div>
 
 
 <!--- debug output --->

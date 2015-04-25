@@ -13,10 +13,42 @@
 .font-oxygen {
   font-family: 'Oxygen', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, Helvetica, sans-serif;
 }
+.alert {
+  border-width: 2px;
+}
+.alert-danger {
+  border-color: #b53738;
+}
 html,
 body {
-  font-size: 100%;
   font-family: 'Oxygen', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, Helvetica, sans-serif;
+  font-size: 110%;
   font-weight: normal;
   color: #000;
+  width: 100%;
+  height: 100%;
+  background: #fafafa;
+  background: -moz-linear-gradient(top, #fafafa 0%, #fafafa 13%, #d4d4d4 97%, #d4d4d4 100%);
+  background: -webkit-gradient(left top, left bottom, color-stop(0%, #fafafa), color-stop(13%, #fafafa), color-stop(97%, #d4d4d4), color-stop(100%, #d4d4d4));
+  background: -webkit-linear-gradient(top, #fafafa 0%, #fafafa 13%, #d4d4d4 97%, #d4d4d4 100%);
+  background: -o-linear-gradient(top, #fafafa 0%, #fafafa 13%, #d4d4d4 97%, #d4d4d4 100%);
+  background: -ms-linear-gradient(top, #fafafa 0%, #fafafa 13%, #d4d4d4 97%, #d4d4d4 100%);
+  background: linear-gradient(to bottom, #fafafa 0%, #fafafa 13%, #d4d4d4 97%, #d4d4d4 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fafafa', endColorstr='#d4d4d4', GradientType=0);
+}
+.main {
+  min-height: 100%;
+  min-width: 100%;
+  margin: 0 auto;
+}
+body.fatal-error {
+  padding-top: 4%;
+}
+body.fatal-error .logo {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+body.fatal-error .logo img {
+  width: 85px;
 }

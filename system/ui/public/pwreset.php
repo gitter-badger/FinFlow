@@ -70,114 +70,118 @@ if( count($_POST) ){
 
 Captcha::init(); $captcha_url = ( FN_URL . '/system/ui/extras/captcha.php?o=1' ); ?>
 
-<div class="row content">
+<div class="row content content-login">
 
-    <div class="col-lg-5 col-lg-offset-3">
+    <div class="col-lg-7 col-sm-8 col-xs-12" style="margin: 0px auto; float: none;">
 
-        <div class="inner-container container-login">
+	    <div class="panel panel-default">
 
-            <div class="panel panel-default">
+		    <div class="panel-heading">
+			    <a class="brand">
+				    <img src="<?php UI::asset_url('/assets/images/finflow-logo.png'); ?>">
+			    </a>
+		    </div>
 
-                <div class="panel-heading"> <h2 align="center" class="brand">FinFlow</h2></div>
+		    <div class="panel-body">
 
-                <div class="panel-body">
+			    <?php UI::show_errors($Errors); ?>
 
-                    <?php UI::show_errors($Errors); ?>
+			    <?php if( empty($reset_key) ): ?>
 
-                    <?php if( empty($reset_key) ): ?>
+				    <?php if($Success): ?>
 
-                        <?php if($Success): ?>
+					    <div class="alert alert-info">
+						    Un email cu informatii pentru resetarea parolei a fost trimis la
+						    <em><?php echo $_POST['email']; ?></em>.<br/><br/>
+						    Verific&#259;-&#355;i dosarul Inbox, iar dac&#259; nu e acolo verific&#259; &#351;i
+						    dosarele de Spam &#351;i Trash.
+					    </div>
 
-                            <div class="alert alert-info">
-                                Un email cu informatii pentru resetarea parolei a fost trimis la <em><?php echo $_POST['email']; ?></em>.<br/><br/>
-                                Verific&#259;-&#355;i dosarul Inbox, iar dac&#259; nu e acolo verific&#259; &#351;i dosarele de Spam &#351;i Trash.
-                            </div>
+				    <?php else: ?>
 
-                        <?php else: ?>
-
-                            <form class="form form-horizontal" target="_self" method="post" name="request-pw-form" id="requestPwForm">
-                                <div class="form-group">
-                                    <label class="control-label col-lg-4" for="email">Email:</label>
-                                    <div class="col-lg-8">
-                                        <input class="form-control" type="email" size="45" maxlength="255" name="email" id="email" value="<?php echo UI::extract_post_val('email');?>" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-lg-4" for="verify">Verificare:</label>
-                                    <div class="col-lg-8">
-                                        <div class="input-group">
-                                            <?php if( Captcha::supports_img() ): ?>
-                                                <span class="input-group-addon captcha-img-addon">
+					    <form class="form form-horizontal" target="_self" method="post" name="request-pw-form" id="requestPwForm">
+						    <div class="form-group">
+							    <label class="control-label col-lg-4" for="email">Email:</label>
+							    <div class="col-lg-8">
+								    <input class="form-control" type="email" size="45" maxlength="255" name="email" id="email" value="<?php echo UI::extract_post_val('email');?>" />
+							    </div>
+						    </div>
+						    <div class="form-group">
+							    <label class="control-label col-lg-4" for="verify">Verificare:</label>
+							    <div class="col-lg-8">
+								    <div class="input-group">
+									    <?php if( Captcha::supports_img() ): ?>
+										    <span class="input-group-addon captcha-img-addon">
                                                 <img id="captchaImg" onclick="fn_popup('<?php echo $captcha_url; ?>&mag=1&htmlmag=1');" src="<?php echo $captcha_url; ?>" align="absmiddle"/>
                                             </span>
-                                                <input class="form-control" type="text" size="10" maxlength="255" name="verify" id="verify" value=""/>
-                                            <?php else: ?>
-                                                <span class="input-group-addon"><?php fn_Captcha::output_math(); ?></span>
-                                                <input class="form-control" type="text" size="10" maxlength="255" name="verify" id="verify" value=""/>
-                                            <?php endif;?>
-                                        </div>
-                                    </div>
-                                </div>
+										    <input class="form-control" type="text" size="10" maxlength="255" name="verify" id="verify" value=""/>
+									    <?php else: ?>
+										    <span class="input-group-addon"><?php fn_Captcha::output_math(); ?></span>
+										    <input class="form-control" type="text" size="10" maxlength="255" name="verify" id="verify" value=""/>
+									    <?php endif;?>
+								    </div>
+							    </div>
+						    </div>
 
-                                <div class="form-group align-center">
-                                    <div class="col-lg-12 form-submit">
-                                        <button class="btn btn-primary" type="submit">Trimite link de reset</button>
-                                    </div>
-                                </div>
-                            </form>
+						    <div class="form-group align-center">
+							    <div class="col-lg-12 form-submit">
+								    <button class="btn btn-primary" type="submit">Trimite link de reset</button>
+							    </div>
+						    </div>
+					    </form>
 
-                        <?php endif;?>
+				    <?php endif;?>
 
-                    <?php else: ?>
+			    <?php else: ?>
 
-                        <?php if( $user and isset($user->user_id) ): ?>
+				    <?php if( $user and isset($user->user_id) ): ?>
 
-                            <p class="align-center"> Email: <em><?php echo $user->email; ?></em> </p>
+					    <p class="align-center"> Email: <em><?php echo $user->email; ?></em> </p>
 
-                            <div class="clearfix"></div>
+					    <div class="clearfix"></div>
 
-                            <?php if( $Success ): ?>
+					    <?php if( $Success ): ?>
 
-                                <div class="alert alert-info">
-                                    Parola a fost schimbata. <br/> Pentru a te autentifica <a href="<?php fn_UI::page_url('index', array('p'=>'login')); ?>">click aici</a>.
-                                </div>
+						    <div class="alert alert-info">
+							    Parola a fost schimbata. <br/> Pentru a te autentifica <a href="<?php fn_UI::page_url('index', array('p'=>'login')); ?>">click aici</a>.
+						    </div>
 
-                            <?php else: ?>
+					    <?php else: ?>
 
-                                <form class="form form-horizontal" target="_self" method="post" name="reset-pw-form" id="resetPwForm">
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-3" for="password">Parola:</label>
-                                        <div class="col-lg-8">
-                                            <input class="form-control" type="password" size="45" maxlength="255" name="password" id="password" value="" />
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="control-label col-lg-4" for="password2">Confirmare:</label>
-                                        <div class="col-lg-8">
-                                            <input class="form-control" type="password" size="45" maxlength="255" name="password2" id="password2" value="" />
-                                        </div>
-                                    </div>
+						    <form class="form form-horizontal" target="_self" method="post" name="reset-pw-form" id="resetPwForm">
+							    <div class="form-group">
+								    <label class="control-label col-lg-3" for="password">Parola:</label>
+								    <div class="col-lg-8">
+									    <input class="form-control" type="password" size="45" maxlength="255" name="password" id="password" value="" />
+								    </div>
+							    </div>
+							    <div class="form-group">
+								    <label class="control-label col-lg-4" for="password2">Confirmare:</label>
+								    <div class="col-lg-8">
+									    <input class="form-control" type="password" size="45" maxlength="255" name="password2" id="password2" value="" />
+								    </div>
+							    </div>
 
-                                    <div class="form-group">
-                                        <div class="col-lg-12 align-center"><button class="btn btn-primary" type="submit">Reseteaz&#259; parola</button></div>
-                                    </div>
-                                </form>
+							    <div class="form-group">
+								    <div class="col-lg-12 align-center"><button class="btn btn-primary" type="submit">Reseteaz&#259; parola</button></div>
+							    </div>
+						    </form>
 
-                            <?php endif; ?>
+					    <?php endif; ?>
 
-                        <?php else: ?>
+				    <?php else: ?>
 
-                            <div class="alert alert-warning">
-                                Codul de resetare al parolei este incorect sau a fost deja utilizat. <br/>
-                                Pentru a ob&#355;ine un nou cod acceseaz&#259; <a href="<?php UI::page_url('index', array('p'=>'pwreset')); ?>">formularul de resetare al parolei</a> .
-                            </div>
+					    <div class="alert alert-warning">
+						    Codul de resetare al parolei este incorect sau a fost deja utilizat. <br/>
+						    Pentru a ob&#355;ine un nou cod acceseaz&#259; <a href="<?php UI::page_url('index', array('p'=>'pwreset')); ?>">formularul de resetare al parolei</a> .
+					    </div>
 
-                        <?php endif; ?>
+				    <?php endif; ?>
 
-                    <?php endif; ?>
+			    <?php endif; ?>
 
-                </div>
-            </div>
-        </div>
+		    </div>
+	    </div>
+
     </div>
 </div>

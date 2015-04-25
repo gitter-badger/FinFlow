@@ -122,8 +122,13 @@ class UI{
 				<div class="wrap container-fluid">
 					<div class="row">
                         <div class="col-lg-12">
+
+	                        <p class="logo">
+		                        <img align="absmiddle" src="<?php UI::asset_url('/assets/images/finflow-logo.png'); ?>">
+	                        </p>
+
                             <div class="alert alert-<?php echo $msgtype; ?>">
-	                            <strong><?php echo $prefix; ?> </strong><?php echo $msg; ?>
+	                            <strong><i class="fa fa-exclamation-triangle"></i> <?php echo $prefix; ?> </strong><?php echo $msg; ?>
                             </div>
                         </div>
 					</div>
@@ -393,7 +398,7 @@ class UI{
         return ( Util::get_server_base_url() . $_SERVER['REQUEST_URI'] );
     }
 	
-	public static function get_body_class(){
+	public static function get_body_class($main_component=null){
 	
 		$classes = array();
 	

@@ -87,10 +87,10 @@ $GLOBALS['fnsql'] = $fnsql;
 //--- phptestunit globals workaround ---//
 
 if ( $fndb and ! $fndb->connected )
-    UI::fatal_error("Nu se poate realiza conexiunea cu baza de date pe " . FN_DB_HOST);
+    UI::fatal_error('Nu se poate realiza conexiunea cu baza de date pe ' . FN_DB_HOST);
 
 if ( Settings::get('db_version', 0) == 0 ) //database not installed
-	UI::fatal_error("Baza de date nu a fost instalata pe " . FN_DB_HOST);
+	UI::fatal_error('Baza de date nu a fost instalata pe ' . FN_DB_HOST . ' ...');
 
 //--- setup timezone ---//
 define('FN_TIMEZONE', Settings::get('timezone', 'Europe/London') ); date_default_timezone_set(FN_TIMEZONE);
