@@ -1,6 +1,12 @@
-<?php if ( !defined('FNPATH') ) exit(); if( ! isset( $_POST['account_currency_id']) ) $_POST['account_currency_id'] = 0; ?>
+<?php
 
-<?php fn_UI::show_errors($errors); fn_UI::show_notes($notices); ?>
+use FinFlow\UI;
+
+if ( !defined('FNPATH') ) exit();
+
+if( ! isset( $_POST['account_currency_id']) ) $_POST['account_currency_id'] = 0; ?>
+
+<?php UI::show_errors($errors); UI::show_notes($notices); ?>
 
 <form class="form form-horizontal" action="<?php fn_UI::page_url('accounts', array('t'=>'add'))?>" method="post" name="add-account-form" id="addAccountForm" role="form">
 

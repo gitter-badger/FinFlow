@@ -1,30 +1,34 @@
-<?php if( !defined('FNPATH') ) exit; include_once ( FNPATH . '/inc/class.captcha.php' );
+<?php if( !defined('FNPATH') ) exit;
 
-$Errors    = array();
+use FinFlow\UI;
+use FinFlow\User;
+use FinFlow\CheckValidityOf;
+use FinFlow\Captcha;
+
+$Errors   = array();
 $Success  = false;
 
-$user = null;
+$user      = null;
+$reset_key = get('key');
 
-$reset_key = isset($_GET['key']) ? trim($_GET['key']) : false;
-
-if( $reset_key ) $user = fn_User::get_by($reset_key, 'pw_reset_key');
+if( $reset_key ) $user = User::get_by($reset_key, 'pw_reset_key');
 
 if( count($_POST) ){
 
     if( empty($reset_key) ) {
 
         //--- step 1, request a reset key ---//
-        if( !fn_CheckValidityOf::email( $_POST['email'] ) )
+        if( ! CheckValidityOf::email( $_POST['email'] ) )
             $Errors[] = "Adresa de email este invalid&#259;.";
 
-        if( !fn_Captcha::validate( $_POST['verify'] ) )
+        if( ! Captcha::validate( $_POST['verify'] ) )
             $Errors[] = "Codul de verificare introdus este incorect.";
 
         if( empty($Errors) ){
-            $user = fn_User::get_by($_POST['email'], 'email');
+            $user = User::get_by($_POST['email'], 'email');
 
             if( $user and isset($user->user_id) ){
-               if( fn_User::send_reset_pw_link($user->user_id) )
+               if( User::send_reset_pw_link($user->user_id) )
                     $Success = true;
                else
                    $Errors[] = "Emailul nu poate fi trimis din cauza unei erori tehnice. Te rugam sa &#238;ncerci din nou peste c&#226;teva minute.";
@@ -36,16 +40,18 @@ if( count($_POST) ){
     }
     else{
 
+	    //--- step 2, reset the password ---//
         if( $user and isset($user->user_id) ){
 
-            if( !fn_CheckValidityOf::stringlen($_POST['password'], 6) )
-                $Errors[] = "Parola trebuie sa aib&#259; minim 6 caractere";
+            if( ! CheckValidityOf::stringlen(post('password'), 8) )
+                $Errors[] = "Parola trebuie sa aib&#259; minim 8 caractere";
 
-            if( $_POST['password'] != $_POST['password2'] )
+            if( post('password') != post('password2') )
                 $Errors[] = "Parola aleas&#259; este diferit&#259; de cea confirmat&#259;.";
 
             if( empty($Errors) ){
-                $changed = fn_User::update($user->user_id, array('email'=>$user->email, 'password'=>$_POST['password'], 'pw_reset_key'=>""));
+
+                $changed = User::update($user->user_id, array('email'=>$user->email, 'password'=>post('password'), 'pw_reset_key'=>''));
 
                 if($changed)
                     $Success = true;
@@ -54,13 +60,15 @@ if( count($_POST) ){
             }
 
         }
-        else $Errors[] = "Codul de reset este invalid.";
+        else
+	        $Errors[] = "Codul de reset este invalid.";
+	    //--- step 2, reset the password ---//
 
     }
 
 }
 
-fn_Captcha::init(); $captcha_url = (FN_URL . '/snippets/captcha.php?o=1'); ?>
+Captcha::init(); $captcha_url = ( FN_URL . '/system/ui/extras/captcha.php?o=1' ); ?>
 
 <div class="row content">
 
@@ -74,7 +82,7 @@ fn_Captcha::init(); $captcha_url = (FN_URL . '/snippets/captcha.php?o=1'); ?>
 
                 <div class="panel-body">
 
-                    <?php fn_UI::show_errors($Errors); ?>
+                    <?php UI::show_errors($Errors); ?>
 
                     <?php if( empty($reset_key) ): ?>
 
@@ -91,14 +99,14 @@ fn_Captcha::init(); $captcha_url = (FN_URL . '/snippets/captcha.php?o=1'); ?>
                                 <div class="form-group">
                                     <label class="control-label col-lg-4" for="email">Email:</label>
                                     <div class="col-lg-8">
-                                        <input class="form-control" type="email" size="45" maxlength="255" name="email" id="email" value="<?php echo fn_UI::extract_post_val('email');?>" />
+                                        <input class="form-control" type="email" size="45" maxlength="255" name="email" id="email" value="<?php echo UI::extract_post_val('email');?>" />
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-lg-4" for="verify">Verificare:</label>
                                     <div class="col-lg-8">
                                         <div class="input-group">
-                                            <?php if( fn_Captcha::supports_img() ): ?>
+                                            <?php if( Captcha::supports_img() ): ?>
                                                 <span class="input-group-addon captcha-img-addon">
                                                 <img id="captchaImg" onclick="fn_popup('<?php echo $captcha_url; ?>&mag=1&htmlmag=1');" src="<?php echo $captcha_url; ?>" align="absmiddle"/>
                                             </span>
@@ -161,7 +169,7 @@ fn_Captcha::init(); $captcha_url = (FN_URL . '/snippets/captcha.php?o=1'); ?>
 
                             <div class="alert alert-warning">
                                 Codul de resetare al parolei este incorect sau a fost deja utilizat. <br/>
-                                Pentru a ob&#355;ine un nou cod acceseaz&#259; <a href="<?php fn_UI::page_url('index', array('p'=>'pwreset')); ?>">formularul de resetare al parolei</a> .
+                                Pentru a ob&#355;ine un nou cod acceseaz&#259; <a href="<?php UI::page_url('index', array('p'=>'pwreset')); ?>">formularul de resetare al parolei</a> .
                             </div>
 
                         <?php endif; ?>

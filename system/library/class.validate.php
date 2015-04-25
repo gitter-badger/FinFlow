@@ -5,7 +5,9 @@
  * @since Trackify 0.6
  */
 
-class fn_CheckValidityOf{
+namespace FinFlow;
+
+class CheckValidityOf{
 	
 	/**
 	 * validates an e-mail address;

@@ -1,6 +1,8 @@
 <?php
 
-class fn_Util{
+namespace FinFlow;
+
+class Util{
 
     /**
      * A list of translitaration(s) for generating slugs

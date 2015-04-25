@@ -1,8 +1,6 @@
 <?php
 
-define( 'OBJECT'	, 'OBJECT', TRUE );
-define( 'ARRAY_A'	, 'ARRAY_A' );
-define( 'ARRAY_N'   , 'ARRAY_N' );
+namespace FinFlow;
 
 /**
  * MySQL(i) Database PHP API Wrapper. Offers the option to manage one or more connections as objects. Requires PHP 5
@@ -11,7 +9,11 @@ define( 'ARRAY_N'   , 'ARRAY_N' );
  * @license GPL v2
  */
 class MySQLiDB{
-	
+
+	const OBJECT  = 'OBJECT';
+	const ARRAY_A = 'ARRAY_A';
+	const ARRAY_N = 'ARRAY_N';
+
 	public 	  $host;
 	protected $port;
 	protected $user;
@@ -52,9 +54,9 @@ class MySQLiDB{
 		$this->name 		= empty($name) ? $this->user : $name;
 		
 		$this->collation = $collation;
-		$this->char_set = $char_set;
+		$this->char_set  = $char_set;
 
-        $this->logfile             = $logfile;
+        $this->logfile        = $logfile;
         $this->logfile_append = $logfile_append;
 
 		$this->connect();
@@ -74,7 +76,7 @@ class MySQLiDB{
 		
 		else {
 			$this->connected = FALSE;
-			$this->error		= @mysqli_error($this->connectionId);
+			$this->error     = @mysqli_error($this->connectionId);
 		}
 		
 		return $this->connected;
@@ -87,11 +89,13 @@ class MySQLiDB{
 	
 	public function set_charset($charset, $collation ){
 	
-		if (function_exists('mysqli_set_charset'))
-			@mysqli_set_charset( $this->connectionId, $charset );
-		else 
-			if( strlen($collation) ) $this->execute_query("SET NAMES {$charset} COLLATE {$collation}");
-	
+		if ( function_exists('mysqli_set_charset') )
+			return @mysqli_set_charset( $this->connectionId, $charset );
+		elseif( strlen($collation) )
+			return $this->execute_query("SET NAMES {$charset} COLLATE {$collation}");
+
+		return false; //failed to set charset
+
 	}
 	
 	
@@ -108,7 +112,7 @@ class MySQLiDB{
                 if(is_array($val) or is_object($val))
                     $eval = $this->escape( is_object($val) ? @get_object_vars($val) : $val );
                 else
-				    $eval	 = mysqli_real_escape_string($this->connectionId, $val);
+				    $eval = mysqli_real_escape_string($this->connectionId, $val);
 				
 				if ( $valuesonly )
                     $escaped[$key] = $eval;
@@ -137,22 +141,30 @@ class MySQLiDB{
 		
 		$this->query = $string;
 	
-		if (strlen($this->queryLog) > 1000) $this->clear_logs($this->logfile, $this->logfile_append); //automatically clear logs in case these are too long
+		if (strlen($this->queryLog) > 1000)
+			$this->clear_logs($this->logfile, $this->logfile_append); //automatically clear logs in case these are too long
 	
 		$this->queryLog.= ( $this->query . "\n" );
 	
 		if ($this->result = @mysqli_query( $this->connectionId, $this->query ) ){
+
 			$this->error = ""; 
 			
-			if ( strpos($this->query, "UPDATE") === FALSE ); else $this->affected_rows  = @mysqli_affected_rows($this->connectionId);
-			if ( strpos($this->query, "DELETE") === FALSE );  else $this->affected_rows  = @mysqli_affected_rows($this->connectionId);
-			if ( strpos($this->query, "INSERT") === FALSE );  else $this->last_insert_id    = @mysqli_insert_id($this->connectionId);
+			if ( strpos($this->query, "UPDATE") === FALSE ); else
+				$this->affected_rows  = @mysqli_affected_rows($this->connectionId);
+
+			if ( strpos($this->query, "DELETE") === FALSE ); else
+				$this->affected_rows  = @mysqli_affected_rows($this->connectionId);
+
+			if ( strpos($this->query, "INSERT") === FALSE ); else
+				$this->last_insert_id    = @mysqli_insert_id($this->connectionId);
 			
 			return  TRUE;
+
 		}
 		else {
 			
-			$this->error	   = @mysqli_error($this->connectionId);
+			$this->error	= @mysqli_error($this->connectionId);
 			$this->errorLog.= ("\n". $this->error);
 				
 			return FALSE;
@@ -180,12 +192,12 @@ class MySQLiDB{
 
         }
         else {
-            $this->error	   = mysqli_error($this->connectionId);
+            $this->error	= mysqli_error($this->connectionId);
             $this->errorLog.= ("\n". $this->error);
         }
 
         if( @mysqli_errno($this->connectionId) ){
-            $this->error	   = mysqli_error($this->connectionId);
+            $this->error	= mysqli_error($this->connectionId);
             $this->errorLog.= ("\n". $this->error);
         }
 
@@ -196,20 +208,27 @@ class MySQLiDB{
 	
 	public function parse_object($raw_result){
 		
-		$Rows = array(); while ( $row = @mysqli_fetch_object($raw_result) ) $Rows[] = $row;
+		$Rows = array();
+
+		while ( $row = @mysqli_fetch_object($raw_result) ) $Rows[] = $row;
 		
 		return $Rows;
 	}
 	
 	public function parse_array_a($raw_result){
 		
-		$Rows = array(); while ( $row = @mysqli_fetch_array($raw_result, MYSQL_ASSOC) ) $Rows[] = $row;
+		$Rows = array();
+
+		while ( $row = @mysqli_fetch_array($raw_result, MYSQL_ASSOC) ) $Rows[] = $row;
 		
 		return $Rows;
 	}
 	
 	public function parse_array_n($raw_result){
-		$Rows = array(); while ( $row = @mysqli_fetch_array($raw_result, MYSQL_NUM) ) $Rows[] = $row;
+
+		$Rows = array();
+
+		while ( $row = @mysqli_fetch_array($raw_result, MYSQL_NUM) ) $Rows[] = $row;
 		
 		return $Rows;
 	}
@@ -221,19 +240,19 @@ class MySQLiDB{
 	
 	public function get_row($query, $index=0, $result_type=NULL){
 		
-		if ( empty($result_type) ) $result_type = OBJECT;
+		if ( empty($result_type) ) $result_type = self::OBJECT;
 		
 		$this->execute_query($query);
 		
 		if ( $this->result ) {
 			
-			if ($result_type == OBJECT) 
+			if ($result_type == self::OBJECT )
 				$this->vresult = $this->parse_object( $this->result );
 			
-			if ( $result_type == ARRAY_A )
+			if ( $result_type == self::ARRAY_A )
 				$this->vresult = $this->parse_array_a( $this->result );
 			
-			if ( $result_type == ARRAY_N )
+			if ( $result_type == self::ARRAY_N )
 				$this->vresult = $this->parse_array_n( $this->result );
 			
 			return @$this->vresult[$index] ? $this->vresult[$index] : NULL;
@@ -245,19 +264,19 @@ class MySQLiDB{
 	
 	public function get_rows($query, $result_type=NULL){
 	
-		if ( empty($result_type) ) $result_type = OBJECT;
+		if ( empty($result_type) ) $result_type = self::OBJECT;
 	
 		$this->execute_query($query);
 	
 		if ( $this->result ) {
 				
-			if ($result_type == OBJECT)
+			if ($result_type == self::OBJECT)
 				$this->vresult = $this->parse_object( $this->result );
 				
-			if ( $result_type == ARRAY_A )
+			if ( $result_type == self::ARRAY_A )
 				$this->vresult = $this->parse_array_a( $this->result );
 				
-			if ( $result_type == ARRAY_N )
+			if ( $result_type == self::ARRAY_N )
 				$this->vresult = $this->parse_array_n( $this->result );
 				
 			return count($this->vresult) ? $this->vresult : NULL;

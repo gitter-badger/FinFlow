@@ -1,6 +1,8 @@
 <?php
 
-class fn_User{
+namespace FinFlow;
+
+class User{
 	
 	protected $authenticated;
 	protected $level;
@@ -207,6 +209,7 @@ class fn_User{
     }
 
     public static function delete($user_id){
+
         global $fndb, $fnsql;
 
         $count = self::get_total();

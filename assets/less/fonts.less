@@ -1,0 +1,33 @@
+
+@font-face {
+  font-family: 'Oxygen';
+  font-style: normal;
+  font-weight: 400;
+  src:
+  local('Oxygen'),
+  local('Oxygen-Regular'),
+  url('../fonts/oxygen/Oxygen_400.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/oxygen/Oxygen_400.woff') format('woff'),
+  url('../fonts/oxygen/Oxygen_400.ttf') format('truetype'),
+  url('../fonts/oxygen/Oxygen_400.svg#Oxygen') format('svg');
+}
+
+@font-face {
+  font-family: 'Oxygen';
+  font-style: normal;
+  font-weight: 700;
+  src:
+  local('Oxygen Bold'),
+  local('Oxygen-Bold'),
+  url('../fonts/oxygen/Oxygen_700.eot?#iefix') format('embedded-opentype'),
+  url('../fonts/oxygen/Oxygen_700.woff') format('woff'),
+  url('../fonts/oxygen/Oxygen_700.ttf') format('truetype'),
+  url('../fonts/oxygen/Oxygen_700.svg#Oxygen') format('svg');
+}
+
+@fallback-font: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, Helvetica, sans-serif;
+@body-font: 'Oxygen', @fallback-font;
+
+.font-oxygen{
+  font-family: 'Oxygen', @fallback-font;
+}

@@ -5,7 +5,9 @@
  * @version 1.0
  */
 
-class fn_OP_Pending{
+namespace FinFlow;
+
+class OP_Pending{
 
     public static $table  = 'fn_op_pending';
 

@@ -4,10 +4,10 @@ namespace FinFlow;
 
 class UI{
 
-    public static $MSG_ERROR   = 'danger';
-    public static $MSG_NOTE    = 'info';
-    public static $MSG_WARN    = 'warning';
-    public static $MSG_SUCCESS = 'success';
+    const MSG_ERROR   = 'danger';
+	const MSG_NOTE    = 'info';
+	const MSG_WARN    = 'warning';
+	const MSG_SUCCESS = 'success';
 
     public static $pageNames = array(
         'index'         => 'Panou Principal',
@@ -112,23 +112,22 @@ class UI{
 		if ( $html ): ?>
 			<html>
 			<head>
-			<meta charset="utf-8" />
-			<title>FinFlow | <?php echo $title; ?> </title>
-            <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/bootstrap.min.css'); ?>" />
-            <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/font-awesome.min.css'); ?>" />
-            <link rel="stylesheet" type="text/css" media="all" href="<?php fn_UI::asset_url('styles/style.css'); ?>" />
+				<meta charset="utf-8"/>
+				<title>FinFlow | <?php echo $title; ?> </title>
+				<link rel="stylesheet" type="text/css" media="all" href="<?php UI::asset_url('/assets/css/bootstrap.min.css'); ?>"/>
+				<link rel="stylesheet" type="text/css" media="all" href="<?php UI::asset_url('/assets/css/font-awesome.min.css'); ?>"/>
+				<link rel="stylesheet" type="text/css" media="all" href="<?php UI::asset_url('/assets/css/styles.css'); ?>" />
 			</head>
-			<body id="page-error" class="error">
+			<body id="page-error" class="error fatal-error">
 				<div class="wrap container-fluid">
 					<div class="row">
                         <div class="col-lg-12">
-                            <div class="alert alert-<?php echo $msgtype; ?>"><strong><?php echo $prefix; ?> </strong><?php echo $msg; ?></div>
+                            <div class="alert alert-<?php echo $msgtype; ?>">
+	                            <strong><?php echo $prefix; ?> </strong><?php echo $msg; ?>
+                            </div>
                         </div>
 					</div>
 				</div>
-                <script type="text/javascript" src="<?php fn_UI::asset_url('js/jquery.min.js'); ?>"></script>
-                <script type="text/javascript" src="<?php fn_UI::asset_url('js/bootstrap.min.js'); ?>"></script>
-                <script type="text/javascript" src="<?php fn_UI::asset_url('js/fn.js'); ?>"></script>
 			</body>
 			</html>
 		<?php 
@@ -170,8 +169,8 @@ class UI{
         if( $die ) die();
     }
 
-	public static function start(){
-		return file_exists(FNPATH . '/system/ui/main/main.php') ? include_once ( FNPATH . '/system/ui/main/main.php' ) : include_once ( FNPATH . '/system/ui/errors/404.php' );
+	public static function start($component=false){
+		$component = empty($component) ? 'main/dashboard' : trim( Util::xss_filter($component) ); include_once (FNPATH . '/system/ui/main.php');
 	}
 
 	/**
@@ -180,15 +179,15 @@ class UI{
 	 * @param array $vars
 	 */
 	public static function component($template, $vars=array()){
-		global $fndb, $fnsql; @extract($vars, EXTR_SKIP); $anon_tpl_path = ( FNPATH . '/system/ui/' . fn_Util::xss_filter( trim( $template ) ) . '.php' ); if( file_exists( $anon_tpl_path ) ) include $anon_tpl_path; else self::msg("UI Template {$anon_tpl_path} not found... .");
+		global $fndb, $fnsql; @extract($vars, EXTR_SKIP); $anon_tpl_path = ( FNPATH . '/system/ui/' . Util::xss_filter( trim( $template ) ) . '.php' ); if( file_exists( $anon_tpl_path ) ) include $anon_tpl_path; else self::msg("UI Template {$anon_tpl_path} not found... .");
 	}
 
 	public static function esc_html( $input ){
-		return htmlentities( stripslashes($input) , ENT_NOQUOTES, 'UTF-8' );
+		return htmlentities( stripslashes($input), ENT_NOQUOTES, 'UTF-8' );
 	}
 	
 	public static function esc_attr( $input ){
-		return htmlspecialchars( stripslashes( fn_Util::xss_filter($input) ) , ENT_NOQUOTES, 'UTF-8' );
+		return htmlspecialchars( stripslashes( Util::xss_filter($input) ) , ENT_NOQUOTES, 'UTF-8' );
 	}
 	
 	public static function extract_post_val($key, $default="", $escape=FALSE){
@@ -221,21 +220,21 @@ class UI{
 	public static function show_errors($errors){
 
 		if ( is_array($errors) ) 
-			foreach ($errors as $msg) self::msg($msg, self::$MSG_ERROR);
+			foreach ($errors as $msg) self::msg($msg, self::MSG_ERROR);
 		else 
 			self::msg($errors, 'error');
 	}
 	
 	public static function show_notes($notes){
 		if ( is_array($notes) )
-			foreach ($notes as $msg) self::msg($msg, self::$MSG_NOTE);
+			foreach ($notes as $msg) self::msg($msg, self::MSG_NOTE);
 		else
 			self::msg($notes, 'note');
 	}
 
     public static function show_warnings($warnings){
         if ( is_array($warnings) )
-            foreach ($warnings as $msg) self::msg($msg, self::$MSG_WARN);
+            foreach ($warnings as $msg) self::msg($msg, self::MSG_WARN);
         else
             self::msg($warnings, 'note');
     }
@@ -310,7 +309,7 @@ class UI{
 	}
 
     public static function format_nr($number, $decimals=2, $precision=FALSE){
-        return fn_Util::format_nr($number, $decimals, $precision);
+        return Util::format_nr($number, $decimals, $precision);
     }
 
     public static function format_money($value, $currency=false, $show_cc=false, $currency_after=false){
@@ -320,14 +319,14 @@ class UI{
         $currency = empty($currency) ? 0 : $currency;
 
         if( empty($currency) ){
-            $currency = fn_Currency::get_default();
+            $currency = Currency::get_default();
         }else{
 
             if( is_string($currency) )
-                $currency = fn_Currency::get_by_code($currency);
+                $currency = Currency::get_by_code($currency);
 
             if( is_int( $currency ) )
-                $currency = fn_Currency::get($currency);
+                $currency = Currency::get($currency);
 
         }
 
@@ -387,18 +386,18 @@ class UI{
 	}
 
     public static function base_url($relative_url='/'){
-        return ( rtrim( fn_Util::get_base_url(), '/' ) . '/' . trim($relative_url, '/') );
+        return ( rtrim( Util::get_base_url(), '/' ) . '/' . trim($relative_url, '/') );
     }
 
     public static function current_page_url(){
-        return ( fn_Util::get_server_base_url() . $_SERVER['REQUEST_URI'] );
+        return ( Util::get_server_base_url() . $_SERVER['REQUEST_URI'] );
     }
 	
 	public static function get_body_class(){
 	
 		$classes = array();
 	
-		if ( fn_User::is_authenticated() )
+		if ( User::is_authenticated() )
 			$classes[] = "logged-in";
 		else
 			$classes[] = "logged-out";
@@ -406,7 +405,7 @@ class UI{
 		if( isset($_GET['p']) ) {
             $classes[] = ( 'page-' . get('p') ); if( isset($_GET['t']) ) $classes[] = ( 'page-' . get('p') . '-' .  get('t') ); else $classes[] =   ( 'page-' . get('p') . '-index' );
         }else{
-			if ( fn_User::is_authenticated() )
+			if ( User::is_authenticated() )
 				$classes[] = "dashboard";
 			else
 				$classes[] = "login";
@@ -417,11 +416,11 @@ class UI{
 	}
 
     public static function sidebar_grid_class($default='col-sm-offset-1 col-lg-2 col-md-2 col-sm-3'){
-        $setting = fn_Settings::get('sidebar_grid_class', $default); echo $setting;
+        $setting = Settings::get('sidebar_grid_class', $default); echo $setting;
     }
 
     public static function main_container_grid_class($default='col-lg-9 col-md-9 col-sm-7'){
-        $setting = fn_Settings::get('main_container_grid_class', $default); echo $setting;
+        $setting = Settings::get('main_container_grid_class', $default); echo $setting;
     }
 
     public static function pagination_get_current_offset($page, $per_page=25){
@@ -606,7 +605,7 @@ class UI{
 
 	public static function html_embed_file($file_url, $display_filename=null, $download_url=null){
 
-        $ext = fn_Util::get_file_extension($file_url); $download_url = empty($download_url) ? $file_url : $download_url;
+        $ext = Util::get_file_extension($file_url); $download_url = empty($download_url) ? $file_url : $download_url;
 
         if( empty($display_filename) ) $display_filename = basename($file_url);
 
@@ -653,11 +652,11 @@ class UI{
     }
 
     public static function enqueue_js($src){
-        if( ! in_array($src, self::$js_assets) ) self::$js_assets[] = ( fn_Util::str_startswith('//', $src, true) or fn_Util::str_startswith('http:', $src, true) ) ? $src : self::asset_url($src, false);
+        if( ! in_array($src, self::$js_assets) ) self::$js_assets[] = ( Util::str_startswith('//', $src, true) or Util::str_startswith('http:', $src, true) ) ? $src : self::asset_url($src, false);
     }
 
     public static function enqueue_css($link){
-        if( ! in_array($link, self::$css_assets) ) self::$js_assets[] = ( fn_Util::str_startswith('//', $link, true) or fn_Util::str_startswith('http:', $link, true) ) ? $link : self::asset_url($link, false);
+        if( ! in_array($link, self::$css_assets) ) self::$js_assets[] = ( Util::str_startswith('//', $link, true) or Util::str_startswith('http:', $link, true) ) ? $link : self::asset_url($link, false);
     }
 
     public static function enqueue_inline($data, $type='css'){

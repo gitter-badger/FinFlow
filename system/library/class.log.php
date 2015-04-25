@@ -1,8 +1,10 @@
 <?php
 
+namespace FinFlow;
+
 $fn_log_messages = array();
 
-class fn_Log{
+class Log{
 
     /**
      * Logs a message in the log file. Log file is defined in the constant FN_LOGFILE

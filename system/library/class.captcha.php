@@ -4,7 +4,7 @@ namespace FinFlow;
 
 class Captcha{
 
-    public static $fonts_dir = "/ttf";
+    public static $fonts_dir ='/assets/ttf';
 
     public static function init($length=6, $math_max=100){
         self::set($length, $math_max);
@@ -50,6 +50,7 @@ class Captcha{
 	}
 	
 	public static function get(){
+		//TODO drop $_SESSION and use Session Class
 		if ( self::is_initialized() ) return $_SESSION['capchakey'];
 
         trigger_error(__CLASS__ . '::' . __FUNCTION__ ." Error: The captcha verification string hasn't been initialized.", E_USER_WARNING);

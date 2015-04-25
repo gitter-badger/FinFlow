@@ -5,8 +5,11 @@
  * @version 1.0
  */
 
+use FinFlow\UI;
+use FinFlow\Util;
+
 function get_input($key, $xss_filter=false){ //TODO add cli support
-    return fn_Util::get_input($key, $xss_filter);
+    return Util::get_input($key, $xss_filter);
 }
 
 /**
@@ -16,7 +19,7 @@ function get_input($key, $xss_filter=false){ //TODO add cli support
  * @return mixed|null
  */
 function in($key, $xss_filter=false){
-    return fn_Util::get_input($key, $xss_filter);
+    return Util::get_input($key, $xss_filter);
 }
 
 /**
@@ -27,7 +30,7 @@ function in($key, $xss_filter=false){
  * @return mixed|null
  */
 function av($array, $key, $xss_filter=false){
-    return fn_Util::array_value($array, $key, $xss_filter);
+    return Util::array_value($array, $key, $xss_filter);
 }
 
 /**
@@ -37,7 +40,7 @@ function av($array, $key, $xss_filter=false){
  * @return mixed|null
  */
 function post($key, $xss_filter=true){
-    return fn_Util::array_value($_POST, $key, $xss_filter);
+    return Util::array_value($_POST, $key, $xss_filter);
 }
 
 /**
@@ -47,7 +50,7 @@ function post($key, $xss_filter=true){
  * @return mixed|null
  */
 function get($key, $xss_filter=true){
-    return fn_Util::array_value($_GET, $key, $xss_filter);
+    return Util::array_value($_GET, $key, $xss_filter);
 }
 
 /**
@@ -59,7 +62,7 @@ function get($key, $xss_filter=true){
  */
 function _url($relative_url, $echo=true, $version=null){
 	if( $echo )
-		fn_UI::asset_url($relative_url,true, $version);
+		UI::asset_url($relative_url,true, $version);
 	else
-		return fn_UI::asset_url($relative_url, false, $version);
+		return UI::asset_url($relative_url, false, $version);
 }

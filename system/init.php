@@ -13,27 +13,15 @@ define('FN_MYSQL_DATE'		, 'Y-m-d H:i:s');
 
 define('FN_LOGFILE', (FNPATH . "/application.log"));
 
-include_once ( FNPATH . '/system/library/interface.exr.php' ); //TODO switch to autoloader and namespaces
-
-include_once ( FNPATH . '/system/library/class.pop3.php' );
-include_once ( FNPATH . '/system/library/class.mysqlidb.php' );
-include_once ( FNPATH . '/system/library/class.sqlstatement.php' );
-include_once ( FNPATH . '/system/library/class.ui.php' );
-include_once ( FNPATH . '/system/library/class.op.php' );
-include_once ( FNPATH . '/system/library/class.op-pending.php' );
-include_once ( FNPATH . '/system/library/class.settings.php' );
-include_once ( FNPATH . '/system/library/class.validate.php' );
-include_once ( FNPATH . '/system/library/class.currency.php' );
-include_once ( FNPATH . '/system/library/class.accounts.php' );
-include_once ( FNPATH . '/system/library/class.contacts.php' );
-include_once ( FNPATH . '/system/library/class.label.php' );
-include_once ( FNPATH . '/system/library/class.util.php' );
-include_once ( FNPATH . '/system/library/class.user.php' );
-include_once ( FNPATH . '/system/library/class.log.php' );
-
-include_once ( FNPATH . '/system/library/helpers.php' );
-
+require_once ( FNPATH . '/system/library/autoload.php');
 require_once ( FNPATH . '/system/thirdparty/autoload.php');
+require_once ( FNPATH . '/system/library/helpers.php');
+
+use FinFlow\UI;
+use FinFlow\Util;
+use FinFlow\MySQLiDB;
+use FinFlow\SQLStatement;
+use FinFlow\Settings;
 
 //--- set environment ---//
 
@@ -48,11 +36,11 @@ if( !defined('FN_ENVIRONMENT') ) define('FN_ENVIRONMENT', ( isset($_SERVER['APP_
 //--- set environment ---//
 
 //--- include config ---//
-$cfg_path = fn_Util::cfg_file_path(); @include_once ( $cfg_path );
+$cfg_path = Util::cfg_file_path(); @include_once ( $cfg_path );
 //--- include config ---//
 
 //--- init debug ---//
-if( ( defined('FN_DEBUG') and FN_DEBUG ) or fn_Util::is_development_environment() ) {
+if( ( defined('FN_DEBUG') and FN_DEBUG ) or Util::is_development_environment() ) {
     @ini_set('display_errors', 'On'); @error_reporting(E_ALL);
 }
 //--- init debug ---//
@@ -61,9 +49,9 @@ if( ( defined('FN_DEBUG') and FN_DEBUG ) or fn_Util::is_development_environment(
 if( !defined('FN_URL') ){
 
     if( defined('FN_IS_INSTALLING') )
-        define('FN_URL', fn_Util::get_base_url( false, false, '/setup/'));
+        define('FN_URL', Util::get_base_url( false, false, '/setup/'));
     else
-        define('FN_URL', fn_Util::get_base_url( false, ( defined('FN_FORCE_HTTPS') and FN_FORCE_HTTPS ) ));
+        define('FN_URL', Util::get_base_url( false, ( defined('FN_FORCE_HTTPS') and FN_FORCE_HTTPS ) ));
 
 }
 //--- setup base url ---//
@@ -86,11 +74,11 @@ $fnsql = $fndb = null;
 if( defined('FN_DB_HOST') ){
 
 	$fnsql = new SQLStatement();
-	$fndb = new MySQLiDB(FN_DB_HOST, FN_DB_USER, FN_DB_PASS, FN_DB_NAME);
+	$fndb  = new MySQLiDB(FN_DB_HOST, FN_DB_USER, FN_DB_PASS, FN_DB_NAME);
 
 }
 else{
-	fn_UI::fatal_error("Fisierul de configurare {$cfg_path} nu poate fi incarcat.");
+	UI::fatal_error("Fisierul de configurare {$cfg_path} nu poate fi incarcat.");
 }
 
 //--- phptestunit globals workaround ---//
@@ -99,19 +87,23 @@ $GLOBALS['fnsql'] = $fnsql;
 //--- phptestunit globals workaround ---//
 
 if ( $fndb and ! $fndb->connected )
-    fn_UI::fatal_error("Nu se poate realiza conexiunea cu baza de date pe " . FN_DB_HOST);
+    UI::fatal_error("Nu se poate realiza conexiunea cu baza de date pe " . FN_DB_HOST);
+
+if ( Settings::get('db_version', 0) == 0 ) //database not installed
+	UI::fatal_error("Baza de date nu a fost instalata pe " . FN_DB_HOST);
 
 //--- setup timezone ---//
-define('FN_TIMEZONE', fn_Settings::get('timezone', 'Europe/London') ); date_default_timezone_set(FN_TIMEZONE);
+define('FN_TIMEZONE', Settings::get('timezone', 'Europe/London') ); date_default_timezone_set(FN_TIMEZONE);
 //--- setup timezone ---//
 
-if( !defined('FN_IS_CRON') ) @session_start();
+//--- setup language ---//
+//TODO
+//--- setup language ---//
 
-$fnPublicPages = array('login', 'pwreset');
-$page          = get('p');
+//--- setup session ---//
+//TODO
+//--- setup session ---//
 
-if ( !fn_User::is_authenticated() and !in_array($page, $fnPublicPages) ) $page = 'public/login';
+$_SERVER['REQUEST_URI'] = str_replace(Util::get_base_url(), '', UI::current_page_url());
 
-$router = new \Klein\Klein();
-
-//TODO enable router
+include_once (FNPATH . '/system/routes/web.php');

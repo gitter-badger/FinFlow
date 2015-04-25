@@ -1,5 +1,7 @@
 <?php
 
+namespace FinFlow;
+
 /**
  * SQLStatement is an SQL statement builder made mainly for MySQL, but also compatible with any other *SQL databases
  * @author Adrian7 (http://adrian.silimon.eu/)
@@ -553,7 +555,7 @@ class SQLStatement{
 	 */
 	public function delete($table, $conditions=array(), $operator='=', $junction="AND", $autoready=TRUE){
 		
-		$this->init( SQLStatement::$DELETE );
+		$this->init(SQLStatement::$DELETE );
 		
 		$this->from($table);
 		
@@ -588,7 +590,7 @@ class SQLStatement{
 		$argsarray= array();
 		
 		if ($numargs > 1) for($i=1; $i<$numargs; $i++) $argsarray[] = func_get_arg($i);
-		
+
 		$this->query = vsprintf($string, $argsarray);
 		
 		return $this->query;

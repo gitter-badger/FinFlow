@@ -1,12 +1,14 @@
 <?php
 
+namespace FinFlow;
+
 /**
  * Operations Main Class
  * Class fn_OP
  * @version 1.5
  * @author Adrian7 (adrian@finflow.org)
  */
-class fn_OP{
+class OP{
 	
 	public static $table 			   = 'fn_op';
 	public static $table_meta 	   = 'fn_op_meta';

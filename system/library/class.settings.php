@@ -1,6 +1,8 @@
 <?php
 
-class fn_Settings{
+namespace FinFlow;
+
+class Settings{
 	
 	public static $table = 'fn_settings';
 	

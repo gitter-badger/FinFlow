@@ -1,0 +1,32 @@
+@font-face {
+	font-family: 'Oxygen';
+	font-style: normal;
+	font-weight: 400;
+	src:
+		local('Oxygen'),
+		local('Oxygen-Regular'),
+		/* from http://fonts.gstatic.com/s/oxygen/v5/RuRdwqUdkfYP0fpTfyGHiA.eot */
+		url('Oxygen_400.eot?#iefix') format('embedded-opentype'),
+		/* from http://fonts.gstatic.com/s/oxygen/v5/RzoNiRR1p2Mqyyz2RwqSMw.woff */
+		url('Oxygen_400.woff') format('woff'),
+		/* from http://fonts.gstatic.com/s/oxygen/v5/f8OBjBbevvywgbyJOxlO7Q.ttf */
+		url('Oxygen_400.ttf') format('truetype'),
+		/* from http://fonts.gstatic.com/l/font?kit=yh90VGZKR0bnBJLT_XYX1g#Oxygen */
+		url('Oxygen_400.svg#Oxygen') format('svg');
+}
+@font-face {
+	font-family: 'Oxygen';
+	font-style: normal;
+	font-weight: 700;
+	src:
+		local('Oxygen Bold'),
+		local('Oxygen-Bold'),
+		/* from http://fonts.gstatic.com/s/oxygen/v5/yVHpdQrmTj9Kax1tmFSx2vY6323mHUZFJMgTvxaG2iE.eot */
+		url('Oxygen_700.eot?#iefix') format('embedded-opentype'),
+		/* from http://fonts.gstatic.com/s/oxygen/v5/yVHpdQrmTj9Kax1tmFSx2j8E0i7KZn-EPnyo3HZu7kw.woff */
+		url('Oxygen_700.woff') format('woff'),
+		/* from http://fonts.gstatic.com/s/oxygen/v5/yVHpdQrmTj9Kax1tmFSx2qCWcynf_cDxXwCLxiixG1c.ttf */
+		url('Oxygen_700.ttf') format('truetype'),
+		/* from http://fonts.gstatic.com/l/font?kit=yVHpdQrmTj9Kax1tmFSx2pbd9NUM7myrQQz30yPaGQ4#Oxygen */
+		url('Oxygen_700.svg#Oxygen') format('svg');
+}
