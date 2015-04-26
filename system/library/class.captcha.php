@@ -4,7 +4,11 @@ namespace FinFlow;
 
 class Captcha{
 
-    public static $fonts_dir ='/assets/ttf';
+	/**
+	 * Relative path to TTF fonts dir (relative to FNPATH )
+	 * @var string
+	 */
+    public static $fonts_dir = '/assets/ttf';
 
     public static function init($length=6, $math_max=100){
         self::set($length, $math_max);
@@ -13,6 +17,10 @@ class Captcha{
     public static function is_initialized(){
         return isset($_SESSION['capchakey']);
     }
+
+	public static function getFontsDir($path=null){
+		return $path ? ( FNPATH . $path ) : ( FNPATH . self::$fonts_dir );
+	}
 
     public static function supports_img(){
         if ( @function_exists('gd_info') ) {
@@ -97,7 +105,7 @@ class Captcha{
 	public static function output_img($width=120, $height=60, $textcolor=array('r'=>0, 'g'=>0, 'b'=>0), $fontsize=14){
 		
 		$randomStr =  self::get();
-		$fontsDir	 = ( dirname(__FILE__) . self::$fonts_dir );
+		$fontsDir  = self::getFontsDir();
 	
 		if ( !is_dir($fontsDir) ){ trigger_error(__CLASS__ . '::' . __FUNCTION__ ." Error: Fonts dir is missing.", E_USER_WARNING); return null; }
 	
@@ -116,10 +124,18 @@ class Captcha{
 	
 		@imagesavealpha($source, true);
 	
-		$bg 			 = @imagecolorallocatealpha($source, 0, 0, 0, 127);
+		$bg 	    = @imagecolorallocatealpha($source, 0, 0, 0, 127);
 		$font_color = imagecolorallocate($source, $textcolor['r'], $textcolor['g'], $textcolor['b']);
 	
 		@imagefill($source, 0, 0, $bg);
+
+		//draw lines
+		$black = imagecolorallocate($source, 0, 0, 0);
+
+		imageline($source, 0, 0, $width, $height, $black);
+		imageline($source, $height/2, $width/2, $width/3, $height/3, $black);
+		imageline($source, $height, $width, $width, 0, $black);
+		imageline($source, 0, $height, $width, 0, $black);
 	
 		//calculate font middle on y
 		$pos_y = ($height/2 + $size/2);
@@ -135,6 +151,7 @@ class Captcha{
 		@imagepng($source);
 	
 		@imagedestroy($source);
+
 	}
 	
 }

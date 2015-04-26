@@ -1,5 +1,6 @@
 
 @import "bootstrap/mixins";
+@import "colors";
 @import "fonts";
 @import "alerts";
 
@@ -38,6 +39,28 @@ body.fatal-error{
 
 }
 
+.align-center{
+  text-align: center;
+  vertical-align: middle;
+}
+
+.col-centered{
+  float: none;
+  margin: 0px auto;
+}
+
+.panel{
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, .1);
+}
+
+.panel-default{
+  border-color: @blue;
+
+  .panel-heading{
+    background: @grey;
+  }
+}
+
 .wrapper{
   min-height:100%;
   min-width:100%;
@@ -48,11 +71,24 @@ body.fatal-error{
   text-align: center;
 
   img{
-    width: 90px;
+    width: 50px;
     margin: 0px auto;
+    float: none;
   }
 }
 
 .content-login{
   padding-top: 4.3%;
+
+  .panel-heading{
+    text-align: center;
+
+    background: none;
+    border-bottom: none;
+
+  }
+}
+
+.captcha-img-addon{
+  padding: 0px;
 }

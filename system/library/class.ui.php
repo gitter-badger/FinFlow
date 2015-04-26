@@ -184,7 +184,7 @@ class UI{
 	 * @param array $vars
 	 */
 	public static function component($template, $vars=array()){
-		global $fndb, $fnsql; @extract($vars, EXTR_SKIP); $anon_tpl_path = ( FNPATH . '/system/ui/' . Util::xss_filter( trim( $template ) ) . '.php' ); if( file_exists( $anon_tpl_path ) ) include $anon_tpl_path; else self::msg("UI Template {$anon_tpl_path} not found... .");
+		global $fndb, $fnsql; @extract($vars, EXTR_SKIP); $anon_tpl_path = ( FNPATH . '/system/ui/' . Util::xss_filter( trim( $template ) ) . '.php' ); if( file_exists( $anon_tpl_path ) ) include $anon_tpl_path; else ( headers_sent() ? self::msg("UI Template {$anon_tpl_path} not found... .") : self::fatal_error("UI Template {$anon_tpl_path} not found... .") );
 	}
 
 	public static function esc_html( $input ){
@@ -344,17 +344,15 @@ class UI{
 
 
 
-	public static function page_url($page='index', $vars=array(), $echo=TRUE){
+	public static function page_url($component='index', $vars=array()){
+		$url = ( trim(FN_URL, '/') . trim($component, '/') . '/?' . http_build_query($vars) ); return $url;
+	}
 
-		if( strlen($page) )
-			$vars = array_merge(array('p'=>strtolower($page)), $vars);
-		
-		$url = ( trim(FN_URL, "/") . '/?' . http_build_query($vars) );
-
-		if( $echo )	
-			echo $url;
-		else 			
-			return $url;
+	public static function url($component, $vars=array(), $echo=TRUE){
+		if( $echo )
+			echo self::page_url($component, $vars);
+		else
+			return self::page_url($component, $vars);
 	}
 
     public static function asset_url($asset, $echo=true, $version=null){

@@ -102,6 +102,7 @@ define('FN_TIMEZONE', Settings::get('timezone', 'Europe/London') ); date_default
 
 //--- setup session ---//
 //TODO
+session_start();
 //--- setup session ---//
 
 $_SERVER['REQUEST_URI'] = str_replace(Util::get_base_url(), '', UI::current_page_url());
