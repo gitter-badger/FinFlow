@@ -6,26 +6,23 @@
  */
 
 /** URL-ul de baza al aplicatiei */
-define('FN_URL'		, 'http://localhost:8087/live');
+define('FN_URL', 'http://localhost:8087/live');
 
 
 /** Setari pentru conexiuna la baza de date, le poti obtine de la furnizorul tau de servicii de gazduire web */
-define('FN_DB_HOST'		, 'localhost');
-define('FN_DB_USER'		, 'root');
-define('FN_DB_PASS'		, 'parola123');
-define('FN_DB_NAME'	    , 'test');
+define('FN_DB_HOST'	, 'localhost');
+define('FN_DB_USER'	, 'root');
+define('FN_DB_PASS'	, 'parola123');
+define('FN_DB_NAME'	, 'test');
 
 /** prefixul pentru tabelele din baza de date */
 define('FN_DB_PREFIX'	, 'PREFIX_DB');
-
-/** String folosit ca salt pentru criptarea parolelor, poti genera unul la http://tinyurl.com/SecureRandomString7 */
-define('FN_PW_SALT'	, '1059cf397e2ad895f51d6c23');
 
 
 /** Setari de pentru formatul datelor afisate, vezi http://php.net/manual/en/function.date.php */
 define('FN_DATETIME_FORMAT', 'l, jS F Y h:i:s A');
 
-define('FN_DAY_FORMAT'		    , 'jS \of F Y');
+define('FN_DAY_FORMAT'		, 'jS \of F Y');
 define('FN_MONTH_FORMAT'	, 'F Y');
 define('FN_YEAR_FORMAT'		, 'Y');
 
@@ -38,4 +35,4 @@ define('FN_CACHE_FOLDER', '/var/www/live/.cache');
 define('FN_CACHE_EXPIRE', 7200);
 
 /**Activeaza debuging*/
-define('FN_DEBUG', false);
+define('FN_DEBUG', true);

@@ -7,7 +7,12 @@
 
 namespace FinFlow;
 
+$Session = false;
+
 class Session{
+
+	const COOKIE = 'fn_session';
+	const ENCRYPT= true;
 
 	const DRIVER_DEFAULT = 'apc';
 
@@ -21,8 +26,32 @@ class Session{
 		//TODO...
 	}
 
+	public function start(){
+		global $Session; if( empty($Session) ) $Session = new Session(self::DRIVER_DEFAULT);
+	}
+
 	public static function getCurrentSession($autostart=true){
 		//TODO...
+	}
+
+	public static function update(){
+		//TODO...
+	}
+
+	public static function store($key, $value=1){
+		//TODO...
+	}
+
+	public static function fetch($key){
+		//TODO...
+	}
+
+	public static function destroy(){
+		//TODO...
+	}
+
+	public static function create(){
+
 	}
 
 }

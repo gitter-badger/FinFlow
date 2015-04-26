@@ -5,6 +5,7 @@
 
 use FinFlow\UI;
 use FinFlow\Util;
+use FinFlow\User;
 
 ?>
 <div class="row content content-error">
@@ -33,7 +34,15 @@ use FinFlow\Util;
 
 		<div class="row">
 			<div class="col-lg-8 col-centered align-center">
-				<a class="btn btn-default" onclick="window.history.back();"><i class="fa fa-chevron-left"></i> inapoi</a>
+
+				<a class="btn btn-default btn-spaced-right" onclick="window.history.back();"><i class="fa fa-chevron-left"></i> inapoi</a>
+
+				<?php if( User::is_authenticated() ): ?>
+					<a class="btn btn-default" href="<?php UI::url('/dashboard'); ?>">catre dashboard <i class="fa fa-chevron-right"></i></a>
+				<?php else: ?>
+					<a class="btn btn-default" href="<?php UI::url('/login'); ?>">catre log in <i class="fa fa-chevron-right"></i></a>
+				<?php endif; ?>
+
 			</div>
 		</div>
 

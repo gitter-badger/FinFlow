@@ -113,14 +113,17 @@ class Util{
         // is it future date or past date
         if($now > $unix_date) {
             $difference = $now - $unix_date;
-            $tense        = "acum";
+            $tense      = "acum";
 
         } else {
-            $difference     = $unix_date - $now;
-            $tense         = "peste";
+            $difference = $unix_date - $now;
+            $tense      = "peste";
         }
 
-        if( strlen($custom_tense) ) $tense = $custom_tense; $genre_prefix = "";
+        if( strlen($custom_tense) )
+	        $tense = $custom_tense;
+
+	    $genre_prefix = "";
 
         for($j = 0; $difference >= $lengths[$j] && $j < count($lengths)-1; $j++) {
             $difference /= $lengths[$j];
@@ -373,7 +376,7 @@ class Util{
 
             $k++;
 
-            $ld 	= ( $sum['year'] . "-01-01");
+            $ld = ( $sum['year'] . "-01-01");
             $fm	= FN_YEAR_FORMAT;
 
             if ( isset($sum['month']) ){
@@ -386,11 +389,14 @@ class Util{
                 $fm	= FN_DAY_FORMAT;
             }
 
-            $fmdate = fn_UI::translate_date(date($fm, strtotime($ld)));
+            $fmdate = UI::translate_date(date($fm, strtotime($ld)));
 
             //--- better illustrate the title ---//
-            if ( $k == 1 ) 				 $chartdtspan.= " {$fmdate} -";
-            if ( $k == $sumscount ) $chartdtspan.= " {$fmdate}";
+            if ( $k == 1 )
+	            $chartdtspan.= " {$fmdate} -";
+
+            if ( $k == $sumscount )
+	            $chartdtspan.= " {$fmdate}";
 
             $categories[] = $fmdate;
             $seriesdata[] = round($sum['sum'], 2, PHP_ROUND_HALF_EVEN);

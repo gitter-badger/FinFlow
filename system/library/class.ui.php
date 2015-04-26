@@ -105,9 +105,11 @@ class UI{
 		<?php 
 	}
 
-	public static function fatal_error($msg, $die=TRUE, $html=TRUE, $msgtype="danger", $prefix="Eroare: ", $title="Eroare"){
+	public static function fatal_error($msg, $die=TRUE, $html=TRUE, $msgtype="danger", $prefix="Eroare: ", $title="Eroare", $http_header=true){
 
         if( defined('FN_BYPASS_UI_FATAL_ERRORS') and FN_BYPASS_UI_FATAL_ERRORS ) return false;
+
+		if( $http_header ) self::header_500();
 
 		if ( $html ): ?>
 			<html>
@@ -185,6 +187,43 @@ class UI{
 	 */
 	public static function component($template, $vars=array()){
 		global $fndb, $fnsql; @extract($vars, EXTR_SKIP); $anon_tpl_path = ( FNPATH . '/system/ui/' . Util::xss_filter( trim( $template ) ) . '.php' ); if( file_exists( $anon_tpl_path ) ) include $anon_tpl_path; else ( headers_sent() ? self::msg("UI Template {$anon_tpl_path} not found... .") : self::fatal_error("UI Template {$anon_tpl_path} not found... .") );
+	}
+
+	public static function header_nocache($legacy=false){
+		if( ! headers_sent() ) {
+
+			header( "Cache-Control: no-cache, must-revalidate" ); // HTTP/1.1
+
+			if( $legacy )
+				header( "Expires: Sat, 26 Jul 1997 05:00:00 GMT" );   // Date in the past
+		}
+	}
+
+	public static function header_404(){
+		if( ! headers_sent() )
+			header( $_SERVER['SERVER_PROTOCOL'] . " 404 Not Found", true, 404);
+		else
+			self::msg('Could not set 404 header! Headers already sent.', self::MSG_ERROR);
+	}
+
+	public static function header_500($message='Internal Server Error'){
+		if( ! headers_sent() )
+			header( ( $_SERVER['SERVER_PROTOCOL'] . ' 500 ' . $message ), true, 500);
+		else
+			self::msg('Could not set 404 header! Headers already sent.', self::MSG_ERROR);
+	}
+
+	public function header_redirect($url, $permament=false){
+
+		if( ! headers_sent() ){
+
+			if( $permament )
+				header( 'Location: ' . $url, true, 301 );
+			else
+				header( 'Location: ' . $url, true, 307);
+
+		}
+
 	}
 
 	public static function esc_html( $input ){
