@@ -72,6 +72,7 @@ class User{
     }
 
     public static function get_by($value, $by='email'){ //email, pw_reset_key, id
+
         global $fndb, $fnsql;
 
         if( empty($value) ) return false;
@@ -93,12 +94,13 @@ class User{
     }
 
     public static function send_reset_pw_link($user_id){
-        $random = md5( time()  + rand(10, 9999) );
-        $random = substr($random,  7, 14);
 
-        $user = self::get($user_id, 'email,user_id');
+        $random = strtoupper( Util::random_string(12) );
+        $user   = self::get($user_id, 'email,user_id');
 
         if( $user and isset($user->user_id) ){
+
+	        //TODO move this to EMail::class
 
             //--- update password reset key in database ---//
             $updated = self::update($user_id, array('pw_reset_key'=>$random));
@@ -106,7 +108,7 @@ class User{
 
             if( $updated ){
 
-                $url          = fn_UI::page_url('pwreset', array('key'=>$random), false);
+                $url     = UI::url('/recover', array('key'=>$random), false);
                 $baseURL = FN_URL;
 
                 $Subject = "FinFlow - Resetare parola";
@@ -116,7 +118,7 @@ class User{
 
                 $Content.="<br/><br/><small>Dac&#259; nu ai solicitat recuperarea parolei pentru <em>{$baseURL}</em> atunci ignor&#259; acest mesaj.</small>";
 
-                return fn_Util::send_email($Subject, $Content, $user->email);
+                return Util::send_email($Subject, $Content, $user->email);
 
             }
 
@@ -125,9 +127,16 @@ class User{
         return false;
 
     }
-	
-	public static function crypt_password($email, $password, $salt="unknown"){
-		return md5($salt . $email . $salt . $password . str_rot13($salt) . '__');	
+
+	/**
+	 * Hashes passwords, or very very important secrets
+	 * @param $password
+	 * @param int $algo
+	 *
+	 * @return bool|string
+	 */
+	public static function hash_password($password, $algo=PASSWORD_DEFAULT){
+		return password_hash($password, $algo);
 	}
 	
 	
@@ -139,16 +148,16 @@ class User{
 		
 		global $fndb, $fnsql;
 		
-		$email	   = $fndb->escape($email);
-		$password = self::crypt_password($email, $password, FN_PW_SALT);
+		$email	  = $fndb->escape($email);
+		$password = self::hash_password($password, PASSWORD_DEFAULT);
 		
-		$fnsql->select('*', self::$table, array('email'=>$email, 'password'=>$password));
+		$fnsql->select('*', self::$table, array('email'=>$email));
 		
 		$user = $fndb->get_row( $fnsql->get_query() );
 		
-		if ( count($user) and isset($user->user_id) ){
-			
-			$_SESSION['fn_user_id'] 			= $user->user_id;
+		if ( count($user) and isset($user->user_id) and password_verify($password, $user->password) ){
+			//TODO use session class
+			$_SESSION['fn_user_id'] 	    = $user->user_id;
 			$_SESSION['fn_authentication']	= TRUE;
 
             $fnsql->update(self::$table, array('last_login'=>date(FN_MYSQL_DATE)), array('user_id'=>$user->user_id));
@@ -179,7 +188,7 @@ class User{
         global $fndb, $fnsql;
 
         if( $data['password'] )
-            $data['password'] = self::crypt_password($data['email'], $data['password'], FN_PW_SALT);
+            $data['password'] = self::hash_password($data['password']);
 
         $data = $fndb->escape($data);
 
@@ -194,11 +203,11 @@ class User{
 
         global $fndb, $fnsql;
 
-        if( $data['password'] )
-            $data['password'] = self::crypt_password($data['email'], $data['password'], FN_PW_SALT);
+        if( isset( $data['password'] ) )
+            $data['password'] = self::hash_password($data['password']);
 
         $user_id = intval($user_id);
-        $data     = $fndb->escape($data);
+        $data    = $fndb->escape($data);
 
         if( $user_id ){
             $fnsql->update(self::$table, $data, array('user_id'=>$user_id)); return ( $fndb->execute_query( $fnsql->get_query() ) === false ) ? false : true;

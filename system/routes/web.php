@@ -10,16 +10,10 @@ use FinFlow\User;
 
 $router = new \Klein\Klein();
 
-//captcha output
-$router->respond('/captcha/?', function($request){
-	UI::component('extras/captcha');
-});
-
-
 if( User::is_authenticated() ){
 
 	//pages and sections
-	$router->respond('/[:section]/[:page]', function($request){
+	$router->respond('/[:section]/[:page]', function(){
 		die("User is authenticated"); //TODO...
 	});
 
@@ -27,21 +21,31 @@ if( User::is_authenticated() ){
 else{
 
 	//password reset
-	$router->respond('/recover/?', function($request){
+	$router->respond('/recover/?', function(){
 		UI::start('public/pwreset');
 	});
 
 	//login
-	$router->respond('/login/?', function($request){
-		die("Loading login page...");
+	$router->respond('/login/?', function(){
+		UI::start('public/login');
 	});
 
 	//serve login page by default
-	$router->respond('/?', function($request){
-		die("Loading login page...");
+	$router->respond('/?', function(){
+		UI::start('public/login');
 	});
 
 }
+
+//captcha output
+$router->respond('/captcha/?', function(){
+	UI::component('extras/captcha');
+});
+
+//404 error
+$router->respond(function(){
+	UI::start('errors/404');
+});
 
 
 $router->dispatch();

@@ -298,6 +298,10 @@ class Util{
         return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($input), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
     }
 
+	public static function random_string($length=12){
+		$seed = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length) . substr(md5( time() + mt_rand(1, 9999999)), $length); return substr( str_shuffle($seed), 0, $length );
+	}
+
     /**
      * Simple encrypt/decrypt function
      * @param $input
@@ -526,14 +530,18 @@ class Util{
 
         $headers = "";
 
-        if( is_array($from) )
-            $headers.= "From: {$from[0]} <{$from[1]}> \r\n";
-        else
-            $headers.= "From: {$from} \r\n";
+        if( is_array($from) ) {
+	        $from_email = $from[1];
+	        $headers   .= "From: {$from[0]}<{$from[1]}>\r\n";
+        }else {
+	        $from_email = $from;
+	        $headers.= "From: {$from} \r\n";
+        }
+
 
         if( $reply_to ){
             if( is_array($reply_to) )
-                $headers.= "Reply-To: {$reply_to[0]} <{$reply_to[1]}> \r\n";
+                $headers.= "Reply-To: {$reply_to[0]}<{$reply_to[1]}>\r\n";
             else
                 $headers.= "Reply-To: {$reply_to} \r\n";
         }
@@ -541,7 +549,8 @@ class Util{
         $headers.= "Content-type: text/html\r\n";
         $headers.= "X-Mailer: PHP {$phpversion}\r\n";
 
-        if( @mail($to, $subject, $message, $headers) ) return true;
+        if( @mail($to, $subject, $message, $headers, $from_email) )
+	        return true;
 
         return false;
 

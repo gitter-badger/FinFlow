@@ -241,8 +241,12 @@ class UI{
         if ( is_array($warnings) )
             foreach ($warnings as $msg) self::msg($msg, self::MSG_WARN);
         else
-            self::msg($warnings, 'note');
+            self::msg($warnings, 'warning');
     }
+
+	public static function show_success(){
+		//TODO...
+	}
 	
 	
 	public static function get_translated_strings($what='months'){
@@ -345,7 +349,7 @@ class UI{
 
 
 	public static function page_url($component='index', $vars=array()){
-		$url = ( trim(FN_URL, '/') . trim($component, '/') . '/?' . http_build_query($vars) ); return $url;
+		$url = ( trim(FN_URL, '/') . '/' . trim($component, '/') . '/' . ( count($vars) ? ( '?' . http_build_query($vars) ) : '' ) ); return $url;
 	}
 
 	public static function url($component, $vars=array(), $echo=TRUE){

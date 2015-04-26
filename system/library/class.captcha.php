@@ -2,6 +2,8 @@
 
 namespace FinFlow;
 
+use FinFlow\Session;
+
 class Captcha{
 
 	/**
@@ -30,8 +32,14 @@ class Captcha{
         return false;
     }
 
+	/**
+	 * Generates a random string; maximum length 32
+	 * @param int $length
+	 *
+	 * @return string
+	 */
 	public static function randomstr( $length=6 ){
-		if ( $length > (32 -9) ) $length = 10; return strtoupper( substr(md5(time() + rand(1, 999)), 9, $length) );
+		if ( $length > 32 ) $length = 32; return strtoupper( Util::random_string($length) );
 	}
 
     public static function radom_math_question($max=100){
@@ -99,7 +107,7 @@ class Captcha{
 	}
 
     public static function output_math($before='<em>', $after='</em>'){
-        echo ( $before . $_SESSION['capcha_math'] . $after );
+        $math = isset($_SESSION['capcha_math']) ? $_SESSION['capcha_math'] : '---'; echo ( $before . $math . $after );
     }
 	
 	public static function output_img($width=120, $height=60, $textcolor=array('r'=>0, 'g'=>0, 'b'=>0), $fontsize=14){

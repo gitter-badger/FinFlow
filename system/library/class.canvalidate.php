@@ -7,7 +7,7 @@
 
 namespace FinFlow;
 
-class CheckValidityOf{
+class CanValidate{
 	
 	/**
 	 * validates an e-mail address;

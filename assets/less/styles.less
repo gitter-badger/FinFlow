@@ -6,7 +6,7 @@
 
 html, body {
   font-family: @body-font;
-  font-size: 110%;
+  font-size: 100%;
   font-weight: normal;
   color: #000;
 
@@ -39,9 +39,19 @@ body.fatal-error{
 
 }
 
+.content-error{
+  .error-heading{
+    margin-top: 0px;
+  }
+}
+
 .align-center{
   text-align: center;
   vertical-align: middle;
+}
+
+.btn-spaced-right{
+  margin-right: 20px;
 }
 
 .col-centered{
@@ -54,8 +64,6 @@ body.fatal-error{
 }
 
 .panel-default{
-  border-color: @blue;
-
   .panel-heading{
     background: @grey;
   }
@@ -77,8 +85,13 @@ body.fatal-error{
   }
 }
 
-.content-login{
+.content-login,
+.content-error{
   padding-top: 4.3%;
+
+  .panel{
+    border-color: @blue;
+  }
 
   .panel-heading{
     text-align: center;

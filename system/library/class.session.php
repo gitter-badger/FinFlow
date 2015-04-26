@@ -17,4 +17,12 @@ class Session{
 
 	//TODO implement session class
 
+	public function __construct($driver, $config=array()){
+		//TODO...
+	}
+
+	public static function getCurrentSession($autostart=true){
+		//TODO...
+	}
+
 }

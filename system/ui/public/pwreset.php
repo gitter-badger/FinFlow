@@ -2,7 +2,7 @@
 
 use FinFlow\UI;
 use FinFlow\User;
-use FinFlow\CheckValidityOf;
+use FinFlow\CanValidate;
 use FinFlow\Captcha;
 
 $Errors   = array();
@@ -18,13 +18,14 @@ if( count($_POST) ){
     if( empty($reset_key) ) {
 
         //--- step 1, request a reset key ---//
-        if( ! CheckValidityOf::email( $_POST['email'] ) )
+        if( ! CanValidate::email( post('email') ) )
             $Errors[] = "Adresa de email este invalid&#259;.";
 
-        if( ! Captcha::validate( $_POST['verify'] ) )
+        if( ! Captcha::validate( post('verify') ) )
             $Errors[] = "Codul de verificare introdus este incorect.";
 
         if( empty($Errors) ){
+
             $user = User::get_by($_POST['email'], 'email');
 
             if( $user and isset($user->user_id) ){
@@ -43,10 +44,10 @@ if( count($_POST) ){
 	    //--- step 2, reset the password ---//
         if( $user and isset($user->user_id) ){
 
-            if( ! CheckValidityOf::stringlen(post('password'), 8) )
+            if( ! CanValidate::stringlen(post('password'), 8) )
                 $Errors[] = "Parola trebuie sa aib&#259; minim 8 caractere";
 
-            if( post('password') != post('password2') )
+            if( post('password') != post('password_confirm') )
                 $Errors[] = "Parola aleas&#259; este diferit&#259; de cea confirmat&#259;.";
 
             if( empty($Errors) ){
@@ -92,9 +93,9 @@ Captcha::init(); $captcha_url = ( FN_URL . '/captcha/?o=1' ); ?>
 
 					<div class="panel-body">
 
-						<h3 class="align-center">Recover your password</h3><hr/>
+						<h3 class="align-center"><i class="fa fa-life-bouy"></i> Recover your password</h3><hr/>
 
-						<?php UI::show_errors($Errors); ?>
+						<?php UI::show_warnings($Errors); ?>
 
 						<?php if( empty($reset_key) ): ?>
 
@@ -102,7 +103,7 @@ Captcha::init(); $captcha_url = ( FN_URL . '/captcha/?o=1' ); ?>
 
 								<div class="alert alert-info">
 									Un email cu informatii pentru resetarea parolei a fost trimis la
-									<em><?php echo $_POST['email']; ?></em>.<br/><br/>
+									<em><?php echo $_POST['email']; ?></em>.<br/>
 									Verific&#259;-&#355;i dosarul Inbox, iar dac&#259; nu e acolo verific&#259; &#351;i
 									dosarele de Spam &#351;i Trash.
 								</div>
@@ -122,11 +123,13 @@ Captcha::init(); $captcha_url = ( FN_URL . '/captcha/?o=1' ); ?>
 											<div class="input-group">
 												<?php if( Captcha::supports_img() ): ?>
 													<span class="input-group-addon captcha-img-addon">
-                                                <img id="captchaImg" onclick="fn_popup('<?php echo $captcha_url; ?>&mag=1&htmlmag=1');" src="<?php echo $captcha_url; ?>" align="absmiddle"/>
-                                            </span>
+														<a id="captchaMagnifyAnchor" href="<?php echo $captcha_url; ?>&mag=1">
+                                                            <img id="captchaImg" src="<?php echo $captcha_url; ?>" align="absmiddle"/>
+                                                        </a>
+													</span>
 													<input class="form-control" type="text" size="10" maxlength="255" name="verify" id="verify" value=""/>
 												<?php else: ?>
-													<span class="input-group-addon"><?php fn_Captcha::output_math(); ?></span>
+													<span class="input-group-addon"><?php Captcha::output_math(); ?></span>
 													<input class="form-control" type="text" size="10" maxlength="255" name="verify" id="verify" value=""/>
 												<?php endif;?>
 											</div>
@@ -148,9 +151,15 @@ Captcha::init(); $captcha_url = ( FN_URL . '/captcha/?o=1' ); ?>
 
 							<?php if( $user and isset($user->user_id) ): ?>
 
-								<p class="align-center"> Email: <em><?php echo $user->email; ?></em> </p>
+								<?php if( empty($_POST) ): ?>
 
-								<div class="clearfix"></div>
+									<div class="alert alert-info align-center">
+										Type your new password for <em><?php echo $user->email; ?></em> below:
+									</div>
+
+									<div class="clearfix"></div>
+
+								<?php endif; ?>
 
 								<?php if( $Success ): ?>
 
@@ -169,14 +178,18 @@ Captcha::init(); $captcha_url = ( FN_URL . '/captcha/?o=1' ); ?>
 											</div>
 										</div>
 										<div class="form-group">
-											<label class="control-label col-lg-4" for="password2">Confirmare:</label>
+											<label class="control-label col-lg-3" for="password_confirm">Confirmare:</label>
 											<div class="col-lg-8">
-												<input class="form-control" type="password" size="45" maxlength="255" name="password2" id="password2" value="" />
+												<input class="form-control" type="password" size="45" maxlength="255" name="password_confirm" id="password_confirm" value="" />
 											</div>
 										</div>
 
+										<p>&nbsp;</p>
+
 										<div class="form-group">
-											<div class="col-lg-12 align-center"><button class="btn btn-primary" type="submit">Reseteaz&#259; parola</button></div>
+											<div class="col-lg-12 align-center">
+												<button class="btn btn-primary" type="submit">Reseteaz&#259; parola</button>
+											</div>
 										</div>
 									</form>
 
