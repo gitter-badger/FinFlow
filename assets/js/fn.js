@@ -1,21 +1,22 @@
 
 var _http_query = "";
 
-var max_filesize = 2048;
-
-var sday	    = "";
+var sday	 = "";
 var smonth   = "";
-var syear	   = "";
+var syear	 = "";
 
-var eday			   = "";
-var emonth		   = "";
-var eyear		   = "";
+var eday	= "";
+var emonth  = "";
+var eyear   = "";
 
-var tzoffset	   = 0;
-var gmthour    = 0;
-var clockelemid	 = "#displayWClock";
+var tzoffset	= 0;
+var gmthour     = 0;
+var clockelemid	= "#displayWClock";
 
 clockTimeout = null;
+
+
+var max_filesize = ( max_filesize === undefined ) ? 2048 : max_filesize;
 
 function rawurlencode (str) {
 	if (typeof str != 'undefined' && str != null ){
@@ -59,7 +60,7 @@ function select_eltext(el, win) {
 function submit_http_query(formId, prefix, separator, link){
 	
 	var iname = null;
-	var ival    = null;
+	var ival  = null;
 	
 	//---- reset the query ----- //
 	_http_query = "";
@@ -206,32 +207,19 @@ function fn_calculate_tz(hour, offset){
 	return fn_prepend_zeros(hour);
 }
 
-function set_gmt_hour(){
-
-    $.ajax({
-        type: 'GET',
-        url: 'http://json-time.appspot.com/time.json?tz=GMT',
-        contentType: "application/json",
-        dataType: 'jsonp',
-        success: function(data){
-            gmthour = parseInt(data.hour);
-        }
-    });
-}
-
 function fn_clock(){
 
 	var today	=	new Date();
 	
-	var h	 = today.getHours();
+	var h = today.getHours();
 	var m = today.getMinutes();
-	var s	= today.getSeconds();
+	var s = today.getSeconds();
 	
 	h = fn_calculate_tz(h, tzoffset);
 	
     // add a zero in front of numbers < 10
 	m = fn_prepend_zeros(m);
-	s  = fn_prepend_zeros(s);
+	s = fn_prepend_zeros(s);
 	
 	$(clockelemid).text(h+":"+m+":"+s);
 }
@@ -240,24 +228,27 @@ function fn_clock_set_tzoffset(offset){
 	tzoffset = parseInt(offset);
 }
 
-function fn_zoom_in(elementId){
-    $(elementId).css('height', ( parseInt( $(elementId).height() ) + 25 ) + 'px');
-}
-
-function fn_check_safe_browser_file(fld) {
+function fn_check_upload_file(fld) {
 
     var fvalue = $(fld).val();
-    var alertcs= $(fld).data('alerts');
+    var parent = $(fld).parent().get(0);
+
+    $(parent).find('.file-alert-js').remove();
+
+    var unsafeWarn = $('.file-alert-web-unsafe').clone();
+    var sizeWarn   = $('.file-alert-upload-size-exceeded').clone();
 
     if(!/(\.pdf|\.gif|\.jpg|\.jpeg|\.mp3|\.png|\.mp4|\.txt)$/i.test(fvalue)) {
-        $('.unsafe-file-warn.' + alertcs).show(); return false;
+        $(unsafeWarn).removeClass('hidden'); $(fld).after(unsafeWarn); return false;
     }
 
     if( (fld.files !== undefined) && fld.files.length && (fld.files[0].size >= max_filesize ) ) {
-        $('.toobig-file-warn.' + alertcs).show(); return false;
+        $(sizeWarn).removeClass('hidden'); $(fld).after(sizeWarn); return false;
     }
 
-    $('.toobig-file-warn.' + alertcs).hide(); $(fld).next('.unsafe-file-warn.' + alertcs).hide(); return true;
+    $(parent).find('.file-alert-js').remove();
+
+    return true;
 }
 
 function fn_resize_to_height(element, paddingBottom){
@@ -283,9 +274,9 @@ $(document).ready(function(){
 	smonth 	= parseInt($('#smonth').val());
 	syear 	= parseInt($('#syear').val());
 	
-	eday 	= parseInt($('#eday').val());
+	eday   = parseInt($('#eday').val());
 	emonth = parseInt($('#emonth').val());
-	eyear 	= parseInt($('#eyear').val());
+	eyear  = parseInt($('#eyear').val());
 	
 	$('#sday').change(function(){ sday = $(this).val(); });
 	$('#smonth').change(function(){ smonth = $(this).val(); });
@@ -306,7 +297,9 @@ $(document).ready(function(){
 	clockTimeout = setInterval("fn_clock()", 999);
 
     //--- mup port selection ---//
-    $('#port_select').change(function(){ var portNum = parseInt( $(this).val() ); if( ( portNum > 0 ) && !isNaN( portNum ) ) $('#mup_port').val(portNum); else $('#mup_port').val(""); });
+    $('#port_select').change(function(){
+        var portNum = parseInt( $(this).val() ); if( ( portNum > 0 ) && !isNaN( portNum ) ) $('#mup_port').val(portNum); else $('#mup_port').val("");
+    });
     //--- mup port selection ---//
 
     //--- cronjob line auto-select on click ---//
@@ -316,9 +309,9 @@ $(document).ready(function(){
     //--- autofill currency info ---//
     $('#addCurrencyForm #ccode').change(function(){
 
-        var rate     = $(this).find('option:selected').data('rate');
+        var rate   = $(this).find('option:selected').data('rate');
         var symbol = $(this).find('option:selected').data('symbol');
-        var cname   = $(this).find('option:selected').data('cname');
+        var cname  = $(this).find('option:selected').data('cname');
 
         if( symbol.length > 0 )$('#csymbol').val(symbol);
         if( cname.length > 0 )$('#cname').val(cname);

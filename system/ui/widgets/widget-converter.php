@@ -1,6 +1,12 @@
-<?php if ( !defined('FNPATH') ) include_once '../inc/init.php';
+<?php
 
-if ( !fn_User::is_authenticated() ) exit();
+if ( !defined('FNPATH') ) include_once '../../init.php';
+
+use FinFlow\User;
+use FinFlow\UI;
+use FinFlow\Currency;
+
+if ( ! User::is_authenticated() ) exit();
 
 if ( isset($_GET['convert']) ){
 	
@@ -11,16 +17,18 @@ if ( isset($_GET['convert']) ){
 	$sum = floatval($_POST['sum']);
 
     if( $from_id != $to_id )
-	    $converted = fn_Currency::convert($sum, $from_id, $to_id, 'id');
+	    $converted = Currency::convert($sum, $from_id, $to_id, 'id');
     else
         $converted = $sum;
 
-    echo fn_Util::format_nr($converted, 4);
+    echo
+        Util::format_nr($converted, 4);
 
     exit();
 }
 
-if ( empty($Currencies) ) $Currencies = fn_Currency::get_all();
+if ( empty($Currencies) )
+	$Currencies = Currency::get_all();
 
 ?>
 

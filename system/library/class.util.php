@@ -448,14 +448,14 @@ class Util{
 	
 	public static function get_timezone_offset($timezone_from, $timezone_to){
 
-		$defaultTz= new DateTimeZone($timezone_from);
-		$offsetTz = new DateTimeZone($timezone_to);
+		$defaultTz= new \DateTimeZone($timezone_from);
+		$offsetTz = new \DateTimeZone($timezone_to);
 		
-		$serverTime = new DateTime("now", $defaultTz);
-		$offsetTime = new DateTime("now", $offsetTz);
+		$serverTime = new \DateTime("now", $defaultTz);
+		$offsetTime = new \DateTime("now", $offsetTz);
 		
 		$serverOffset 	= $serverTime->getOffset(); //relative offset to GMT
-		$localOffset       = $offsetTime->getOffset(); //relative offset to GMT
+		$localOffset    = $offsetTime->getOffset(); //relative offset to GMT
 		
 		$offset = 0; $back = FALSE;
 			
@@ -622,8 +622,14 @@ class Util{
     }
 
     public static function format_nr($number, $decimals=2, $precision=FALSE){ //TODO add international support
-        $rmode     = PHP_ROUND_HALF_EVEN; if( !defined('PHP_ROUND_HALF_EVEN') ) $rmode = PHP_ROUND_HALF_DOWN;
-        $precision = $precision > 0 ? $precision : $decimals;  $number = round(floatval($number), $precision, $rmode);  return number_format($number, $decimals, ",", ".");
+
+	    $rmode     = PHP_ROUND_HALF_EVEN;
+	    $precision = $precision > 0 ? $precision : $decimals;
+
+	    $number = round(floatval($number), $precision, $rmode);
+
+	    return number_format($number, $decimals, ",", ".");
+
     }
 
     /**
@@ -674,10 +680,12 @@ class Util{
     }
 
     public static function get_max_upload_filesize(){
+
         $upload_max_size= self::env_get_cfg('upload_max_filesize', TRUE);
-        $post_max_size   = self::env_get_cfg('post_max_size', TRUE);
+        $post_max_size  = self::env_get_cfg('post_max_size', TRUE);
 
         return min($upload_max_size, $post_max_size);
+
     }
 
     public static function get_file_extension($filename){

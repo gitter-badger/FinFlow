@@ -66,7 +66,7 @@ class Accounts{
 
         global $fndb, $fnsql;
 
-        $Currency = fn_Currency::get($currency_id);
+        $Currency = Currency::get($currency_id);
 
         if( count($Currency) and isset($Currency->currency_id) ){
 

@@ -66,3 +66,31 @@ function _url($relative_url, $echo=true, $version=null){
 	else
 		return UI::asset_url($relative_url, false, $version);
 }
+
+
+function url_part($index=0){
+	return UI::url_part($index);
+}
+
+function create_form_nonce($name, $ttl=90){
+
+	$nonces = $_SESSION['fn_nonces'];
+
+	//TODO...
+}
+
+function form_nonce($prefix){
+	//TODO
+}
+
+function form_nonce_input(){
+	//TODO...
+}
+
+function form_nonce_valid($nonce, $name){
+	//TODO...
+}
+
+function cleanup_nonces($force=true){
+	//TODO...
+}

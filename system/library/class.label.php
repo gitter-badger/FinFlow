@@ -1,9 +1,10 @@
 <?php
 
+namespace FinFlow;
 
-class fn_Label{
+class Label{
 	
-	public static $table 			= 'fn_labels';
+	public static $table 	    = 'fn_labels';
 	public static $table_assoc 	= 'fn_assoc';
 	
 	public static function get($slug){

@@ -11,7 +11,7 @@ class CronAssistant{
 	
 	public static function may_cron_run($cron){
 
-		$is_running = fn_Settings::get(self::skey($cron), 'unknown');
+		$is_running = Settings::get(self::skey($cron), 'unknown');
 		
 		if( $is_running == FN_CRON_STATE_RUNNING )
 			return FALSE;
@@ -42,24 +42,24 @@ class CronAssistant{
 		if( !in_array($state, array(FN_CRON_STATE_FINISHED, FN_CRON_STATE_RUNNING)) ) 
 			die("Invalid state {$state} . Available states are running or finished.");
 		
-		fn_Settings::set(self::skey($cron), $state);
+		Settings::set(self::skey($cron), $state);
 		
 	}
 	
 	public static function get_cron_state($cron){
-		return fn_Settings::get(self::skey($cron), 'unknown');;	
+		return Settings::get(self::skey($cron), 'unknown');;
 	}
 	
 	public static function set_lastrun($cron, $lastrun=FALSE){
 		
 		if ( empty($lastrun) ) $lastrun = time(); 
 		
-		fn_Settings::set(self::skey($cron, "lastrun_"), intval($lastrun));
+		Settings::set(self::skey($cron, "lastrun_"), intval($lastrun));
 		
 	}
 	
 	public static function get_lastrun($cron){
-		return fn_Settings::get(self::skey($cron, "lastrun_"), 0);
+		return Settings::get(self::skey($cron, "lastrun_"), 0);
 	}
 	
 	public static function get_lock($cron, $stop=TRUE){
@@ -73,7 +73,7 @@ class CronAssistant{
 			
 		}elseif ($stop){
             if( self::is_running_in_window() )
-                fn_UI::fatal_error('Cronul ' . $cron . ' a fost blocat. Se pare ca o alta instanta a aceluiasi fisier ruleaza in acest moment.');
+                UI::fatal_error('Cronul ' . $cron . ' a fost blocat. Se pare ca o alta instanta a aceluiasi fisier ruleaza in acest moment.');
             else
 			    die( date(FN_MYSQL_DATE) . " Eroare: Cronul " . $cron . " a fost blocat. Se pare ca o alta instanta a aceluiasi fisier ruleaza in acest moment." );
         }
@@ -91,7 +91,7 @@ class CronAssistant{
         //TODO remove absolute paths from error messages, show instead relative paths
 
         if( $onscreen )
-            fn_UI::fatal_error($msg, $fatal);
+            UI::fatal_error($msg, $fatal);
         else
             if($fatal) die("Eroare: " . $msg); else echo ("Eroare: " . $msg); //most servers will send an email with the message
     }

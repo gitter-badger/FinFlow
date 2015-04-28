@@ -7,6 +7,7 @@
 
 	$component = empty($component) ? 'main/dashboard' : ( strpos($component, '/') === false ? ( $component . DIRECTORY_SEPARATOR . $component ) : $component );
 	$ui_class  = str_replace('/', '-', Util::xss_filter( trim($component, '/') ));
+	$args      = isset($args) ? $args : array();
 
 ?>
 <!DOCTYPE html>
@@ -38,7 +39,7 @@
 	<?php if ( User::is_authenticated() ) UI::component('main/header'); ?>
 
 	<div class="container container-fluid container-<?php echo $ui_class; ?>" role="main">
-		<?php UI::component( $component ); ?>
+		<?php UI::component( $component,  $args ); ?>
 	</div>
 
 	<?php if ( User::is_authenticated() ) UI::component('main/footer'); ?>

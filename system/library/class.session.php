@@ -30,6 +30,10 @@ class Session{
 		global $Session; if( empty($Session) ) $Session = new Session(self::DRIVER_DEFAULT);
 	}
 
+	public function restart(){
+		//TODO...
+	}
+
 	public static function getCurrentSession($autostart=true){
 		//TODO...
 	}

@@ -19,8 +19,9 @@ if (count($_POST)){
 	if ( empty($_POST['pass']) )
 		$errors[] = "Parola lipse&#351;te.";
 
-	if( ! Captcha::validate( post('verify') ) )
-		$errors[] = "Codul de verificare introdus este incorect.";
+	//TODO activate captcha check
+	//if( ! Captcha::validate( post('verify') ) )
+	//	$errors[] = "Codul de verificare introdus este incorect.";
 
 	if ( empty($errors) ){
 

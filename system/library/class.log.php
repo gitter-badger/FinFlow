@@ -47,12 +47,13 @@ class Log{
      * Logs a message to be displayed on the screen log
      * @param $msg
      * @param string $prefix
+     * @return null
      */
     public static function to_screen($msg, $prefix="MESSAGE: "){
 
         global $fn_log_messages;
 
-        if( defined('FN_DEBUG') and !FN_DEBUG ) return false; //debug deactivated
+        if( defined('FN_DEBUG') and ! FN_DEBUG ) return false; //debug deactivated
 
         $now = date(FN_MYSQL_DATE);
 

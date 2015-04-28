@@ -13,13 +13,36 @@ $router = new Klein();
 
 if( User::is_authenticated() ){
 
-	$router->respond('/[:section]/?', function(){
-		die("dispatching " . $section); //TODO...
+	//dashboard
+	$router->respond('/dashboard/?', function(){
+		UI::start('main/dashboard');
+	});
+
+	//logout
+	$router->respond('/logout/?', function(){
+		UI::start('extras/logout');
+	});
+
+	$router->respond('/[:section]/?', function($request){
+		UI::start($request->section);
 	});
 
 	//pages and sections
-	$router->respond('/[:section]/[:page]/?', function(){
-		die("User is authenticated"); //TODO...
+	$router->respond('/[:page]/[:section]/?', function($request){
+		UI::start($request->page);
+	});
+
+	//serve dashboard page by default
+	$router->respond('/?', function(){
+		UI::start('main/dashboard');
+	});
+
+}
+else{
+
+	//serve login page by default
+	$router->respond('/?', function(){
+		UI::start('public/login');
 	});
 
 }
@@ -31,11 +54,6 @@ $router->respond('/recover/?', function(){
 
 //login
 $router->respond('/login/?', function(){
-	UI::start('public/login');
-});
-
-//serve login page by default
-$router->respond('/?', function(){
 	UI::start('public/login');
 });
 

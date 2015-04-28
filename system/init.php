@@ -5,7 +5,14 @@ define('FN_DB_VERSION', '1');
 
 define('FNPATH', rtrim(str_replace(basename(dirname(__FILE__)), '', dirname(__FILE__)), DIRECTORY_SEPARATOR));
 
+/**
+ * @deprecated
+ */
 define('FN_OP_IN'	, 'in');
+
+/**
+ * @deprecated
+ */
 define('FN_OP_OUT'	, 'out');
 
 define('FN_SERVER_TIMEZONE'	, date_default_timezone_get());
@@ -104,6 +111,14 @@ define('FN_TIMEZONE', Settings::get('timezone', 'Europe/London') ); date_default
 //TODO
 session_start();
 //--- setup session ---//
+
+//--- setup headers ---//
+
+if( Util::is_production_environment() ){
+
+	header('X-Frame-Options: SAMEORIGIN', true);
+
+}
 
 $_SERVER['REQUEST_URI'] = str_replace(Util::get_base_url(), '', UI::current_page_url());
 

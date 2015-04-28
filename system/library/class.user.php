@@ -148,13 +148,12 @@ class User{
 		
 		global $fndb, $fnsql;
 		
-		$email	  = $fndb->escape($email);
-		$password = self::hash_password($password, PASSWORD_DEFAULT);
+		$email = $fndb->escape($email);
 		
 		$fnsql->select('*', self::$table, array('email'=>$email));
 		
 		$user = $fndb->get_row( $fnsql->get_query() );
-		
+
 		if ( count($user) and isset($user->user_id) and password_verify($password, $user->password) ){
 			//TODO use session class
 			$_SESSION['fn_user_id'] 	    = $user->user_id;

@@ -9,9 +9,12 @@ namespace FinFlow;
  * @author Adrian7 (adrian@finflow.org)
  */
 class OP{
-	
-	public static $table 			   = 'fn_op';
-	public static $table_meta 	   = 'fn_op_meta';
+
+	const TYPE_IN  = 'in';
+	const TYPE_OUT = 'out';
+
+	public static $table      = 'fn_op';
+	public static $table_meta = 'fn_op_meta';
 
     public static $uploads_dir = "/uploads";
     public static $attached    = 'attached';
@@ -419,7 +422,7 @@ class OP{
             $currency_id = intval($filters['currency_id']);
         }
         else {
-            $currency = fn_Currency::get_default(); $currency_id = is_object( $currency ) ? $currency->currency_id : 0;
+            $currency = Currency::get_default(); $currency_id = is_object( $currency ) ? $currency->currency_id : 0;
         }
 
         $fnsql->init(SQLStatement::$SELECT);
@@ -428,7 +431,7 @@ class OP{
         $fnsql->from();
 
         if ( isset($filters['labels']) or isset($filters['ignore_labels']) )
-            $fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
+            $fnsql->left_join(Label::$table_assoc, 'trans_id', 'trans_id');
 
         self::apply_filters($filters);
 
@@ -443,7 +446,7 @@ class OP{
             $fnsql->from();
 
             if ( isset($filters['labels']) )
-                $fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
+                $fnsql->left_join(Label::$table_assoc, 'trans_id', 'trans_id');
 
             self::apply_filters( array_merge($filters, array('currency_id'=>$row->currency_id)) );
 
@@ -451,7 +454,7 @@ class OP{
             $sum = floatval($sum->ctotal);
 
             if ( ( $sum > 0 ) and ( $currency_id !=  $row->currency_id) ) //convert it
-                $sum = fn_Currency::convert($sum, $row->currency_id, $currency_id, 'id');
+                $sum = Currency::convert($sum, $row->currency_id, $currency_id, 'id');
 
             $Total+= $sum;
 
@@ -474,8 +477,8 @@ class OP{
         }
 
 
-        $Income		= fn_OP::get_sum(array_merge($filters, array('type'=>FN_OP_IN)));
-        $Outcome	= fn_OP::get_sum(array_merge($filters, array('type'=>FN_OP_OUT)));
+        $Income		= self::get_sum(array_merge($filters, array('type'=>FN_OP_IN)));
+        $Outcome	= self::get_sum(array_merge($filters, array('type'=>FN_OP_OUT)));
 
         if( $include_accounts ){
             //--- include accounts deposits in calculations ---//
@@ -483,10 +486,10 @@ class OP{
             if( isset($filters['currency_id']) )
                 $currency_id = $filters['currency_id'];
             else{
-                $Currency = fn_Currency::get_default(); $currency_id = is_object($Currency) ? $Currency->currency_id : 0;
+                $Currency = Currency::get_default(); $currency_id = is_object($Currency) ? $Currency->currency_id : 0;
             }
 
-            $Income+= fn_Accounts::get_total_balance($currency_id);
+            $Income+= Accounts::get_total_balance($currency_id);
 
             //--- include accounts deposits in calculations ---//
         }
@@ -497,7 +500,7 @@ class OP{
 	
 	public static function consistent_flow($type, $value, $currency_id, $date=FALSE){
 		
-		$defaultCC = fn_Currency::get_default();
+		$defaultCC = Currency::get_default();
 
 		if ( $currency_id == $defaultCC->currency_id )
 			return array('value'=>$value, 'currency_id'=>$currency_id);
@@ -505,24 +508,24 @@ class OP{
 		if( $type == FN_OP_IN ){
 		
 			//--- convert to accepted in currencies  ---//
-			$currencies_in = fn_Settings::get('op_currencies_in');
+			$currencies_in = Settings::get('op_currencies_in');
 			$currencies_in = @explode(",", $currencies_in);
 		
 			if ( is_array($currencies_in)  and count($currencies_in) ){
 				if ( !in_array($currency_id, $currencies_in) ){  //convert in default currency
-					$value 			= fn_Currency::historically_convert($value, $currency_id, $defaultCC->currency_id, $date, 'id');
+					$value 			= Currency::historically_convert($value, $currency_id, $defaultCC->currency_id, $date, 'id');
 					$currency_id	= $defaultCC->currency_id;
 				}
 			}
 			else{ //no currencies in defined, convert to default currency
-				$value 			= fn_Currency::historically_convert($value, $currency_id, $defaultCC->currency_id, $date, 'id');
+				$value 			= Currency::historically_convert($value, $currency_id, $defaultCC->currency_id, $date, 'id');
 				$currency_id	= $defaultCC->currency_id;
 			}
 			//--- convert to accepted in currencies  ---//
 
 		}
 		else{
-			$value 			= fn_Currency::historically_convert($value, $currency_id, $defaultCC->currency_id, $date, 'id');
+			$value 			= Currency::historically_convert($value, $currency_id, $defaultCC->currency_id, $date, 'id');
 			$currency_id	= $defaultCC->currency_id;
 		}
 
@@ -540,14 +543,14 @@ class OP{
      */
     public static function consistent_flow_by_account($account_id, $value, $currency_id, $date=FALSE){
 
-        $account   = fn_Accounts::get( $account_id );
-        $defaultCC = fn_Currency::get_default();
+        $account   = Accounts::get( $account_id );
+        $defaultCC = Currency::get_default();
 
         if( $account ) {
 
             if( $currency_id != $account->account_currency_id ){
                  //--- we will convert it to the currency accepted by the account ---//
-                 $value 			= fn_Currency::historically_convert($value, $currency_id, $account->account_currency_id, $date, 'id');
+                 $value 		= Currency::historically_convert($value, $currency_id, $account->account_currency_id, $date, 'id');
                  $currency_id	= $account->account_currency_id;
                  //--- we will convert it to the currency accepted by the account ---//
              }
@@ -612,8 +615,8 @@ class OP{
 			}
 			
 			if ( $k == ( 1+ $ioff ) ) $extracted['optype'] = in_array(strtolower($var), array(FN_OP_IN, FN_OP_OUT)) ? strtolower($var) : FALSE;
-			if ( $k == ( 2+ $ioff ) ) $extracted['value']    = floatval($var);
-			if ( $k == ( 3+ $ioff ) ) $extracted['ccode']   = strtoupper($var);
+			if ( $k == ( 2+ $ioff ) ) $extracted['value']  = floatval($var);
+			if ( $k == ( 3+ $ioff ) ) $extracted['ccode']  = strtoupper($var);
 			
 		}
 

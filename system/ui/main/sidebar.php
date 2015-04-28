@@ -1,5 +1,15 @@
-<?php if ( !defined('FNPATH') ) exit; ?>
-<div class="<?php fn_UI::sidebar_grid_class('col-lg-3 col-md-3 col-sm-4'); ?> sidebar panel-group">
+<?php
+/**
+ * Renders the sidebar
+ */
+
+if ( !defined('FNPATH') ) exit;
+
+use FinFlow\UI;
+
+?>
+
+<div class="col-lg-4 aside sidebar sidebar-right panel-group">
 
     <div class="widget panel panel-default widget-upcoming" id="">
         <div class="widget-title panel-heading">
@@ -30,18 +40,22 @@
 	<!--
     <div class="widget panel panel-default widget-calculator">
         <div class="widget-title panel-heading">Calculator</div>
-        <div class="widget-content panel-body"><?php fn_UI::component('widgets/widget-calculator'); ?></div>
+        <div class="widget-content panel-body"><?php UI::component('widgets/widget-calculator'); ?></div>
     </div>
     -->
 
     <div class="widget panel panel-default widget-wclock">
         <div class="widget-title panel-heading">Ceas</div>
-        <div class="widget-content panel-body"><?php fn_UI::component('widgets/widget-wclock'); ?></div>
+        <div class="widget-content panel-body">
+	        <?php UI::component('widgets/widget-wclock'); ?>
+        </div>
     </div>
 
     <div class="widget panel panel-default widget-converter">
         <div class="widget-title panel-heading">Convertor valutar</div>
-        <div class="widget-content panel-body"><?php fn_UI::component('widgets/widget-converter'); ?></div>
+        <div class="widget-content panel-body">
+	        <?php UI::component('widgets/widget-converter'); ?>
+        </div>
 	</div>
 	
 </div>

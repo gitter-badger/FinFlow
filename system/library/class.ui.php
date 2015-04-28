@@ -176,7 +176,7 @@ class UI{
         if( $die ) die();
     }
 
-	public static function start($component=false){
+	public static function start($component=false, $args=array()){
 		$component = empty($component) ? 'main/dashboard' : trim( Util::xss_filter($component) ); include_once (FNPATH . '/system/ui/main.php');
 	}
 
@@ -401,6 +401,14 @@ class UI{
     public static function asset_url($asset, $echo=true, $version=null){
         $version = empty($version) ? FN_VERSION : $version; $url = ( self::base_url($asset) . '?v=' . $version ); if( $echo ) echo $url; else return $url;
     }
+
+	public static function url_part($index=1){
+
+		$path  = parse_url( self::current_page_url(), PHP_URL_PATH );
+		$parts = @explode('/', trim($path, '/'));
+
+		return $index == 0 ? '/' : ( isset($parts[$index-1]) ? urldecode($parts[$index-1]) : null );
+	}
 
     public static function page_title($page, $echo=true){
 

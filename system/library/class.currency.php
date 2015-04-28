@@ -134,7 +134,7 @@ class Currency{
 
     }
 	
-	public static function get_all($excludeDefault=FALSE){
+	public static function get_all($excludeDefault=false){
 		
 		global $fnsql, $fndb;
 		
