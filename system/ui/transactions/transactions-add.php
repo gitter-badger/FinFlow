@@ -7,13 +7,168 @@ if ( !defined('FNPATH') ) exit();
 
 use FinFlow\UI;
 use FinFlow\OP;
+use FinFlow\OP_Pending;
 use FinFlow\Currency;
 use FinFlow\Contacts;
 use FinFlow\Label;
 use FinFlow\Accounts;
 use FinFlow\Util;
 
-//TODO... move logic for adding a transaction here
+if ( isset($_POST['add']) ){
+
+	//--- add a transaction ---//
+
+	$value = floatval( post('value') );
+	$date  = post('date');
+
+	$account_id = post('account_id') ? intval($_POST['account_id']) : 0;
+	$contact_id = isset($_POST['contact_id']) ? intval($_POST['contact_id']) : 0;
+
+	if ( $value <= 0 )
+		$errors[] = "Valoare tranzac&#355;iei lipse&#351;te.";
+
+	if( strtotime($date) === false)
+		$errors[] = "Data specificat&#259; este invalida";
+
+	if ( !in_array(post('optype'), OP::getTypesArray()) )
+		$errors[] = "Tipul tranzac&#355;iei este invalid.";
+
+	if( ! isset($_POST['add_pending']) and (strtotime($date) > time() ) )
+		$errors[] = "Data tranzactiei este in viitor. Foloseste caracteristica &quot;in asteptare&quot; pentru a adauga tranzactii in viitor.";
+
+	if ( empty($errors) ){
+
+		if( isset($_POST['add_pending']) ){
+
+			//--- add a pending transaction ---//
+
+			$trans_id = OP_Pending::add($_POST['optype'], $value, $_POST['currency_id'], $_POST['recurring'], array(), $date);
+
+			if( $trans_id ){
+
+				$metadata = array('labels'=>array(), 'files'=>array(), 'account_id'=>0, 'comments'=>trim($_POST['comments']));
+
+				//--- add the metadata ---//
+				if ( count($_POST['labels']) ) foreach ($_POST['labels'] as $label_id) $metadata['labels'][] = $label_id;
+
+				if( $account_id ) $metadata['account_id'] = $account_id;
+				if( $contact_id ) $metadata['contact_id'] = $contact_id;
+
+				//--- upload files if any ---//
+				if( count( $_FILES ) ) {
+
+					if( strlen($_FILES['attachment_1']['name']) ){
+
+						$attached = OP_Pending::add_file($trans_id, $_FILES['attachment_1']);
+
+						if( strpos($attached, '@') === false )
+							$errors[] = $attached;
+						else {
+							$filename = $_FILES['attachment_1']['name']; $metadata['files'][$filename] = trim($attached, '@');
+						}
+
+					}
+
+					if( strlen($_FILES['attachment_2']['name']) ){
+
+						$attached = OP_Pending::add_file($trans_id, $_FILES['attachment_2']);
+
+						if( strpos($attached, '@') === false )
+							$errors[] = $attached;
+						else{
+							$filename = $_FILES['attachment_2']['name']; $metadata['files'][$filename] = trim($attached, '@');
+						}
+					}
+
+					if( strlen($_FILES['attachment_3']['name']) ){
+
+						$attached = OP_Pending::add_file($trans_id, $_FILES['attachment_3']);
+
+						if( strpos($attached, '@') === false )
+							$errors[] = $attached;
+						else {
+							$filename = $_FILES['attachment_3']['name']; $metadata['files'][$filename] = trim($attached, '@');
+						}
+					}
+
+				}
+				//--- upload files if any ---//
+
+				$metadata = @serialize($metadata); OP_Pending::update($trans_id, array('metadata'=>$metadata));
+
+				if( $_POST['recurring'] != 'no' )
+					$children = OP_Pending::add_children($trans_id); //Add a children as instance of the recurring transaction
+				else
+					$children = $trans_id;
+
+				//--- add the metadata ---//
+
+				//--- create first child transaction ---//
+				if( $children )
+					$notices[] = "Tranzac&#355;ia a fost adaugat&#259;.";
+				else
+					$errors[] =  "Eroare SQL: {$fndb->error} .";
+				//--- create first child transaction ---//
+
+			}
+			else $errors[] = "Eroare SQL: {$fndb->error} .";
+
+			//--- add a pending transaction ---//
+
+		}
+		else{
+
+			//--- add a normal transaction ---//
+
+			$trans_id = OP::add($_POST['optype'], $value, $_POST['currency_id'], $_POST['comments'], $date);
+
+			if ( $trans_id ){
+
+				//--- associate to an account (if any selected) ---//
+				if( $account_id ) Accounts::add_trans($account_id, $trans_id);
+				//--- associate to an account (if any selected) ---//
+
+				if ( count($_POST['labels']) ) foreach ($_POST['labels'] as $label_id){
+					OP::associate_label($trans_id, $label_id);
+				}
+				else $warnings[] = "Nu s-a asociat nici o etichet&#259; pentru aceast&#259; tranzac&#355;ie.";
+
+				//--- upload files if any ---//
+				if( count( $_FILES ) ) {
+
+					if( strlen($_FILES['attachment_1']['name']) ){
+						$attached = OP::add_attachment($trans_id, $_FILES['attachment_1']); if($attached != OP::$attached ) $errors[] = $attached;
+					}
+
+					if( strlen($_FILES['attachment_2']['name']) ){
+						$attached = OP::add_attachment($trans_id, $_FILES['attachment_2']); if($attached != OP::$attached ) $errors[] = $attached;
+					}
+
+					if( strlen($_FILES['attachment_3']['name']) ){
+						$attached = OP::add_attachment($trans_id, $_FILES['attachment_3']); if($attached != OP::$attached ) $errors[] = $attached;
+					}
+
+				}
+				//--- upload files if any ---//
+
+				//--- associate with a contact (if any selected) ---//
+				if( $contact_id ) Contacts::assoc_trans($contact_id, $trans_id);
+				//--- associate with a contact (if any selected) ---//
+
+				$notices[] = "Tranzac&#355;ia a fost adaugat&#259;.";
+
+			}
+			else
+				$errors[] = "Eroare SQL: {$fndb->error} .";
+
+			//--- add a normal transaction ---//
+		}
+
+
+	}
+
+	//--- add a transaction ---//
+}
 
 $max_filesize     = Util::get_max_upload_filesize();
 $max_filesize_fmt = Util::fmt_filesize( $max_filesize );
@@ -37,24 +192,29 @@ UI::show_errors($errors); UI::show_notes($notices); UI::show_warnings($warnings)
 			<div class="form-group">
 				<label class="control-label col-lg-3" for="date">Data:</label>
 				<div class="col-lg-3">
-					<input class="form-control" type="date" size="45" maxlength="255" name="date" id="date" value="<?php echo UI::extract_post_val('date'); ?>" />
+					<input class="form-control" type="text" size="45" maxlength="255" name="date" id="date" value="<?php echo UI::extract_post_val('date', date('Y-m-d')); ?>" />
 				</div>
 			</div>
 
 			<div class="form-group">
 				<label class="control-label col-lg-3" for="optype">Tip:</label>
-				<div class="col-lg-3">
-					<select class="form-control" name="optype" id="optype">
-						<option value="<?php echo OP::TYPE_IN; ?>" <?php echo UI::selected_or_not(OP::TYPE_IN, post('optype')); ?>>venit</option>
-						<option value="<?php echo OP::TYPE_OUT; ?>" <?php echo UI::selected_or_not(OP::TYPE_OUT, post('optype')); ?>>cheltuial&#259;</option>
-					</select>
-				</div>
 				<div class="col-lg-4">
-					<div class="checkbox">
-						<label class="control-label" for="add_pending">
-							<input type="checkbox" name="add_pending" id="add_pending" /> &#238;n a&#351;teptare
-						</label>
+
+					<div class="input-group">
+					<label class="radio-inline radio-inline-spaced-right">
+						<input name="optype" type="radio"" value="<?php echo OP::TYPE_IN; ?>" <?php echo UI::checked_or_not(OP::TYPE_IN, post('optype')); ?>/> venit
+					</label>
+
+					<label class="radio-inline">
+						<input name="optype" type="radio" value="<?php echo OP::TYPE_IN; ?>" <?php echo UI::checked_or_not(OP::TYPE_IN, post('optype')); ?>/> cheltuiala
+					</label>
 					</div>
+
+				</div>
+				<div class="col-lg-3">
+					<label class="checkbox-inline" for="add_pending">
+						<input type="checkbox" name="add_pending" id="add_pending" /> &#238;n a&#351;teptare
+					</label>
 				</div>
 			</div>
 
@@ -64,6 +224,7 @@ UI::show_errors($errors); UI::show_notes($notices); UI::show_warnings($warnings)
 					<select class="form-control" name="recurring" id="recurring">
 						<option value="no">nu</option>
 						<option value="daily">zilnic</option>
+						<!-- <option value="weekly">saptamanal</option> --->
 						<option value="monthly">lunar</option>
 						<option value="yearly">anual</option>
 					</select>
@@ -194,9 +355,9 @@ UI::show_errors($errors); UI::show_notes($notices); UI::show_warnings($warnings)
 			<p>&nbsp;</p>
 
 			<div class="form-group">
-				<div class=" col-lg-5 col-lg-offset-5">
+				<div class=" col-lg-12 align-center">
 					<input type="hidden" name="add" value="yes" />
-					<button class="btn btn-primary" type="submit">Adaug&#259;</button>
+					<button class="btn btn-primary btn-submit" type="submit">Adaug&#259;</button>
 				</div>
 			</div>
 
@@ -206,23 +367,15 @@ UI::show_errors($errors); UI::show_notes($notices); UI::show_warnings($warnings)
 </div>
 
 <script type="text/javascript" src="<?php UI::asset_url('assets/js/moment.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php UI::asset_url('assets/js/pikaday.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php UI::asset_url('assets/js/pickdate-picker.js'); ?>"></script>
+<script type="text/javascript" src="<?php UI::asset_url('assets/js/pickdate-picker.date.js'); ?>"></script>
+<script type="text/javascript" src="<?php UI::asset_url('assets/js/pickdate-legacy.js'); ?>"></script>
 <script type="text/javascript">
 
     max_filesize = parseInt('<?php echo $max_filesize; ?>');
 
-    var today  = new Date();
-    var picker = new Pikaday({
-		field: document.getElementById('date'),
-        firstDay: 1,
-        i18n: PikadayRO,
-        format: 'YYYY-MM-DD',
-        onSelect: function(date) {
-            if( date > today ) {
-                //---- is a pending transaction ---//
-                $('#add_pending').prop('checked', true); $('.recurring-choices').slideDown('fast');
-                //---- is a pending transaction ---//
-            }
-        }
-     });
+    $('.datepicker').pickadate({
+		min: [2015,3,20],
+	    max: [2015,7,14]
+    });
 </script>

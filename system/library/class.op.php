@@ -19,6 +19,9 @@ class OP{
     public static $uploads_dir = "/uploads";
     public static $attached    = 'attached';
 
+	public static function getTypesArray(){
+		return array(self::TYPE_IN, self::TYPE_OUT);
+	}
 
     /**
      * Adds a single operation
