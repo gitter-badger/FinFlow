@@ -241,8 +241,8 @@ class Util{
 	
 	public static function date_diff($from, $to, $output="days"){ //ANSI-formatted dates
 		
-		$date1 = new DateTime($from);
-		$date2 = new DateTime($to);
+		$date1 = new \DateTime($from);
+		$date2 = new \DateTime($to);
 		
 		$interval = $date1->diff($date2);
 		
@@ -500,6 +500,7 @@ class Util{
     }
 
     public static function get_rand_string($length=12){
+	    //TODO better random string support
         return substr(md5( time() + rand(1, 9999) ), 0, $length);
     }
 

@@ -29,8 +29,8 @@
 		<link rel="stylesheet" type="text/css" media="all" href="<?php UI::asset_url('/assets/css/styles.css'); ?>"/>
 	<?php endif; ?>
 
-	<link rel="stylesheet" type="text/css" media="all" href="<?php UI::asset_url('/assets/css/pikaday.css'); ?>"/>
 	<?php UI::css(); ?>
+
 </head>
 <body id="page-<?php echo $ui_class; ?>" class="<?php echo UI::get_body_class($component); ?>" role="document">
 
@@ -55,6 +55,7 @@
 <script type="text/javascript" src="<?php UI::asset_url('assets/js/bootstrap.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php UI::asset_url('assets/js/fn.js'); ?>"></script>
 
+<?php UI::css(); ?>
 <?php UI::js(); ?>
 
 </body>

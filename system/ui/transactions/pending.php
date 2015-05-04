@@ -1,6 +1,9 @@
-<?php if ( !defined('FNPATH') ) exit(); global $Currency, $filters, $start, $count, $pagevars; ?>
+<?php if ( !defined('FNPATH') ) exit();
 
-<?php
+use FinFlow\UI;
+use FinFlow\OP_Pending;
+
+global $Currency, $filters, $start, $count, $pagevars;
 
 if( isset( $_GET['forecast'] ) ):
 
@@ -32,7 +35,7 @@ else:
 
     //-- figure out the startdate ---//
 
-    $starttime = ( @strtotime( fn_OP_Pending::get_min_date($cfilters) ) - 86400 );
+    $starttime = ( @strtotime( OP_Pending::get_min_date($cfilters) ) - 86400 );
 
     if( $starttime > time() ) $starttime = time();
 
@@ -43,23 +46,41 @@ else:
     $cfilters['order']     = 'ASC';
     $cfilters['orderby'] = 'fdate';
 
-    $Transactions    = fn_OP_Pending::get_period($cfilters);
-    $Total              = fn_OP_Pending::get_period_sum($cfilters);
+    $Transactions = OP_Pending::get_period($cfilters);
+    $Total        = OP_Pending::get_period_sum($cfilters);
 
-    $Income    = fn_OP_Pending::get_period_sum( array_merge($cfilters, array('type'=>FN_OP_IN)) );
-    $Outcome = fn_OP_Pending::get_period_sum( array_merge($cfilters, array('type'=>FN_OP_OUT)) ); ?>
+    $Income  = OP_Pending::get_period_sum( array_merge($cfilters, array('type'=>FN_OP_IN)) );
+    $Outcome = OP_Pending::get_period_sum( array_merge($cfilters, array('type'=>FN_OP_OUT)) ); ?>
 
     <?php if( count($Transactions) ): ?>
 
-        <?php include 'pending-period-list.php'; ?>
+        <?php include 'pending-list.php'; ?>
 
     <?php else: ?>
-        <h4>
-            <em>P&#226;n&#259; la <?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, $endtime) ); ?></em>
-        </h4>
-        <p class="alert alert-info">
-            Nu am gasit tranzac&#355;ii &#238;n a&#351;teptare pentru perioada selectat&#259;.
-        </p>
+
+		<div class="alert alert-info">
+			<p>Nu am gasit tranzac&#355;ii &#238;n a&#351;teptare pentru perioada selectat&#259;.</p>
+		</div>
+
+		<div class="panel panel-default">
+
+			<div class="panel-heading">
+
+				<h4>
+					<em>P&#226;n&#259; la <?php echo UI::translate_date( date(FN_DAY_FORMAT, $endtime) ); ?></em>
+				</h4>
+
+			</div>
+
+			<div class="panel-body">
+
+				...
+
+			</div>
+
+		</div>
+
+
     <?php endif; ?>
 
 <?php endif; ?>

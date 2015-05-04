@@ -38,21 +38,25 @@ if ( isset($_POST['add']) ){
 
 	if ( empty($errors) ){
 
-		if( isset($_POST['add_pending']) ){
+		if( post('add_pending') ){
 
 			//--- add a pending transaction ---//
 
-			$trans_id = OP_Pending::add($_POST['optype'], $value, $_POST['currency_id'], $_POST['recurring'], array(), $date);
+			$trans_id = OP_Pending::add(post('optype'), $value, post('currency_id'), post('recurring'), array(), $date);
 
 			if( $trans_id ){
 
-				$metadata = array('labels'=>array(), 'files'=>array(), 'account_id'=>0, 'comments'=>trim($_POST['comments']));
+				$metadata = array('labels'=>array(), 'files'=>array(), 'account_id'=>0, 'comments'=>trim( post('comments') ));
 
 				//--- add the metadata ---//
-				if ( count($_POST['labels']) ) foreach ($_POST['labels'] as $label_id) $metadata['labels'][] = $label_id;
+				if ( post('labels') and count($_POST['labels']) )
+					foreach ($_POST['labels'] as $label_id) $metadata['labels'][] = $label_id;
 
-				if( $account_id ) $metadata['account_id'] = $account_id;
-				if( $contact_id ) $metadata['contact_id'] = $contact_id;
+				if( $account_id )
+					$metadata['account_id'] = $account_id;
+
+				if( $contact_id )
+					$metadata['contact_id'] = $contact_id;
 
 				//--- upload files if any ---//
 				if( count( $_FILES ) ) {
@@ -120,7 +124,7 @@ if ( isset($_POST['add']) ){
 
 			//--- add a normal transaction ---//
 
-			$trans_id = OP::add($_POST['optype'], $value, $_POST['currency_id'], $_POST['comments'], $date);
+			$trans_id = OP::add(post('optype'), $value, post('currency_id'), post('comments'), $date);
 
 			if ( $trans_id ){
 
@@ -128,7 +132,7 @@ if ( isset($_POST['add']) ){
 				if( $account_id ) Accounts::add_trans($account_id, $trans_id);
 				//--- associate to an account (if any selected) ---//
 
-				if ( count($_POST['labels']) ) foreach ($_POST['labels'] as $label_id){
+				if ( post('labels') and count($_POST['labels']) ) foreach ($_POST['labels'] as $label_id){
 					OP::associate_label($trans_id, $label_id);
 				}
 				else $warnings[] = "Nu s-a asociat nici o etichet&#259; pentru aceast&#259; tranzac&#355;ie.";
@@ -177,7 +181,7 @@ $unsafeBrowserFileWarn = 'Tipul de fi&#351;ier ales nu are suport nativ in navig
 $sizeLimiteExceedFile  = ( 'Fi&#351;ierul ales este prea mare pentru a fi &#238;ncarc&#259;t. Marimea maxima admisa este ' . $max_filesize_fmt . '.' );
 
 
-UI::show_errors($errors); UI::show_notes($notices); UI::show_warnings($warnings); ?>
+UI::show_errors($errors); UI::show_success($notices); UI::show_warnings($warnings); ?>
 
 <div class="panel panel-default">
 
@@ -192,7 +196,7 @@ UI::show_errors($errors); UI::show_notes($notices); UI::show_warnings($warnings)
 			<div class="form-group">
 				<label class="control-label col-lg-3" for="date">Data:</label>
 				<div class="col-lg-3">
-					<input class="form-control" type="text" size="45" maxlength="255" name="date" id="date" value="<?php echo UI::extract_post_val('date', date('Y-m-d')); ?>" />
+					<input class="form-control datepicker" type="text" size="45" maxlength="255" name="date" id="date" value="<?php echo UI::extract_post_val('date', date('Y-m-d')); ?>" />
 				</div>
 			</div>
 
@@ -206,7 +210,7 @@ UI::show_errors($errors); UI::show_notes($notices); UI::show_warnings($warnings)
 					</label>
 
 					<label class="radio-inline">
-						<input name="optype" type="radio" value="<?php echo OP::TYPE_IN; ?>" <?php echo UI::checked_or_not(OP::TYPE_IN, post('optype')); ?>/> cheltuiala
+						<input name="optype" type="radio" value="<?php echo OP::TYPE_OUT; ?>" <?php echo UI::checked_or_not(OP::TYPE_OUT, post('optype')); ?>/> cheltuiala
 					</label>
 					</div>
 
@@ -269,34 +273,31 @@ UI::show_errors($errors); UI::show_notes($notices); UI::show_warnings($warnings)
 			<?php endif;?>
 
 
+			<?php $Labels = Label::get_parents(); if ( count($Labels) ): ?>
 			<div class="form-group">
 
 				<label class="control-label col-lg-3" for="labels">Etichete:</label>
 
-				<?php $Labels = Label::get_parents(); if ( count($Labels) ): ?>
+				<div class="col-lg-9">
+					<select class="form-control" name="labels[]" id="labels" size="10" multiple="multiple">
+						<?php foreach ($Labels as $label): $ChildrenLabels = Label::get_children($label->label_id); ?>
 
-					<div class="col-lg-9">
-						<select class="form-control" name="labels[]" id="labels" size="10" multiple="multiple">
-							<?php foreach ($Labels as $label): $ChildrenLabels = Label::get_children($label->label_id); ?>
+							<option value="<?php echo $label->label_id; ?>" <?php echo UI::selected_or_not($label->label_id, post('labels')); ?>>
+								<?php echo UI::esc_html( $label->title ); ?>
+							</option>
 
-								<option value="<?php echo $label->label_id; ?>" <?php echo UI::selected_or_not($label->label_id, post('labels')); ?>>
-									<?php echo UI::esc_html( $label->title ); ?>
+							<?php if( count($ChildrenLabels) ) foreach($ChildrenLabels as $child): ?>
+								<option value="<?php echo $child->label_id; ?>" <?php echo UI::selected_or_not($child->label_id, post('labels')); ?>>
+									&#150; <?php echo UI::esc_html( $child->title ); ?>
 								</option>
-
-								<?php if( count($ChildrenLabels) ) foreach($ChildrenLabels as $child): ?>
-									<option value="<?php echo $child->label_id; ?>" <?php echo UI::selected_or_not($child->label_id, post('labels')); ?>>
-										&#150; <?php echo UI::esc_html( $child->title ); ?>
-									</option>
-								<?php endforeach; ?>
-
 							<?php endforeach; ?>
-						</select>
-					</div>
 
-				<?php else: ?>
-					<div class="col-lg-9"><a class="btn btn-default" href="<?php UI::page_url('labels/add'); ?>">Adaug&#259; &rarr;</a></div>
-				<?php endif;?>
+						<?php endforeach; ?>
+					</select>
+				</div>
+
 			</div>
+			<?php endif; ?>
 
 			<?php if( Accounts::has_accounts() ): ?>
 				<div class="form-group">
@@ -366,16 +367,28 @@ UI::show_errors($errors); UI::show_notes($notices); UI::show_warnings($warnings)
 	</div>
 </div>
 
-<script type="text/javascript" src="<?php UI::asset_url('assets/js/moment.min.js'); ?>"></script>
-<script type="text/javascript" src="<?php UI::asset_url('assets/js/pickdate-picker.js'); ?>"></script>
-<script type="text/javascript" src="<?php UI::asset_url('assets/js/pickdate-picker.date.js'); ?>"></script>
-<script type="text/javascript" src="<?php UI::asset_url('assets/js/pickdate-legacy.js'); ?>"></script>
+<?php
+
+$onclose = <<<JS
+function xdtcheck(){
+
+	var today 		 = new Date();
+	var selectedDate = new Date( $('#date').val() );
+
+	if( ( selectedDate > today ) && ! $('#add_pending').is(':checked') ){
+		$('#add_pending').trigger('click');
+	}
+	else if( $('#add_pending').is(':checked') ){
+		$('#add_pending').trigger('click');
+	}
+
+}
+JS;
+
+
+UI::component('extras/datepicker', array('theme'=>'classic', 'onclose'=>$onclose));
+
+?>
 <script type="text/javascript">
-
-    max_filesize = parseInt('<?php echo $max_filesize; ?>');
-
-    $('.datepicker').pickadate({
-		min: [2015,3,20],
-	    max: [2015,7,14]
-    });
+	max_filesize = <?php echo $max_filesize; ?>;
 </script>

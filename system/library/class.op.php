@@ -32,15 +32,16 @@ class OP{
      * @param null $date
      * @return bool
      */
-    public static function add($type, $value=1, $currency_id=1, $comments="", $date=null){
+    public static function add($type, $value=1, $currency_id=1, $comments='', $date=null){
 
         global $fndb, $fnsql;
 
-        $type         = $type == FN_OP_IN ? FN_OP_IN : FN_OP_OUT;
+        $type         = $type == self::TYPE_IN ? self::TYPE_IN : self::TYPE_OUT;
         $value        = floatval( $value );
         $date         = empty($date) ? date(FN_MYSQL_DATE) : date(FN_MYSQL_DATE, @strtotime($date));
 
-        $preflow = array('currency_id'=>$currency_id, 'value'=>$value); $flow = fn_OP::consistent_flow($type, $value, $currency_id, $date);
+        $preflow = array('currency_id'=>$currency_id, 'value'=>$value);
+	    $flow    = OP::consistent_flow($type, $value, $currency_id, $date);
 
         extract($flow);
 
@@ -81,11 +82,19 @@ class OP{
 			}
 			
 			if ( isset($filters['labels']) and $filters['labels'] and is_array( $filters['labels']) and count($filters['labels']) ){
-				$llist = $fndb->escape(implode(",", $filters['labels'])); $fnsql->condition('label_id', "IN", "({$llist})", "AND", fn_Label::$table_assoc, FALSE);
+
+				$llist = $fndb->escape(implode(",", $filters['labels']));
+
+				$fnsql->condition('label_id', "IN", "({$llist})", "AND", Label::$table_assoc, FALSE);
+
 			}
 
             if ( isset($filters['accounts']) and $filters['accounts'] and is_array( $filters['accounts']) and count($filters['accounts']) ){
-                $alist = $fndb->escape(implode(",", $filters['accounts'])); $fnsql->condition('account_id', "IN", "({$alist})", "AND", self::$table, FALSE);
+
+	            $alist = $fndb->escape(implode(",", $filters['accounts']));
+
+	            $fnsql->condition('account_id', "IN", "({$alist})", "AND", self::$table, FALSE);
+
             }
 
             if( isset($filters['ignore_accounts']) and $filters['ignore_accounts'] ){
@@ -97,6 +106,7 @@ class OP{
                     $act_group_id = 1; $act_sql_junction = "OR";
 
                     $ialist = $fndb->escape(implode(",", $filters['ignore_accounts']));
+
                     $fnsql->condition('account_id', "NOT IN", "({$ialist})", "AND", self::$table, FALSE, $act_group_id);
 
                 }
@@ -106,15 +116,27 @@ class OP{
             }
 			
 			if ( isset($filters['startdate']) and $filters['startdate'] ){
-				$startdate = $fndb->escape($filters['startdate']); $fnsql->condition('sdate', '>=', $startdate);
+
+				$startdate = $fndb->escape($filters['startdate']);
+
+				$fnsql->condition('sdate', '>=', $startdate);
+
 			}
 			
 			if ( isset($filters['enddate']) and $filters['enddate'] ){
-				$enddate = $fndb->escape($filters['enddate']); $fnsql->condition('sdate', '<=', $enddate);
+
+				$enddate = $fndb->escape($filters['enddate']);
+
+				$fnsql->condition('sdate', '<=', $enddate);
+
 			}
 			
 			if ( isset($filters['currency_id']) and $filters['currency_id'] ){
-				$currency_id = $fndb->escape($filters['currency_id']); $fnsql->condition('currency_id', '=', $currency_id);
+
+				$currency_id = $fndb->escape($filters['currency_id']);
+
+				$fnsql->condition('currency_id', '=', $currency_id);
+
 			}
 
             //--- search filter ---//
@@ -182,7 +204,7 @@ class OP{
 		$fnsql->from(self::$table);
 
 		if ( isset($filters['labels']) )
-			$fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
+			$fnsql->left_join(Label::$table_assoc, 'trans_id', 'trans_id');
 		
 		$filters = array_merge($filters, array('start'=>$start, 'count'=>$count));
 
@@ -211,14 +233,14 @@ class OP{
 		if ( $trans_id ){
 		
 			$fnsql->init(SQLStatement::$SELECT);
-			$fnsql->table( fn_Label::$table_assoc);
+			$fnsql->table( Label::$table_assoc);
 			
-			$fnsql->fields('*', fn_Label::$table_assoc);
-			$fnsql->fields('*', fn_Label::$table);
+			$fnsql->fields('*', Label::$table_assoc);
+			$fnsql->fields('*', Label::$table);
 			
 			$fnsql->from();
 			
-			$fnsql->left_join(fn_Label::$table, 'label_id', 'label_id');
+			$fnsql->left_join(Label::$table, 'label_id', 'label_id');
 			$fnsql->condition('trans_id', '=', $trans_id);
 			$fnsql->conditions_ready();
 
@@ -246,6 +268,7 @@ class OP{
     }
 	
 	public static function remove($trans_id){
+
 		global $fndb, $fnsql;
 		
 		$trans_id = intval($trans_id);
@@ -253,13 +276,13 @@ class OP{
 		if ( $trans_id ){
 			
 			//delete labels assoc
-			$fnsql->delete(fn_Label::$table_assoc, array('trans_id'=>$trans_id));
+			$fnsql->delete(Label::$table_assoc, array('trans_id'=>$trans_id));
 			$fndb->execute_query( $fnsql->get_query() );
 
             //TODO! remove trans from account balance
 
             //delete attachments
-            $attachments= fn_OP::get_metadata($trans_id, 'attachments');
+            $attachments= OP::get_metadata($trans_id, 'attachments');
             if( strlen($attachments) ){
                 $attachments = @unserialize($attachments); foreach($attachments as $file) @unlink( rtrim(FNPATH, DIRECTORY_SEPARATOR) . fn_OP::$uploads_dir . DIRECTORY_SEPARATOR . $file );
             }
@@ -269,7 +292,10 @@ class OP{
 			$fndb->execute_query( $fnsql->get_query() );
 			
 			//delete trans
-			$fnsql->delete(self::$table, array('trans_id'=>$trans_id)); 
+			$fnsql->delete(self::$table, array('trans_id'=>$trans_id));
+
+			die( $fnsql->get_query() ); //TODO...
+
 			return $fndb->execute_query( $fnsql->get_query() );
 			
 		}
@@ -413,7 +439,7 @@ class OP{
 	}
 	
 	
-	public static function get_sum($filters){
+	public static function get_sum($filters=array()){
 
         global $fndb, $fnsql;
 
@@ -425,7 +451,8 @@ class OP{
             $currency_id = intval($filters['currency_id']);
         }
         else {
-            $currency = Currency::get_default(); $currency_id = is_object( $currency ) ? $currency->currency_id : 0;
+            $currency    = Currency::get_default();
+	        $currency_id = is_object( $currency ) ? $currency->currency_id : 0;
         }
 
         $fnsql->init(SQLStatement::$SELECT);
@@ -505,10 +532,10 @@ class OP{
 		
 		$defaultCC = Currency::get_default();
 
-		if ( $currency_id == $defaultCC->currency_id )
+		if ( empty($defaultCC) or ( $currency_id == $defaultCC->currency_id ) )
 			return array('value'=>$value, 'currency_id'=>$currency_id);
 		
-		if( $type == FN_OP_IN ){
+		if( $type == self::TYPE_IN ){
 		
 			//--- convert to accepted in currencies  ---//
 			$currencies_in = Settings::get('op_currencies_in');
@@ -704,7 +731,7 @@ class OP{
 		global $fndb, $fnsql;
 		
 		$trans_id 	= intval($trans_id);
-		$key	  		= $fndb->escape($key);
+		$key	    = $fndb->escape($key);
 		
 		$fnsql->select('meta_value', self::$table_meta, array('meta_key'=>$key, 'trans_id'=>$trans_id));
 		
@@ -849,9 +876,10 @@ class OP{
 
     public static function add_attachment($trans_id, $File){
 
-        $folder     = FN_UPLOADS_DIR;
-        $filename = ( 'attachment-' . $trans_id . '-' . fn_Util::get_rand_string(7) );
-        $uploaded = fn_Util::file_upload($File, $folder, $filename);
+	    //TODO add support for file management using File class
+        $folder   = FN_UPLOADS_DIR;
+        $filename = ( 'attachment-' . $trans_id . '-' . Util::get_rand_string(7) );
+        $uploaded = Util::file_upload($File, $folder, $filename);
 
         if( is_array($uploaded) and ( $uploaded['success'] ) ){
 
@@ -880,7 +908,7 @@ class OP{
         if( empty($vars) ) $vars = $_GET;
 
         $readable = "";
-        $period    = "";
+        $period   = "";
 
         if( empty($vars['enddate']) or ( strtotime($vars['enddate']) > time() ) ){
             unset($vars['startdate']);
@@ -888,10 +916,10 @@ class OP{
         }else{
 
             $sd = date($date_format, @strtotime($vars['startdate']));
-            $ed= date($date_format, @strtotime($vars['enddate']));
+            $ed = date($date_format, @strtotime($vars['enddate']));
 
             $sd = ('<span class="date sdate">' . fn_UI::translate_date($sd) . '</span>' );
-            $ed= ('<span class="date edate">' . fn_UI::translate_date($ed) . '</span>');
+            $ed = ('<span class="date edate">' . fn_UI::translate_date($ed) . '</span>');
 
             $period = " pe perioada {$sd} - {$ed}";
         }
@@ -899,11 +927,11 @@ class OP{
         if( count($vars) ){
 
             if( isset($vars['type']) ){
-                $readable.= $vars['type'] == FN_OP_IN ? '<span class="type">venit</span>' : '<span class="type">cheltuieli</span>';
+                $readable.= $vars['type'] == self::TYPE_IN ? '<span class="type">venit</span>' : '<span class="type">cheltuieli</span>';
             }
 
             if( isset($vars['currency_id']) ){
-                $currency = fn_Currency::get( $vars['currency_id'] );
+                $currency = Currency::get( $vars['currency_id'] );
                 $lcurrency= ('<span class="currency">' . $currency->ccode . '</span>');
 
                 $readable.= " &#238;n moneda {$lcurrency} ";
@@ -936,13 +964,14 @@ class OP{
                 if( count($vars['labels']) ) foreach($vars['labels'] as $id) $labels[] = fn_Label::get_by($id, 'id');
 
                 if( count($labels) ) foreach($labels as $label){
-                    $llabel     = ( '<span class="llabel">' . fn_UI::esc_html( $label->title ) . '</span>' ); $readable.= ($llabel . ", ");
+                    $llabel = ( '<span class="llabel">' . fn_UI::esc_html( $label->title ) . '</span>' ); $readable.= ($llabel . ", ");
                 }
 
                 $readable = trim(trim($readable), ",");
-                $cnt         = substr_count($readable, ", ");
+                $cnt      = substr_count($readable, ", ");
 
-                if( $cnt ) $readable = str_replace(", {$llabel}", " sau {$llabel}", $readable);
+                if( $cnt )
+	                $readable = str_replace(", {$llabel}", " sau {$llabel}", $readable);
 
                 $readable.=";";
 
@@ -954,6 +983,10 @@ class OP{
 
     }
 
+	/**
+	 * @return array
+	 * @deprecated
+	 */
     public static function get_export_array(){
 
         global $fndb, $fnsql;
@@ -969,10 +1002,10 @@ class OP{
             $metadata = array();
 
             $metadata['details']          = self::get_metadata($row->trans_id, 'details' , "");
-            $metadata['attachments'] = self::get_metadata($row->trans_id, 'attachments', "");
+            $metadata['attachments']      = self::get_metadata($row->trans_id, 'attachments', "");
             $metadata['attachments_names'] = self::get_metadata($row->trans_id, 'attachments_names', "");
 
-            $metadata = fn_Util::clean_array($metadata);
+            $metadata = Util::clean_array($metadata);
 
             if( count($metadata) ) {
                 $encodedmeta = array(); foreach($metadata as $key=>$value) $encodedmeta[$key] = base64_encode($value);
@@ -1016,6 +1049,7 @@ class OP{
      * @param $labelsIDs
      * @param array $accountsIDs
      * @return int number of transactions imported
+     * @deprecated
      */
     public static function import_osmxml($Transactions, $currenciesIDs, $labelsIDs, $accountsIDs=array()){
 

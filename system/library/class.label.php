@@ -96,14 +96,15 @@ class Label{
 		
 	}
 	
-	public static function add($title, $longdesc="", $parent_id=0, $customslug=""){
+	public static function add($title, $longdesc='', $parent_id=0, $customslug=''){
 		
 		global $fndb, $fnsql; 
 		
-		$slug = empty($customslug) ? self::get_slug($title) : trim($customslug);
-		
+		$slug      = empty($customslug) ? self::get_slug($title) : trim($customslug);
+		$parent_id = intval($parent_id);
+
 		$longdesc 	= $fndb->escape($longdesc);
-		$title			= $fndb->escape($title); 
+		$title		= $fndb->escape($title);
 		
 		$fnsql->insert(self::$table, array('parent_id'=>$parent_id, 'slug'=>$slug, 'title'=>$title, 'description'=>$longdesc));
 		
@@ -124,7 +125,8 @@ class Label{
 	
 	public static function get_slug($title, $transliterate=true){
 
-        if( $transliterate ) return fn_Util::transliterate(strtolower($title), "-");
+        if( $transliterate )
+	        return Util::transliterate(strtolower($title), "-");
 
 		$slug = strtolower(str_replace(" ", '-', $title));
 		$slug = preg_replace("/[^A-Za-z0-9 ]/", '', $slug);

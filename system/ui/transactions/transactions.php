@@ -24,7 +24,12 @@ if ( isset($_GET['del']) ){
 //prepare transaction filter variables
 include_once ( FNPATH . '/system/library/transfilter-vars.php');
 
-//global $filters, $start, $count, $pagevars;
+//TODO using globals kills defined variables
+$filters = isset($filters) ? $filters : array();
+$start   = isset($start) ? $start : 0;
+$count   = isset($count) ? $count : FN_RESULTS_PER_PAGE;
+
+$pagevars = isset($pagevars) ? $pagevars : array();
 
 $activetab            = array();
 $activetab[$_section] = 'active';
@@ -139,7 +144,7 @@ else
 		<?php
 
 			if ( $_section == 'pending' )
-				//include_once( 'pending.php' );
+				include_once( 'pending.php' );
 
 		?>
 
@@ -149,7 +154,14 @@ else
 				//include_once( 'transactions-filter.php' );
 
 		?>
-		
+
+		<?php
+
+			if ( $_section == 'calendar' )
+				include_once( 'calendar.php' );
+
+		?>
+
 		<?php
 
 			if ( $_section == 'add' )

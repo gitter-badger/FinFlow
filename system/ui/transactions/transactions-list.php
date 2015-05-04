@@ -21,41 +21,45 @@ $Transactions = OP::get_operations($filters, $start, $count);
     <div class="panel panel-default">
 
         <div class="panel-heading">
-            Raport <?php echo $report_period; ?> <?php echo OP::get_filter_readable_string($filters); ?>
-            <a href="#" class="pull-right hide-panel-table"><b class="fa fa-chevron-up"></b></a>
+	        <h4>
+                Raport <?php echo $report_period; ?> <?php echo OP::get_filter_readable_string($filters); ?>
+                <a href="#"  data-toggle="collapse" data-target="#reportInfo" class="pull-right hide-panel-table"><b class="fa fa-chevron-up"></b></a>
+	        </h4>
         </div>
 
-        <table class="table table-striped list report" id="transactionsList">
-            <tr>
-                <td>Rulaj: </td>
-                <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Total); ?></td>
-            </tr>
-            <?php if ( ! isset($filters['type']) or $filters['type'] == OP::TYPE_IN): ?>
-                <tr>
-                    <td>Venit: </td>
-                    <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Income); ?></td>
-                </tr>
-            <?php endif;?>
-            <?php if ( ! isset($filters['type']) or $filters['type'] == OP::TYPE_OUT): ?>
-                <tr>
-                    <td>Cheltuieli: </td>
-                    <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Outcome); ?></td>
-                </tr>
-            <?php endif; ?>
-            <?php if ( !isset($filters['type']) ): ?>
-                <tr class="highlight">
-                    <td>Balan&#355;a: </td>
-                    <td class="align-right">
-                        <strong> <?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Income - $Outcome); ?> </strong>
-                    </td>
-                </tr>
-            <?php endif; ?>
-        </table>
+	    <div class="collapse in" id="collapseInfo">
+		    <table class="table table-striped list report" id="reportInfo">
+			    <tr>
+				    <td>Rulaj: </td>
+				    <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Total); ?></td>
+			    </tr>
+			    <?php if ( ! isset($filters['type']) or $filters['type'] == OP::TYPE_IN): ?>
+				    <tr>
+					    <td>Venit: </td>
+					    <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Income); ?></td>
+				    </tr>
+			    <?php endif;?>
+			    <?php if ( ! isset($filters['type']) or $filters['type'] == OP::TYPE_OUT): ?>
+				    <tr>
+					    <td>Cheltuieli: </td>
+					    <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Outcome); ?></td>
+				    </tr>
+			    <?php endif; ?>
+			    <?php if ( !isset($filters['type']) ): ?>
+				    <tr class="highlight">
+					    <td>Balan&#355;a: </td>
+					    <td class="align-right">
+						    <strong> <?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Income - $Outcome); ?> </strong>
+					    </td>
+				    </tr>
+			    <?php endif; ?>
+		    </table>
+	    </div>
 
     </div>
 
     <div class="panel panel-default">
-        <table class="table table-striped list transactions">
+        <table class="table table-striped list transactions" id="transactionsList">
             <tr>
                 <th>ID</th>
                 <th>Tip</th>

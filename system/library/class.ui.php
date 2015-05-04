@@ -702,7 +702,7 @@ class UI{
     }
 
     public static function transaction_icon($type){
-        ?><a class="fa fa-arrow-<?php echo $type == FN_OP_IN ? 'right' : 'left' ?> icon-transaction-<?php echo $type;  ?>" title="<?php echo self::$transactionTypesNames[$type]; ?>"></a><?php
+        ?><a class="fa fa-arrow-<?php echo $type == OP::TYPE_IN ? 'right' : 'left' ?> icon-transaction-<?php echo $type;  ?>" title="<?php echo self::$transactionTypesNames[$type]; ?>"></a><?php
     }
 
     public static function enqueue_js($src){
@@ -710,7 +710,7 @@ class UI{
     }
 
     public static function enqueue_css($link){
-        if( ! in_array($link, self::$css_assets) ) self::$js_assets[] = ( Util::str_startswith('//', $link, true) or Util::str_startswith('http:', $link, true) ) ? $link : self::asset_url($link, false);
+        if( ! in_array($link, self::$css_assets) ) self::$css_assets[] = ( Util::str_startswith('//', $link, true) or Util::str_startswith('http:', $link, true) ) ? $link : self::asset_url($link, false);
     }
 
     public static function enqueue_inline($data, $type='css'){
@@ -728,6 +728,9 @@ class UI{
         if( count(self::$inline_js) ) foreach (self::$inline_js as $inline) {
             ?><script type="text/javascript"><?php echo $inline; ?></script><?php
         }
+
+	    self::$js_assets = self::$inline_js = array();
+
     }
 
     public static function css(){
@@ -738,6 +741,8 @@ class UI{
         if( count(self::$inline_css) ) foreach (self::$inline_css as $inline) {
             ?><style type="text/css" media="all"><?php echo $inline; ?></style><?php
         }
+
+	    self::$css_assets = self::$inline_css = array();
     }
 
 }

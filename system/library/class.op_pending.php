@@ -132,10 +132,11 @@ class OP_Pending{
     public static function add_file($trans_id, $File){
 
         $folder     = FN_UPLOADS_DIR;
-        $filename = ( 'attachment-pending-' . $trans_id . '-' . fn_Util::get_rand_string(7) );
-        $uploaded = fn_Util::file_upload($File, $folder, $filename);
+        $filename = ( 'attachment-pending-' . $trans_id . '-' . Util::get_rand_string(7) );
+        $uploaded = Util::file_upload($File, $folder, $filename);
 
-        if( is_array($uploaded) and ( $uploaded['success'] ) ) return ('@' . $uploaded['filename']);
+        if( is_array($uploaded) and ( $uploaded['success'] ) )
+	        return ('@' . $uploaded['filename']);
 
         return $uploaded['msg'];
 
@@ -726,13 +727,13 @@ class OP_Pending{
 
         $filters['root_id'] = intval( $filters['root_id'] );
 
-        $days     = fn_Util::date_diff($filters['startdate'], $filters['enddate'], 'days');      //number of days in the timespan
-        $months = fn_Util::date_diff($filters['startdate'], $filters['enddate'], 'months');  //number of months in the timespan
-        $years    = fn_Util::date_diff($filters['startdate'], $filters['enddate'], 'years');    //number of years in the timespan
+        $days   = Util::date_diff($filters['startdate'], $filters['enddate'], 'days');    //number of days in the time span
+        $months = Util::date_diff($filters['startdate'], $filters['enddate'], 'months');  //number of months in the time span
+        $years  = Util::date_diff($filters['startdate'], $filters['enddate'], 'years');   //number of years in the time span
 
-        $days     = empty($days) ? 1 : $days;
+        $days   = empty($days) ? 1 : $days;
         $months = empty($months) ? 1 : $months;
-        $years    = empty($years) ? 1 : $years;
+        $years  = empty($years) ? 1 : $years;
 
         if( empty( $filters['root_id'] ) )
             $filters['root_id'] = '0'; //only roots
@@ -744,12 +745,17 @@ class OP_Pending{
            $trans = self::get($filters['root_id']);
 
             switch( $trans->recurring ){
-                case 'daily': return ( fn_Currency::convert_to_default($trans->value, $trans->currency_id) * $days ); break;
-                case 'monthly': return ( fn_Currency::convert_to_default($trans->value, $trans->currency_id) * $months ); break;
-                case 'yearly': return ( fn_Currency::convert_to_default($trans->value, $trans->currency_id) * $years ); break;
+                case 'daily':
+	                return ( Currency::convert_to_default($trans->value, $trans->currency_id) * $days ); break;
+
+                case 'monthly':
+	                return ( Currency::convert_to_default($trans->value, $trans->currency_id) * $months ); break;
+
+                case 'yearly':
+	                return ( Currency::convert_to_default($trans->value, $trans->currency_id) * $years ); break;
             }
 
-            return fn_Currency::convert_to_default($trans->value, $trans->currency_id);
+            return Currency::convert_to_default($trans->value, $trans->currency_id);
 
             //--- only for a single root ---//
         }
@@ -773,7 +779,8 @@ class OP_Pending{
 
                 $Row = $fndb->get_row( $fnsql->get_query() );
 
-                if( $Row and isset( $Row->total ) ) $total+= fn_Currency::convert_to_default($Row->total, $currency_id);
+                if( $Row and isset( $Row->total ) )
+	                $total+= Currency::convert_to_default($Row->total, $currency_id);
 
             }
 
