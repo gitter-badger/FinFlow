@@ -34,6 +34,7 @@ $pagevars = isset($pagevars) ? $pagevars : array();
 $activetab            = array();
 $activetab[$_section] = 'active';
 
+
 //--- add the current report period to the Report menu label ---//
 if( empty($filters['enddate']) or ( strtotime($filters['enddate']) > time() ) )
     $report_period = Util::nicetime($filters['startdate'], " pe ", array('m'=>'ultimul', 'f'=>'ultima'), array('m'=>'ultimii', 'f'=>'ultimele'));
@@ -73,12 +74,19 @@ else
                  	<li>
 	                    <a href="<?php UI::url('transactions', array('sdate'=>Util::get_relative_time(0, 0, 1, $currmonthstart)) ); ?>">Ultimul an</a>
                     </li>
+
+					<!--
                  	<li>
 	                    <a href="<?php UI::url('transactions', array('sdate'=>Util::get_relative_time(0, 0, 3, $currmonthstart)) ); ?>">Ultimii 3 ani</a>
                     </li>
+                    -->
+
+					<!--
                  	<li>
 	                    <a href="<?php UI::url('transactions', array('sdate'=>Util::get_relative_time(0, 0, 5, $currmonthstart)) ); ?>">Ultimii 5 ani</a>
                     </li>
+                    -->
+
                  	<li>
 	                    <a href="<?php UI::url('transactions', array('sdate'=>'1970-01-01')); ?>">Toate</a>
                     </li>
@@ -91,9 +99,9 @@ else
 
 			<li class="separator"></li>
 
-			<li class="<?php echo av($activetab, 'generator'); ?>">
+			<li class="<?php echo av($activetab, 'filter'); ?>">
 
-				<a href="<?php UI::url('transactions/report')?>"> Generator raport  </a>
+				<a href="<?php UI::url('transactions/filter')?>"> Generator raport  </a>
 
 			</li>
 
@@ -150,8 +158,8 @@ else
 
 		<?php
 
-			if ( $_section == 'generator' )
-				//include_once( 'transactions-filter.php' );
+			if ( $_section == 'filter' )
+				include_once( 'transactions-filter.php' );
 
 		?>
 

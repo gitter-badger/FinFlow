@@ -17,11 +17,19 @@ $dtimezones = array(
 );
 
 if( array_key_exists(FN_TIMEZONE, $dtimezones) ); else {
-    $city = @explode('/', FN_TIMEZONE); $city = $city[1]; $city = str_replace('_', ' ', $city); $dtimezones[FN_TIMEZONE] = $city;
+    $city = @explode('/', FN_TIMEZONE); $city = $city[1];
+	$city = str_replace('_', ' ', $city); $dtimezones[FN_TIMEZONE] = $city;
 }
+
+//$time = //TODO display setting time
 
 ?>
 <form class="form">
+
+	<div class="form-group">
+		<output id="displayWClock" class="form-control-static form-output">--:--</output>
+	</div>
+
     <div class="form-group">
         <label class="sr-only">Alege oras</label>
         <select name="clock_tz" id="clock_tz" class="form-control">
@@ -34,7 +42,4 @@ if( array_key_exists(FN_TIMEZONE, $dtimezones) ); else {
         </select>
     </div>
 
-    <div class="form-group">
-	    <output id="displayWClock" class="form-control-static form-output">--:--:--</output>
-    </div>
 </form>

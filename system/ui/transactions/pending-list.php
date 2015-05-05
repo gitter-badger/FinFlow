@@ -1,4 +1,19 @@
-<?php if ( !defined('FNPATH') ) exit(); global $Currency;
+<?php
+/**
+ * Displays pending transactions list
+ * @deprecated
+ */
+
+if ( !defined('FNPATH') ) exit();
+
+use FinFlow\Util;
+use FinFlow\UI;
+use FinFlow\Currency;
+use FinFlow\OP;
+use FinFlow\OP_Pending;
+
+$list_report = isset($list_report) ? $list_report : 'yes';
+$k = 0;
 
 if( count($Transactions) ): ?>
 
@@ -7,20 +22,20 @@ if( count($Transactions) ): ?>
         <table class="list report" border="1">
             <tr>
                 <td>Rulaj: </td>
-                <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Total); ?></td>
+                <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Total); ?></td>
             </tr>
             <tr>
                 <td>Venit: </td>
-                <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Income); ?></td>
+                <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Income); ?></td>
             </tr>
             <tr>
                 <td>Cheltuieli: </td>
-                <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Outcome); ?></td>
+                <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Outcome); ?></td>
             </tr>
             <tr class="highlight">
                 <td>Balan&#355;a: </td>
                 <td class="align-right">
-                    <strong> <?php echo $Currency->ccode; ?> <?php echo fn_Util::format_nr($Income - $Outcome); ?> </strong>
+                    <strong> <?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Income - $Outcome); ?> </strong>
                 </td>
             </tr>
         </table>
@@ -39,21 +54,26 @@ if( count($Transactions) ): ?>
             <th>Etichete</th>
             <th>&nbsp;</th>
         </tr>
-        <?php foreach ($Transactions as $transaction):  $k++; $trclass= ( $k%2 == 0) ? 'even' : 'odd'; $currency = fn_Currency::get($transaction->currency_id); $meta = @unserialize($transaction->metadata); ?>
-            <tr class="<?php echo $trclass; ?>">
+        <?php foreach ($Transactions as $transaction):  $k++; $currency = Currency::get($transaction->currency_id); $meta = @unserialize($transaction->metadata); ?>
+            <tr>
                 <td>#<?php echo $transaction->trans_id; ?></td>
                 <td>
-                    <img src="images/<?php echo $transaction->optype; ?>.png" title="<?php echo ($transaction->optype == FN_OP_IN) ? 'venit' : 'cheltuiala'; ?>" align="middle" alt="<?php echo $transaction->optype; ?>"/>
+                    <img src="images/<?php echo $transaction->optype; ?>.png" title="<?php echo ($transaction->optype == OP::TYPE_IN) ? 'venit' : 'cheltuiala'; ?>" align="middle" alt="<?php echo $transaction->optype; ?>"/>
                 </td>
                 <td>
                     <?php
-                        $trans_value = fn_Util::format_nr( $transaction->value ); echo isset($cfilters['enddate']) ? fn_OP_Pending::recurring_multiplier_display($transaction->recurring, $trans_value, $days, $months, $years): $trans_value ; ?>
+
+                        $trans_value = Util::format_nr( $transaction->value );
+
+                        echo isset($cfilters['enddate']) ? OP_Pending::recurring_multiplier_display($transaction->recurring, $trans_value, $days, $months, $years): $trans_value ;
+
+                    ?>
                 </td>
                 <td><?php echo $currency->ccode; ?></td>
-                <td><?php echo fn_UI::translate_date( date(FN_DAY_FORMAT, strtotime($transaction->fdate)) ); ?></td>
+                <td><?php echo UI::translate_date( date(FN_DAY_FORMAT, strtotime($transaction->fdate)) ); ?></td>
                 <td>
-                    <?php $labels = $meta['labels']; $lc=0; if (count($labels))  foreach ($labels as $label_id):$label = fn_Label::get_by($label_id, 'id');  $lc++; ?>
-                        <?php echo fn_UI::esc_html($label->title); ?><?php if ( $lc < count($labels) ) echo ", "; ?>
+                    <?php $labels = $meta['labels']; $lc=0; if (count($labels))  foreach ($labels as $label_id):$label = Label::get_by($label_id, 'id');  $lc++; ?>
+                        <?php echo UI::esc_html($label->title); ?><?php if ( $lc < count($labels) ) echo ", "; ?>
                     <?php endforeach; ?>
                 </td>
                 <td>
@@ -65,7 +85,7 @@ if( count($Transactions) ): ?>
                         <span class="icon-info-sign"></span>
                     </a>
                     &nbsp;&nbsp;
-                    <button class="btn" onclick="confirm_delete('<?php fn_UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
+                    <button class="btn" onclick="confirm_delete('<?php UI::url('transactions/pending', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
                         <span class="icon-remove"></span>
                     </button>
                 </td>

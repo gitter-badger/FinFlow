@@ -102,6 +102,17 @@ body.logged-in{
   }
 }
 
+.panel-heading{
+  h1, h2, h3, h4{
+    margin: 10px;
+  }
+}
+
+.icon-transaction-out,
+.icon-transaction-in{
+  color: @dark-blue;
+}
+
 .wrapper{
   min-height:100%;
   min-width:100%;
@@ -143,8 +154,16 @@ body.logged-in{
   padding: 20px 15px;
 }
 
+.form-control{
+  font-size: inherit;
+}
+
 .recurring-choices{
   display: none;
+}
+
+.panel-balance{
+  border: 2px @blue solid;
 }
 
 .header{
@@ -168,6 +187,14 @@ body.logged-in{
 
   .widget-title{
     border-bottom: 1px solid @dark-grey !important;
+  }
+
+  .widget.widget-wclock{
+    #displayWClock{
+      text-align: center;
+      font-size: 550%;
+      font-family: "Droid Sans Mono", "Consolas", monospace sans-serif;
+    }
   }
 
 }

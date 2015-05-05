@@ -61,11 +61,11 @@ foreach ($Cronjobs as $job){
 
 	<div class="col-lg-8">
 
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <h3 class="balance treshold <?php echo $threshold_color; ?>">
+        <div class="panel panel-default panel-balance balance treshold <?php echo $threshold_color; ?>">
+            <div class="panel-heading">
+                <h3>
                     Balan&#355;&#259;:
-	                <span class="value">
+	                <span class="value pull-right">
 		                <?php echo is_object($Currency) ? $Currency->csymbol : ''; ?> <?php echo Util::format_nr($Balance); ?>
 	                </span>
                 </h3>

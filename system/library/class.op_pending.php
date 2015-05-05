@@ -969,9 +969,9 @@ class OP_Pending{
 
     public static function recurring_multiplier_display($recurring, $value, $days=1, $months=1, $years=1){
 
-        $days = empty($days) ? '1' : $days;
+        $days   = empty($days) ? '1' : $days;
         $months = empty($months) ? '1' : $months;
-        $years = empty($years) ? '1' : $years;
+        $years  = empty($years) ? '1' : $years;
 
         switch($recurring){
             case 'daily': return ( $days . ' x ' . $value); break;

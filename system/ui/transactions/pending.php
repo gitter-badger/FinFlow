@@ -3,7 +3,7 @@
 use FinFlow\UI;
 use FinFlow\OP_Pending;
 
-global $Currency, $filters, $start, $count, $pagevars;
+//global $Currency, $filters, $start, $count, $pagevars;
 
 if( isset( $_GET['forecast'] ) ):
 
@@ -37,7 +37,8 @@ else:
 
     $starttime = ( @strtotime( OP_Pending::get_min_date($cfilters) ) - 86400 );
 
-    if( $starttime > time() ) $starttime = time();
+    if( $starttime > time() )
+	    $starttime = time();
 
     $cfilters['startdate'] = date(FN_MYSQL_DATE, $starttime);
 
@@ -54,7 +55,7 @@ else:
 
     <?php if( count($Transactions) ): ?>
 
-        <?php include 'pending-list.php'; ?>
+        <?php include 'pending-period-list.php'; ?>
 
     <?php else: ?>
 

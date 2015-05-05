@@ -221,7 +221,8 @@ function fn_clock(){
 	m = fn_prepend_zeros(m);
 	s = fn_prepend_zeros(s);
 	
-	$(clockelemid).text(h+":"+m+":"+s);
+	//$(clockelemid).text(h+":"+m+":"+s);
+	$(clockelemid).text(h+":"+m);
 }
 
 function fn_clock_set_tzoffset(offset){
