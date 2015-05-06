@@ -9,6 +9,9 @@ namespace FinFlow;
 
 class OP_Pending{
 
+	const TYPE_IN  = 'in';
+	const TYPE_OUT = 'out';
+
     public static $table  = 'fn_op_pending';
 
     /**
@@ -103,23 +106,33 @@ class OP_Pending{
      * @param string $date
      * @return int|bool
      */
-    public static function add($type, $value=1, $currency_id=1, $recurring='no', $metadata=array(), $date=NULL){
+    public static function add($type, $value=1, $currency_id=1, $recurring='no', $metadata=array(), $date=NULL, $user_id=0, $contact_id=0){
 
         global $fndb, $fnsql;
 
-        $type = $type == FN_OP_IN ? FN_OP_IN : FN_OP_OUT;
+        $type = ( $type == self::TYPE_IN ) ? self::TYPE_IN : self::TYPE_OUT;
         $value= floatval( $value );
+
+	    $user_id = $user_id ? intval( $user_id ) : User::get_current_user_id();
 
         $timestamp = empty($date) ? time() : @strtotime($date);
 
-        $sdate         = date('Y-m-d 00:00:01', self::get_past_recurring_time($timestamp, $recurring));
-        $fdate         = date('Y-m-d 00:00:01', $timestamp);
+        $sdate = date('Y-m-d 00:00:01', self::get_past_recurring_time($timestamp, $recurring));
+        $fdate = date('Y-m-d 00:00:01', $timestamp);
 
         $metadata  = $fndb->escape( @serialize($metadata) );
-        $recurring   = $fndb->escape( strtolower( $recurring ) );
+        $recurring = $fndb->escape( strtolower( $recurring ) );
 
-
-        $data = array('optype'=>$type, 'value'=>$value, 'currency_id'=>$currency_id, 'recurring'=>$recurring, 'metadata'=>$metadata, 'sdate'=>$sdate, 'fdate'=>$fdate);
+        $data = array(
+	        'optype'        => $type,
+	        'user_id'       => $user_id,
+	        'value'         => $value,
+	        'currency_id'   => $currency_id,
+	        'recurring'     => $recurring,
+	        'metadata'      => $metadata,
+	        'sdate'         => $sdate,
+	        'fdate'         => $fdate
+        );
 
         $fnsql->insert(self::$table,  $data);
 

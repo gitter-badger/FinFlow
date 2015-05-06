@@ -32,13 +32,15 @@ class OP{
      * @param null $date
      * @return bool
      */
-    public static function add($type, $value=1, $currency_id=1, $comments='', $date=null){
+    public static function add($type, $value=1, $currency_id=1, $comments='', $date=null, $user_id=0, $contact_id=0){
 
         global $fndb, $fnsql;
 
-        $type         = $type == self::TYPE_IN ? self::TYPE_IN : self::TYPE_OUT;
-        $value        = floatval( $value );
-        $date         = empty($date) ? date(FN_MYSQL_DATE) : date(FN_MYSQL_DATE, @strtotime($date));
+        $type  = $type == self::TYPE_IN ? self::TYPE_IN : self::TYPE_OUT;
+        $value = floatval( $value );
+        $date  = empty($date) ? date(FN_MYSQL_DATE) : date(FN_MYSQL_DATE, @strtotime($date));
+
+	    $user_id = $user_id ? intval( $user_id ) : User::get_current_user_id();
 
         $preflow = array('currency_id'=>$currency_id, 'value'=>$value);
 	    $flow    = OP::consistent_flow($type, $value, $currency_id, $date);
@@ -47,7 +49,18 @@ class OP{
 
         $comments = $fndb->escape( $comments );
 
-        $fnsql->insert(self::$table, array('optype'=>$type, 'value'=>$value, 'currency_id'=>$currency_id, 'comments'=>$comments, 'sdate'=>$date) );
+	    $data = array(
+		    'optype'        => $type,
+		    'value'         => $value,
+		    'currency_id'   => $currency_id,
+		    'comments'      => $comments,
+		    'sdate'         => $date,
+		    'user_id'       => $user_id
+	    );
+
+        $fnsql->insert(self::$table,  $data);
+
+	    die( $fnsql->get_query() ); //TODO...
 
         if( $fndb->execute_query( $fnsql->get_query() ) ) {
 
@@ -792,14 +805,14 @@ class OP{
 				//--- add labels and set associations ---//
 				if ( count($labels) ) foreach ($labels as $label){
 					
-					$slug		 = fn_Label::get_slug($label);
-					$dblabel = fn_Label::get($slug);
+					$slug	    = Label::get_slug($label);
+					$dblabel    = Label::get($slug);
 					$label_id	= 0;
 					
 					if ( count($dblabel) and isset( $dblabel->label_id ) ) //label already in db
 						$label_id = $dblabel->label_id;
 				
-					elseif ( fn_Label::add($label) ) 							//create the new label
+					elseif ( Label::add($label) ) 							//create the new label
 						 $label_id = $fndb->last_insert_id;
 					
 					if ( $label_id ){
@@ -815,22 +828,24 @@ class OP{
                 //--- in an account has been specified, add transaction to the account ---//
                 if($account and strlen($account) ){
 
-                    $slug       = fn_Util::make_slug($account);
-                    $Account = fn_Accounts::get_by_slug($slug);
+                    $slug    = Util::make_slug($account);
+                    $Account = Accounts::get_by_slug($slug);
 
                     $account_id = isset($Account->account_id) ? $Account->account_id : 0;
 
                     if( empty($account_id) )
-                        $account_id = fn_Accounts::add(array('holder_name'=>$account, 'account_currency_id'=>$currency_id));
+                        $account_id = Accounts::add(array('holder_name'=>$account, 'account_currency_id'=>$currency_id));
 
                     if( $account_id )
-                        fn_Accounts::add_trans($account_id, $trans_id);
+                        Accounts::add_trans($account_id, $trans_id);
 
                 }
                 //--- in an account has been specified, add transaction to the account ---//
 
                 //--- add metadata ---//
-				if ( $trans_id and count($metadata) ) foreach ($metadata as $meta=>$value) self::save_metadata($trans_id, $meta, $value);
+				if ( $trans_id and count($metadata) )
+					foreach ($metadata as $meta=>$value)
+						self::save_metadata($trans_id, $meta, $value);
                 //--- add metadata ---//
 				
 			}

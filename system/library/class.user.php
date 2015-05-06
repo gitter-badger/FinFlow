@@ -167,6 +167,10 @@ class User{
 		
 		return FALSE;
 	}
+
+	public static function get_current_user_id(){
+		if( isset($_SESSION['fn_user_id']) ) return $_SESSION['fn_user_id'];
+	}
 	
 	public static function logout(){
 		

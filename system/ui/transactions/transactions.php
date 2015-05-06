@@ -55,6 +55,7 @@ else
 		</ol>
 		
 		<ul class="nav nav-justified nav-pills nav-page-menu" role="tablist">
+
 			<li class="dropdown <?php echo av($activetab, 'list'); ?>">
 
 				<a href="<?php UI::url('transactions', array('t'=>'list'))?>" class="dropdown-toggle" data-toggle="dropdown">

@@ -20,14 +20,15 @@ if( array_key_exists(FN_TIMEZONE, $dtimezones) ); else {
     $city = @explode('/', FN_TIMEZONE); $city = $city[1];
 	$city = str_replace('_', ' ', $city); $dtimezones[FN_TIMEZONE] = $city;
 }
-
-//$time = //TODO display setting time
+$timezone = new DateTimeZone(FN_TIMEZONE);
+$currTime = new DateTime('now', $timezone);
 
 ?>
+
 <form class="form">
 
 	<div class="form-group">
-		<output id="displayWClock" class="form-control-static form-output">--:--</output>
+		<output id="displayWClock" class="form-control-static form-output"><?php echo $currTime->format('m:s'); ?></output>
 	</div>
 
     <div class="form-group">
