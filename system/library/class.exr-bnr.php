@@ -2,7 +2,7 @@
 
 namespace FinFlow;
 
-class BNR_ExchangeRateParser extends fn_ExchangeRatesParserBase implements fn_ExchangeRatesParser{
+class BNR_ExchangeRateParser extends ExchangeRatesParserBase implements fn_ExchangeRatesParser{
 
     const name            = 'Curs valutar BNR';
     const id              = 'bnr';

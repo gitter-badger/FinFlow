@@ -41,7 +41,7 @@ class Currency{
         $rate = floatval($rate);
 
         if( $currency_id and $rate ) {
-            $fnsql->insert(fn_Currency::$table_history, array('currency_id'=>$currency_id, 'regdate'=>$date, 'cexchange'=>$rate));
+            $fnsql->insert(self::$table_history, array('currency_id'=>$currency_id, 'regdate'=>$date, 'cexchange'=>$rate));
             return $fndb->execute_query( $fnsql->get_query() );
         }
 
@@ -58,15 +58,16 @@ class Currency{
 
 		if ( $field == 'code' ){
 			$from = self::get_by_code($from);
-			$to	 = self::get_by_code($to);
+			$to	  = self::get_by_code($to);
 		}
 		
 		if ( $field == 'id' ){
 			$from = self::get($from);
-			$to	 = self::get($to);
+			$to	  = self::get($to);
 		}
 		
-		if ( empty($from) or empty($to) ) return 0;
+		if ( empty($from) or empty($to) )
+			return 0;
 
         self::log_exchange($from, $to, array(__CLASS__, __FUNCTION__));
 

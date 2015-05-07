@@ -1,5 +1,8 @@
 <?php
 
+
+namespace FinFlow;
+
 /**
  * Implements the Free Open Exchange rates API from AppSpot
  * Class OERFree_ExchangeRateParser
