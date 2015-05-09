@@ -6,7 +6,8 @@
 
   "require": {
     "monolog/monolog": "1.1.*",
-    "klein/klein": "2.1.*"
+    "klein/klein": "2.1.*",
+    "ghunti/highcharts-php": "3.*"
   }
 
 }

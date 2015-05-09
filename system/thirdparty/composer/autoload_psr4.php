@@ -7,4 +7,5 @@ $baseDir = dirname(dirname($vendorDir));
 
 return array(
     'Klein\\' => array($vendorDir . '/klein/klein/src/Klein'),
+    'Ghunti\\HighchartsPHP\\' => array($vendorDir . '/ghunti/highcharts-php/src'),
 );

@@ -6,6 +6,9 @@
  *
  */
 
+
+namespace FinFlow\Parsers;
+
 define('MIME_PARSER_START',        1);
 define('MIME_PARSER_HEADER',       2);
 define('MIME_PARSER_HEADER_VALUE', 3);
@@ -31,7 +34,7 @@ define('MIME_ADDRESS_FIRST',            2);
 	<package>net.manuellemos.mimeparser</package>
 
 	<version>@(#) $Id: mime_parser.php,v 1.85 2012/08/23 12:19:59 mlemos Exp $</version>
-	<copyright>Copyright © (C) Manuel Lemos 2006 - 2008</copyright>
+	<copyright>Copyright ï¿½ (C) Manuel Lemos 2006 - 2008</copyright>
 	<title>MIME parser</title>
 	<author>Manuel Lemos</author>
 	<authoraddress>mlemos-at-acm.org</authoraddress>
@@ -55,7 +58,7 @@ define('MIME_ADDRESS_FIRST',            2);
 {/metadocument}
 */
 
-class mime_parser_class
+class Mime_Email_Parser
 {
 /*
 {metadocument}
@@ -1893,8 +1896,8 @@ class mime_parser_class
 		<do>
 {/metadocument}
 */
-	Function Decode($parameters, &$decoded)
-	{
+	Function Decode($parameters, &$decoded) {
+
 		if(IsSet($parameters['File']))
 		{
 			if(!($this->file = @fopen($parameters['File'], 'r')))

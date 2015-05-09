@@ -8,14 +8,25 @@ UI::show_errors($errors); ?>
 <?php if (count($defaultCurrency) and isset($defaultCurrency->ccode)):?>
     <div class="panel panel-default">
         <div class="panel-body">
-            <h4><em>Moneda implicit&#259;: <?php echo $defaultCurrency->ccode; ?></em></h4>
+            <h4><em>Default currency: <?php echo $defaultCurrency->ccode; ?></em></h4>
         </div>
     </div>
 <?php else:
-    UI::msg(sprintf("Nu ai definit&#259; o moned&#259; implicit&#259;! Verific&#259; set&#259;rile pentru <a href=\"%s\">parserul automat al cursului valutar</a> sau adaug&#259; mai jos o moned&#259; cu rata de schimb 1.", 'index.php?p=settings&t=exrparser'), fn_UI::$MSG_WARN);
+
+    UI::msg(
+
+	        sprintf('Nu ai definit&#259; o moned&#259; implicit&#259;!
+					 Verific&#259; set&#259;rile pentru <a href=\"%s\">parserul automat al cursului valutar</a>
+					 sau adaug&#259; mai jos o moned&#259; cu rata de schimb 1.', UI::url('settings/parsers/exchange-rates')
+	        ),
+
+	    UI::MSG_WARN
+
+    );
+
 endif;?>
 
-<?php if( count($Currencies) ): $k = 0;?>
+<?php if( count($Currencies) ): $k = 0; ?>
     <div class="panel panel-default">
         <table class="table table-responsive table-striped list currencies"">
             <tr>

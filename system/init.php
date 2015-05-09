@@ -18,7 +18,7 @@ define('FN_OP_OUT'	, 'out');
 define('FN_SERVER_TIMEZONE'	, date_default_timezone_get());
 define('FN_MYSQL_DATE'		, 'Y-m-d H:i:s');
 
-define('FN_LOGFILE', (FNPATH . "/application.log"));
+define('FN_LOGFILE', (FNPATH . '/application.log'));
 
 require_once ( FNPATH . '/system/library/autoload.php');
 require_once ( FNPATH . '/system/thirdparty/autoload.php');
@@ -38,7 +38,8 @@ if( file_exists( FNPATH . '/environment.php' ) )
 if( file_exists( FNPATH . '/config/environment.php' ) )
 	@include_once ( FNPATH . '/config/environment.php' );
 
-if( !defined('FN_ENVIRONMENT') ) define('FN_ENVIRONMENT', ( isset($_SERVER['APP_ENV']) ? $_SERVER['APP_ENV'] : 'production' ) );
+if( !defined('FN_ENVIRONMENT') )
+	define('FN_ENVIRONMENT', ( isset($_SERVER['APP_ENV']) ? $_SERVER['APP_ENV'] : 'production' ) );
 
 //--- set environment ---//
 
@@ -109,7 +110,8 @@ define('FN_TIMEZONE', Settings::get('timezone', 'Europe/London') ); date_default
 
 //--- setup session ---//
 //TODO
-session_start();
+if( ! defined('FN_IS_CRON') and ! FN_IS_CRON )
+	session_start();
 //--- setup session ---//
 
 //--- setup headers ---//
@@ -122,4 +124,5 @@ if( Util::is_production_environment() ){
 
 $_SERVER['REQUEST_URI'] = str_replace(Util::get_base_url(), '', UI::current_page_url());
 
-include_once (FNPATH . '/system/routes/web.php');
+if( ! defined('FN_IS_CRON') and ! FN_IS_CRON )
+	include_once ( FNPATH . '/system/routes/web.php' );

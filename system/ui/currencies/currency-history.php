@@ -1,47 +1,70 @@
-<?php if( !defined('FNPATH') ) exit; global $Currencies;
+<?php if( !defined('FNPATH') ) exit;
 
-include_once (FNPATH . '/inc/Highchart.php');
+use FinFlow\UI;
+use FinFlow\Util;
+use FinFlow\Currency;
 
 //--- plot currency history ---//
 
 $categories  = array();
 $series		 = array();
 
-if(count($Currencies)) foreach ($Currencies as $currency){
+if( count($Currencies) ) foreach ($Currencies as $currency){
 
-    $CHistory = fn_Currency::get_currency_history($currency->currency_id);
-
-    $data 		 = array();
+    $CHistory = Currency::get_currency_history($currency->currency_id);
+    $data     = array();
 
     if ( count($CHistory) ) foreach ($CHistory as $histrecord){
-        $data[] 	  = floatval($histrecord->rate);
+
+        $data[] = floatval($histrecord->rate);
 
         if ( count($categories) < count($CHistory) )
-            $categories[] 	= fn_UI::translate_date( date('j/n/Y', strtotime($histrecord->date)) );
+            $categories[] 	= UI::translate_date( date('j/n/Y', strtotime($histrecord->date)) );
     }
 
     $series[] = array('name'=>$currency->ccode, 'data'=>$data);
 
 }
 
-$Chart = fn_Util::highchart('chartCurrenciesHistory', 'line', "Istoric rate de schimb", $categories, "Rata de schimb", $series);
+$Chart = Util::highchart('chartCurrenciesHistory', 'line', "Currency rates history", $categories, "Exchange rate", $series);
 
-$Chart->xAxis->labels->rotation 	= -45;
-$Chart->xAxis->labels->align 		= "right";
+$Chart->xAxis->labels->rotation = -45;
+$Chart->xAxis->labels->align 	= "right";
 
 $Chart->xAxis->labels->style->font = "normal 12px Verdana, sans-serif";
 
 //--- plot currency history ---//
 
-fn_UI::enqueue_js('js/highcharts.js');
-fn_UI::enqueue_js('js/highcharts-exporting.js'); ?>
+UI::enqueue_js('assets/js/highcharts.js');
+UI::enqueue_js('assets/js/highcharts-exporting.js'); ?>
 
 <?php if( count($Currencies) ) : ?>
 
-<div class="chart" id="chartCurrenciesHistory"></div><?php fn_UI::enqueue_inline( $Chart->render("chartCurrenciesHistory"), 'js' ); ?>
+	<div class="panel panel-default">
+
+		<div class="panel-heading">
+			<h4>History of currency rates</h4>
+		</div>
+
+		<div class="panel panel-body">
+			<div class="chart" id="chartCurrenciesHistory"></div>
+			<?php UI::enqueue_inline( $Chart->render("chartCurrenciesHistory"), 'js' ); ?>
+		</div>
+
+	</div>
 
 <?php else:
 
-    fn_UI::msg( sprintf("Nu sunt monede predefinite. Verific&#259; set&#259;rile pentru <a href=\"%1s\">parserul automat al cursului valutar</a> sau <a href=\"%2s\">adaug&#259; c&#226;teva monede</a> folosind formularul de ad&#259;ugare.", 'index.php?p=settings&t=exrparser', 'index.php?p=currencies&t=add'), fn_UI::$MSG_WARN );
+    UI::msg(
+
+	    sprintf('There are no predefined currencies.
+	    		 Check your settings for the <a href="%1s">automatic currency rates parser</a>
+	    		 or <a href="%2s">add a few currencies</a> using the <em>Add currency</em> form.',
+
+		    UI::url('settings/parsers/exchange-rates'), UI::url('curencies/add')
+	    ),
+
+	    UI::MSG_WARN
+    );
 
 endif; ?>

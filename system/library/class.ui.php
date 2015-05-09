@@ -105,17 +105,19 @@ class UI{
 		<?php 
 	}
 
-	public static function fatal_error($msg, $die=TRUE, $html=TRUE, $msgtype="danger", $prefix="Eroare: ", $title="Eroare", $http_header=true){
+	public static function fatal_error($msg, $die=TRUE, $html=TRUE, $msgtype="danger", $prefix="Error: ", $title="Error", $http_header=true){
 
-        if( defined('FN_BYPASS_UI_FATAL_ERRORS') and FN_BYPASS_UI_FATAL_ERRORS ) return false;
+        if( defined('FN_BYPASS_UI_FATAL_ERRORS') and FN_BYPASS_UI_FATAL_ERRORS )
+	        return false;
 
-		if( $http_header ) self::header_500();
+		if( $http_header )
+			self::header_500();
 
 		if ( $html ): ?>
 			<html>
 			<head>
 				<meta charset="utf-8"/>
-				<title>FinFlow | <?php echo $title; ?> </title>
+				<title>FinFlow | <?php __e($title); ?> </title>
 				<link rel="stylesheet" type="text/css" media="all" href="<?php UI::asset_url('/assets/css/bootstrap.min.css'); ?>"/>
 				<link rel="stylesheet" type="text/css" media="all" href="<?php UI::asset_url('/assets/css/font-awesome.min.css'); ?>"/>
 				<link rel="stylesheet" type="text/css" media="all" href="<?php UI::asset_url('/assets/css/styles.css'); ?>" />
@@ -130,7 +132,7 @@ class UI{
 	                        </p>
 
                             <div class="alert alert-<?php echo $msgtype; ?>">
-	                            <strong><i class="fa fa-exclamation-triangle"></i> <?php echo $prefix; ?> </strong><?php echo $msg; ?>
+	                            <strong><i class="fa fa-exclamation-triangle"></i> <?php __e($prefix); ?> </strong><?php echo $msg; ?>
                             </div>
                         </div>
 					</div>
@@ -210,7 +212,7 @@ class UI{
 		if( ! headers_sent() )
 			header( ( $_SERVER['SERVER_PROTOCOL'] . ' 500 ' . $message ), true, 500);
 		else
-			self::msg('Could not set 404 header! Headers already sent.', self::MSG_ERROR);
+			self::msg('Could not set 500 header! Headers already sent.', self::MSG_ERROR);
 	}
 
 	public function header_redirect($url, $permament=false){

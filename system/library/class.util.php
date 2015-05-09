@@ -2,6 +2,8 @@
 
 namespace FinFlow;
 
+use Ghunti\HighchartsPHP;
+
 class Util{
 
     /**
@@ -293,14 +295,35 @@ class Util{
 
 	}
 
+	/**
+	 * Encrypts the input with padded salt
+	 * @param string $input
+	 * @param string $salt
+	 *
+	 * @return string
+	 */
     public static function s_encrypt($input, $salt="salt"){
-        return trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $salt, $input, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
+        return base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $salt, $input, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
     }
 
+	/**
+	 * Decrypts an input previously encrypted with self::s_encrypt()
+	 * @param $input
+	 * @param string $salt
+	 * @see s_encrypt
+	 *
+	 * @return string
+	 */
     public static function s_decrypt($input, $salt="salt"){
-        return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($input), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+        return mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($input), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
     }
 
+	/**
+	 * Generates a random string
+	 * @param int $length
+	 *
+	 * @return string
+	 */
 	public static function random_string($length=12){
 		$seed = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length) . substr(md5( time() + mt_rand(1, 9999999)), $length); return substr( str_shuffle($seed), 0, $length );
 	}
@@ -411,9 +434,9 @@ class Util{
 	
 	public static function highchart($renderTo, $type, $title="Chart", $categories=array(), $yAxisTitle=FALSE, $series=array(), $disableLegend=FALSE){
 		
-		if ( class_exists('Highchart') ){
+		if ( class_exists('Ghunti\HighchartsPHP\Highchart') ){
 		
-			$Chart = new Highchart();
+			$Chart = new HighchartsPHP\Highchart();
 
             $Chart->series = array();
 
@@ -442,7 +465,7 @@ class Util{
 			return $Chart;
 			
 		}
-		else die("Class Highchart not loaded!");
+		else die('Class Highchart not loaded!');
 		
 	}
 	

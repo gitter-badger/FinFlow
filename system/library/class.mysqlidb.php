@@ -146,7 +146,7 @@ class MySQLiDB{
 	
 		$this->queryLog.= ( $this->query . "\n" );
 	
-		if ($this->result = @mysqli_query( $this->connectionId, $this->query ) ){
+		if ( $this->result = @mysqli_query( $this->connectionId, $this->query ) ){
 
 			$this->error = ""; 
 			

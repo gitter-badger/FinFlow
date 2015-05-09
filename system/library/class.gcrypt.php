@@ -1,10 +1,12 @@
 <?php
 
-class fn_gCrypt{
+use FinFlow;
+
+class Cryptographer{
 
     const CYPHER  = MCRYPT_RIJNDAEL_256;
-    const MODE     = MCRYPT_MODE_CBC;
-    const KEY       = FN_PW_SALT; //We use PW_SALT as it's most likely to be changed during installation
+    const MODE    = MCRYPT_MODE_CBC;
+    const KEY     = FN_PW_SALT; //We use PW_SALT as it's most likely to be changed during installation
 
     public static function encrypt($plaintext){
 
@@ -13,6 +15,7 @@ class fn_gCrypt{
         mcrypt_generic_init($td, self::KEY, $iv);
         $crypttext = mcrypt_generic($td, $plaintext);
         mcrypt_generic_deinit($td);
+
         return base64_encode($iv.$crypttext);
 
     }

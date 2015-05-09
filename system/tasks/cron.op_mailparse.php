@@ -1,72 +1,65 @@
 <?php
 
-define('INCPATH', rtrim(str_replace(basename(dirname(__FILE__)), "", dirname(__FILE__)), DIRECTORY_SEPARATOR));
-define('FN_IS_CRON', 7);
+//currently running cron
+define('FN_TASK'     , __FILE__);
+define('FN_TASK_NAME', 'op_mailparse');
 
-include_once (INCPATH . '/init.php');
+include_once ('task-init.php');
 
-include_once (INCPATH . '/class.cronassistant.php');
-include_once (INCPATH . '/class.mime_parser.php');
-include_once (INCPATH . '/class.rfc822_addresses.php');
+use FinFlow\Settings;
+use FinFlow\TaskAssistant;
+use FinFlow\Util;
+use FinFlow\CanValidate;
 
+//default settings
 $Settings = array(
-		'host'			    =>'',
-		'port'			    =>110,
-		'encryption'	=>'tcp',
-		'username'	    =>'anonymous',
-		'password'	    =>''
+		'host'			=> '',
+		'protocol'		=> 'pop3',
+		'port'			=> 110,
+		'encryption'	=> 'tcp',
+		'username'	    => 'anonymous',
+		'password'	    => ''
 );
 
-$active         = fn_Settings::get('mup_state') == 'active' ? TRUE :FALSE;
-$testing        = isset($_GET['test']) ? TRUE : FALSE;
-$in_window  = ( ( php_sapi_name() != 'cli' ) and strlen($_SERVER['REMOTE_ADDR']) );
+$Settings = TaskAssistant::get_task_params(FN_TASK_NAME, $Settings);
+
+$active     = TaskAssistant::is_task_active(FN_TASK_NAME);
+$testing    = isset($_GET['test']) ? TRUE : FALSE;
+$in_browser = TaskAssistant::is_browser();
 
 if ($active){
-	//--- get settings from database ---//
-	$Settings = array(
-			'host'			=> trim(fn_Settings::get('mup_host')),
-			'port'			=> intval(fn_Settings::get('mup_port')),
-			'encryption'	=> trim(fn_Settings::get('mup_encription')),
-			'username'	=> trim(fn_Settings::get('mup_user')),
-			'password'	=> trim(fn_Settings::get('mup_password'))
-	);
-	//--- get settings from database ---//
-	
-	$Settings['password'] = fn_Util::s_decrypt($Settings['password'], FN_PW_SALT);
+	$Settings['password'] = Util::s_decrypt($Settings['password'], FN_PW_SALT);
 }
 
-if ( $testing )
-	//--- override settings with $_POST array ---//
-	$Settings = array(
-			'host'			     => trim($_POST['mup_host']),
-			'port'			     => intval($_POST['mup_port']),
-			'encryption'	 => trim($_POST['mup_encription']),
-			'username'	     => trim($_POST['mup_user']),
-			'password'	     => trim($_POST['mup_password'])
-	);
-	//--- override settings with $_POST array ---//
+//--- validate stuff ---//
+if ( empty($Settings['host']) )
+	TaskAssistant::task_error("Adresa serverului de mail nu este configurat&#259;.");
+
+if ( empty($Settings['port']) )
+	TaskAssistant::task_error("Portul de conectare prin protocolul POP nu este configurat.");
+
+if ( empty($Settings['encryption']) )
+	TaskAssistant::task_error("Tipul de criptare utilizat de server, nu este configurat.");
 
 //--- validate stuff ---//
-if ( empty($Settings['host']) ) 		    fn_CronAssistant::cron_error("Adresa serverului de mail nu este configurat&#259;.", ($testing or $in_window));
-if ( empty($Settings['port']) ) 		    fn_CronAssistant::cron_error("Portul de conectare prin protocolul POP nu este configurat.", ($testing or $in_window));
-if ( empty($Settings['encryption']) ) fn_CronAssistant::cron_error("Tipul de criptare utilizat de server, nu este configurat.", ($testing or $in_window));
-//--- validate stuff ---//
 
-if ( !$active and !$testing and count($_POST) )
-    fn_CronAssistant::cron_error("Scriptul este dezactivat!", ($testing or $in_window));
+if ( !$active and !$testing )
+    TaskAssistant::task_error("The task <em>%1s</em> is deactivated!", array(FN_TASK_NAME));
 
 if ( !$testing and !$active ) 
 	exit(); //silent exit
 
 //--- validate the hostname --//
-if ( !fn_CheckValidityOf::hostname($Settings['host']) ) fn_CronAssistant::cron_error("Serverul de mail {$Settings['host']} nu poate fi contactat.", ($testing or $in_window));
+if ( ! CanValidate::hostname($Settings['host']) )
+	TaskAssistant::task_error("Serverul de mail {$Settings['host']} nu poate fi contactat.");
 //--- validate the hostname --//
 
 try{
 
     //TODO! add IMAP protocol support
 
-	fn_CronAssistant::get_lock(__FILE__);
+	//lock the task
+	TaskAssistant::get_lock(FN_TASK);
 	
 	$connectionTimeout = array( "sec" => 10, "usec" => 500 );
 
@@ -82,8 +75,8 @@ try{
 	$Parser->mbox = 0;
 	
 	if ( $testing ){
-		fn_CronAssistant::release_lock(__FILE__);
-        fn_UI::fatal_error("Scriptul s-a conectat cu succes la serverul {$Settings['host']}.", true, true, 'note', "Not&#259;: ", 'Not&#259;');
+		TaskAssistant::release_lock(__FILE__);
+        UI::fatal_error("Scriptul s-a conectat cu succes la serverul {$Settings['host']}.", true, true, 'note', "Not&#259;: ", 'Not&#259;');
 	}
 	
 	$unread = intval($ostatus['count']);

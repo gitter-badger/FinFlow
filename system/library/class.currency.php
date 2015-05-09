@@ -255,7 +255,7 @@ class Currency{
 		$currency_id = intval($currency_id);
 		
 		if( empty($startdate) )
-			$startdate = fn_Util::get_relative_time(0, 1); //from one month ago
+			$startdate = Util::get_relative_time(0, 1); //from one month ago
 		
 		if ( empty($enddate) )
 			$enddate = date(FN_MYSQL_DATE);
