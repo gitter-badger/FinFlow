@@ -234,9 +234,10 @@ class POP3 {
 	 * @return void
 	 * @throw POP3_Exception
 	 */
-	public function login( $strUser, $strPass, $bAPOP = FALSE)
-	{
+	public function login( $strUser, $strPass, $bAPOP = FALSE) {
+
         $this->checkState(self::STATE_AUTHORIZATION);
+
 		if( !is_string($strUser) || strlen($strUser) == 0 )
 		{
 			throw new POP3_Exception("Invalid username string given", self::ERR_PARAMETER);

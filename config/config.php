@@ -36,3 +36,8 @@ define('FN_CACHE_EXPIRE', 7200);
 
 /**Activeaza debuging*/
 define('FN_DEBUG', true);
+
+/**
+ * Encryption salt and pepper
+ */
+define('FN_CRYPT_SALT', '4WVwhbgKqyD1Rqqu');

@@ -6,10 +6,10 @@ define('FN_TASK_NAME', 'op_mailparse');
 
 include_once ('task-init.php');
 
-use FinFlow\Settings;
 use FinFlow\TaskAssistant;
 use FinFlow\Util;
 use FinFlow\CanValidate;
+use FinFlow\Drivers\POP3;
 
 //default settings
 $Settings = array(
@@ -28,7 +28,7 @@ $testing    = isset($_GET['test']) ? TRUE : FALSE;
 $in_browser = TaskAssistant::is_browser();
 
 if ($active){
-	$Settings['password'] = Util::s_decrypt($Settings['password'], FN_PW_SALT);
+	$Settings['password'] = Util::decrypt($Settings['password'], FN_CRYPT_SALT);
 }
 
 //--- validate stuff ---//
@@ -59,12 +59,12 @@ try{
     //TODO! add IMAP protocol support
 
 	//lock the task
-	TaskAssistant::get_lock(FN_TASK);
+	TaskAssistant::get_lock(FN_TASK_NAME);
 	
-	$connectionTimeout = array( "sec" => 10, "usec" => 500 );
+	$connectionTimeout = array( "sec" => 5, "usec" => 500 );
 
 	$MailFetch = new POP3(FN_LOGFILE, TRUE, TRUE, $Settings['encryption'], FALSE);
-	
+
 	$MailFetch->connect($Settings['host'], $Settings['port'], $connectionTimeout);
 	$MailFetch->login($Settings['username'], $Settings['password'], FALSE);
 	
@@ -94,9 +94,9 @@ try{
 			
 			$mail = $decoded[0];
 			
-			$subject     = $mail['Headers']['subject:'];
-            $timestamp= @strtotime($mail['Headers']['delivery-date:']);
-			$body		= $mail['Body'];
+			$subject   = $mail['Headers']['subject:'];
+            $timestamp = @strtotime($mail['Headers']['delivery-date:']);
+			$body	   = $mail['Body'];
 			
 			if ( isset($mail['Parts'][0]['Body']) ) $body = $mail['Parts'][0]['Body'];
 			

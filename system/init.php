@@ -1,24 +1,24 @@
 <?php
 
+/**
+ * Application version
+ */
 define('FN_VERSION'   , '0.7.1');
+
+/**
+ * Corresponding database version
+ */
 define('FN_DB_VERSION', '1');
 
+/**
+ * Application path on disk
+ */
 define('FNPATH', rtrim(str_replace(basename(dirname(__FILE__)), '', dirname(__FILE__)), DIRECTORY_SEPARATOR));
-
-/**
- * @deprecated
- */
-define('FN_OP_IN'	, 'in');
-
-/**
- * @deprecated
- */
-define('FN_OP_OUT'	, 'out');
 
 define('FN_SERVER_TIMEZONE'	, date_default_timezone_get());
 define('FN_MYSQL_DATE'		, 'Y-m-d H:i:s');
 
-define('FN_LOGFILE', (FNPATH . '/application.log'));
+define('FN_LOGFILE', ( FNPATH . '/application.log') );
 
 require_once ( FNPATH . '/system/library/autoload.php');
 require_once ( FNPATH . '/system/thirdparty/autoload.php');
@@ -63,6 +63,13 @@ if( !defined('FN_URL') ){
 
 }
 //--- setup base url ---//
+
+//--- cron/task constants --//
+if( ! defined('FN_IS_CRON') or ! defined('IS_CRON') ){
+	define('FN_IS_CRON', false);
+	define('IS_CRON'   , false);
+}
+//--- cron/task constants --//
 
 //--- setup uploads dir ---//
 define('FN_UPLOADS_DIR'   , ( FNPATH . '/uploads' ) );
@@ -110,7 +117,7 @@ define('FN_TIMEZONE', Settings::get('timezone', 'Europe/London') ); date_default
 
 //--- setup session ---//
 //TODO
-if( ! defined('FN_IS_CRON') and ! FN_IS_CRON )
+if( ! FN_IS_CRON )
 	session_start();
 //--- setup session ---//
 
@@ -124,5 +131,5 @@ if( Util::is_production_environment() ){
 
 $_SERVER['REQUEST_URI'] = str_replace(Util::get_base_url(), '', UI::current_page_url());
 
-if( ! defined('FN_IS_CRON') and ! FN_IS_CRON )
+if( ! FN_IS_CRON )
 	include_once ( FNPATH . '/system/routes/web.php' );

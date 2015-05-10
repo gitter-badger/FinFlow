@@ -23,7 +23,8 @@ class UI{
         'pwreset'       => 'Recuperare parol&#259;'
     );
 
-    public static $transactionTypesNames = array(FN_OP_IN=>'venit', FN_OP_OUT=>'cheluial&#259;');
+	//TODO translate
+    public static $transactionTypesNames = array(OP::TYPE_IN=>'venit', OP::TYPE_OUT=>'cheluial&#259;');
 
     protected static $js_assets  = array();
     protected static $css_assets = array();

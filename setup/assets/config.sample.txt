@@ -18,7 +18,7 @@ define('FN_DB_NAME'	    , '{dbname}');
 define('FN_DB_PREFIX'	, 'PREFIX_DB');
 
 /** String folosit ca salt pentru criptarea parolelor, poti genera unul la http://tinyurl.com/SecureRandomString7 */
-define('FN_PW_SALT'	, '{secret}');
+define('FN_CRYPT_SALT'	, '{secret}');
 
 
 /** Setari de pentru formatul datelor afisate, vezi http://php.net/manual/en/function.date.php */

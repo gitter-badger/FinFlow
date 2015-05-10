@@ -280,6 +280,25 @@ class TaskAssistant{
 
 	}
 
+	public static function get_registered_tasks($offset=0, $limit=25){
+
+		global $fndb, $fnsql;
+
+		$offset = intval($offset);
+		$limit  = intval($limit);
+
+		$fnsql->select('*', self::TABLE);
+		$fnsql->limit($offset, $limit);
+
+		$Rows = $fndb->get_rows( $fnsql->get_query() );
+
+		if( $Rows and count($Rows) )
+			return $Rows;
+
+		return array();
+
+	}
+
 	public static function is_task_active($name){
 
 		global $fndb, $fnsql;

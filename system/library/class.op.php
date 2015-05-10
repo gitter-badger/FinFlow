@@ -89,9 +89,11 @@ class OP{
 			
 			if ( isset($filters['type']) and $filters['type'] ){
 					
-				if ( !in_array($filters['type'], array(FN_OP_IN, FN_OP_OUT), TRUE) ) return array();
+				if ( !in_array($filters['type'], array(self::TYPE_IN, self::TYPE_OUT), TRUE) )
+					return array();
 					
 				$fnsql->condition('optype', '=', strtolower($filters['type']));
+
 			}
 			
 			if ( isset($filters['labels']) and $filters['labels'] and is_array( $filters['labels']) and count($filters['labels']) ){
@@ -520,8 +522,8 @@ class OP{
         }
 
 
-        $Income		= self::get_sum(array_merge($filters, array('type'=>FN_OP_IN)));
-        $Outcome	= self::get_sum(array_merge($filters, array('type'=>FN_OP_OUT)));
+        $Income		= self::get_sum(array_merge($filters, array('type'=>self::TYPE_IN)));
+        $Outcome	= self::get_sum(array_merge($filters, array('type'=>self::TYPE_OUT)));
 
         if( $include_accounts ){
             //--- include accounts deposits in calculations ---//

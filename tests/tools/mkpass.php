@@ -3,14 +3,25 @@
  * Creates a password for the desired e-mail address
  */
 
-include_once '../../inc/init.php';
+define('FN_IS_CRON', true);
+define('IS_CRON', true);
+
+include_once '../../system/init.php';
+
+use FinFlow\UI;
+use FinFlow\User;
 
 if( isset($_GET['email']) and isset($_GET['pass']) ){
-    $epass  = fn_User::crypt_password($_GET['email'], $_GET['pass'], FN_PW_SALT);
-    $output = ( 'Email: ' . $_GET['email'] . ' <br/>Password: ' . $_GET['pass'] . '<br/>Encrypted Password: <em>' . $epass . '</em>' );
+    $epass  = User::hash_password($_GET['pass']);
+    $output = (
+	    '<strong>Email:</strong> ' . $_GET['email'] . '
+	    <br/><strong>Password:</strong> ' . $_GET['pass'] . '
+	    <br/><strong>Encrypted Password:</strong> <em>' . $epass . '</em>'
+    );
 
-    fn_UI::fatal_error($output, true, true, fn_UI::$MSG_NOTE, '');
+    UI::fatal_error($output, true, true, UI::MSG_NOTE, '');
 
 }
 
-else fn_UI::fatal_error("mkpass.php?email=you@example.com&pass=123456", true, true, fn_UI::$MSG_NOTE, 'Usage: ', 'MKPASS');
+else
+	UI::fatal_error("mkpass.php?email=you@example.com&pass=123456", true, true, UI::MSG_NOTE, 'Usage: ', 'MKPASS');

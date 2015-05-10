@@ -13,12 +13,14 @@ spl_autoload_register(function($className) {
 	$parts     = @explode(DIRECTORY_SEPARATOR, $className);
 
 	$namespace = array_shift($parts);
-	$className = strtolower( implode(DIRECTORY_SEPARATOR, $parts) );
+	$className = array_pop($parts);
+	$className = array( 'class.' . $className . '.php' );
+	$className = strtolower( implode(DIRECTORY_SEPARATOR, array_merge($parts, $className)) );
 
 	if( empty($namespace) or ( $namespace == $default_ns ) )
-		$relative_path = "class.{$className}.php";
+		$relative_path = $className;
 	else {
-		$relative_path = ( strtolower($namespace) . DIRECTORY_SEPARATOR . "class.{$className}.php" );
+		$relative_path = ( strtolower($namespace) . DIRECTORY_SEPARATOR . $className );
 	}
 
 	$classpath = ( FNPATH . '/system/library/' . $relative_path );

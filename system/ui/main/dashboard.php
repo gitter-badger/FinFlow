@@ -4,7 +4,7 @@ if( !defined('FNPATH') ) exit;
 
 use FinFlow\Session;
 use FinFlow\UI;
-use FinFlow\CronAssistant;
+use FinFlow\TaskAssistant;
 use FinFlow\OP;
 use FinFlow\Settings;
 use FinFlow\Util;
@@ -15,8 +15,9 @@ $sdate   = (date('Y-m') . "-01");
 $filters = array('startdate'=>$sdate);
 
 $Total 		= OP::get_sum($filters);
-$Income		= OP::get_sum(array_merge($filters, array('type'=>FN_OP_IN)));
-$Outcome	= OP::get_sum(array_merge($filters, array('type'=>FN_OP_OUT)));
+$Income		= OP::get_sum(array_merge($filters, array('type'=>OP::TYPE_IN)));
+$Outcome	= OP::get_sum(array_merge($filters, array('type'=>OP::TYPE_OUT
+)));
 
 $Balance = OP::get_balance();
 
@@ -42,17 +43,7 @@ $Currency = Currency::get_default();
 //---- get latest transactions ---//
 
 //---- get cron jobs statuses ---//
-$Cronjobs 		= array('/inc/cron/cron.exchangerates.php', '/inc/cron/cron.readmail.php');
-$Cronupdates	= array();
-
-foreach ($Cronjobs as $job){
-
-	$timestamp = CronAssistant::get_lastrun( FNPATH . $job );
-
-	if( $timestamp )
-		$Cronupdates[] = UI::translate_date(date(FN_DATETIME_FORMAT, $timestamp));
-
-}
+$CronTasks = TaskAssistant::get_registered_tasks();
 //---- get cron jobs statuses ---//
 
 ?>
@@ -83,13 +74,13 @@ foreach ($Cronjobs as $job){
 					<td>Rulaj: </td>
 					<td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Total); ?></td>
 				</tr>
-				<?php if ( !isset($filters['type']) or $filters['type'] == FN_OP_IN): ?>
+				<?php if ( !isset($filters['type']) or $filters['type'] == OP::TYPE_IN): ?>
 				<tr>
 					<td>Venit: </td>
 					<td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Income); ?></td>
 				</tr>
 				<?php endif;?>
-				<?php if ( !isset($filters['type']) or $filters['type'] == FN_OP_OUT): ?>
+				<?php if ( !isset($filters['type']) or $filters['type'] == OP::TYPE_OUT): ?>
 				<tr>
 					<td>Cheltuieli: </td>
 					<td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Outcome); ?></td>
@@ -155,20 +146,18 @@ foreach ($Cronjobs as $job){
 
         endif; ?>
 
-        <?php if( count($Cronupdates) ): ?>
+        <?php if( count($CronTasks) ): ?>
 
             <div class="panel panel-default">
                 <div class="panel-heading">Ultimele actualiz&#259;ri f&#259;cute de cronjob-uri</div>
 
                 <table class="table table-responsive list report">
-                    <tr>
-                        <td>Actualizare curs:</td>
-                        <td class="align-right"><?php echo isset($Cronupdates[0]) ? $Cronupdates[0] : '-';  ?></td>
+	                <?php foreach ( $CronTasks as $task ) : ?>
+	                <tr>
+                        <td><?php echo UI::esc_html( $task->task_name ); ?></td>
+                        <td class="align-right"><?php echo Util::nicetime( $task->last_activity ); ?></td>
                     </tr>
-                    <tr>
-                        <td>Actualizare tranzac&#355;ii prin email:</td>
-                        <td class="align-right"><?php echo isset($Cronupdates[1]) ? $Cronupdates[1] : '-';  ?></td>
-                    </tr>
+		            <?php endforeach ?>
                 </table>
 
             </div>

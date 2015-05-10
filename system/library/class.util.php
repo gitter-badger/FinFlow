@@ -73,7 +73,7 @@ class Util{
 
     /**
      * Given a date, will return the time passed from as xx &lt;time&gt; ago
-     * @param $date
+     * @param string $date
      * @param string $custom_tense
      * @param array $before_singulars
      * @param array $before_plurals
@@ -86,6 +86,7 @@ class Util{
             return "No date provided";
         }
 
+	    //TODO get these from translation files
         $periods         	= array("secund&#259;", "minut", "or&#259;", "zi", "s&#259;pt&#259;m&#226;n&#259;", "lun&#259;", "an", "decad&#259;");
         $periods_plural  	= array("secunde", "minute", "ore", "zile", "s&#259;pm&#259;m&#226;ni", "luni", "ani", "decade");
         $lengths         	= array("60", "60", "24", "7", "4.35", "12", "10");
@@ -296,14 +297,14 @@ class Util{
 	}
 
 	/**
-	 * Encrypts the input with padded salt
+	 * Encrypts the input with padded salt;
 	 * @param string $input
 	 * @param string $salt
 	 *
 	 * @return string
 	 */
-    public static function s_encrypt($input, $salt="salt"){
-        return base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $salt, $input, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+    public static function encrypt($input, $salt=null){
+	    return Cryptographer::encrypt($input, $salt);
     }
 
 	/**
@@ -314,8 +315,8 @@ class Util{
 	 *
 	 * @return string
 	 */
-    public static function s_decrypt($input, $salt="salt"){
-        return mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($input), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND));
+    public static function decrypt($input, $salt=null){
+	    return Cryptographer::decrypt($input, $salt);
     }
 
 	/**

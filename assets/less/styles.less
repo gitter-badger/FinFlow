@@ -63,6 +63,16 @@ body.logged-in{
   vertical-align: middle;
 }
 
+.align-right{
+  text-align: right;
+  vertical-align: middle;
+}
+
+.align-left{
+  text-align: left;
+  vertical-align: middle;
+}
+
 .btn-spaced-right,
 .radio-inline-spaced-right{
   margin-right: 20px;
@@ -169,13 +179,19 @@ body.logged-in{
 .header{
   .navbar{
     background: @white;
-    border-bottom: 1px solid @super-grey;
+    border-bottom: 1px solid @blue;
     box-shadow: 1px 2px 4px rgba(0, 0, 0, .1);
   }
 
   .navbar li.active > a{
-    background: @dark-grey;
-    text-decoration: underline;
+    background: @blue;
+    text-decoration: none;
+    color: @white;
+
+    &:hover{
+      background: @blue;
+      color: @white;
+    }
   }
 }
 
