@@ -87,7 +87,8 @@ class CanValidate{
 		else 
 			$result = @gethostbyname($host);
 		
-		if ( $result === FALSE ) return FALSE; //malformed input
+		if ( $result === false )
+			return false; //malformed input
 		
 		return $result != $host;
 		

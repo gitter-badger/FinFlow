@@ -6,19 +6,22 @@ define('FN_TASK_NAME', 'op_mailparse');
 
 include_once ('task-init.php');
 
+use FinFlow\UI;
 use FinFlow\TaskAssistant;
 use FinFlow\Util;
 use FinFlow\CanValidate;
-use FinFlow\Drivers\POP3;
+use FinFlow\Drivers\EmailFetchAgent;
+use FinFlow\Drivers\EmailAgent_Exception;
 
 //default settings
 $Settings = array(
-		'host'			=> '',
-		'protocol'		=> 'pop3',
-		'port'			=> 110,
-		'encryption'	=> 'tcp',
+		'host'			=> 'localhost',
+		'protocol'		=> 'imap',
+		'port'		    => null,
+		'encryption'	=> 'ssl',
 		'username'	    => 'anonymous',
-		'password'	    => ''
+		'password'	    => '',
+		'validate_cert'	=> true,
 );
 
 $Settings = TaskAssistant::get_task_params(FN_TASK_NAME, $Settings);
@@ -35,12 +38,6 @@ if ($active){
 if ( empty($Settings['host']) )
 	TaskAssistant::task_error("Adresa serverului de mail nu este configurat&#259;.");
 
-if ( empty($Settings['port']) )
-	TaskAssistant::task_error("Portul de conectare prin protocolul POP nu este configurat.");
-
-if ( empty($Settings['encryption']) )
-	TaskAssistant::task_error("Tipul de criptare utilizat de server, nu este configurat.");
-
 //--- validate stuff ---//
 
 if ( !$active and !$testing )
@@ -56,30 +53,25 @@ if ( ! CanValidate::hostname($Settings['host']) )
 
 try{
 
-    //TODO! add IMAP protocol support
-
 	//lock the task
 	TaskAssistant::get_lock(FN_TASK_NAME);
-	
-	$connectionTimeout = array( "sec" => 5, "usec" => 500 );
 
-	$MailFetch = new POP3(FN_LOGFILE, TRUE, TRUE, $Settings['encryption'], FALSE);
+	$MailFetch = new EmailFetchAgent($Settings['protocol'], $Settings['host'], $Settings['username'], $Settings['password'], $Settings['encryption'], $Settings['port'], 10, $Settings['validate_cert']);
 
-	$MailFetch->connect($Settings['host'], $Settings['port'], $connectionTimeout);
-	$MailFetch->login($Settings['username'], $Settings['password'], FALSE);
-	
-	$ostatus = $MailFetch->getOfficeStatus();
-	
-	$Parser = new mime_parser_class();
-	
-	$Parser->mbox = 0;
 	
 	if ( $testing ){
-		TaskAssistant::release_lock(__FILE__);
-        UI::fatal_error("Scriptul s-a conectat cu succes la serverul {$Settings['host']}.", true, true, 'note', "Not&#259;: ", 'Not&#259;');
+		TaskAssistant::release_lock(FN_TASK_NAME);
+        UI::fatal_error(
+	        __t('The task has successfully connected to %s.', $Settings['host']),
+	        true, true, UI::MSG_SUCCESS, "Info: ", 'Info'
+        );
 	}
-	
-	$unread = intval($ostatus['count']);
+
+	$messages = $MailFetch->getMessages();
+
+	print_r($messages);
+
+	die();
 	
 	for($i= 1; $i<=$unread; $i++ ){
 		
@@ -121,19 +113,17 @@ try{
 	
 	$MailFetch->quit(); //disconnect and delete marked messages
 
-    if( $in_window )
-        fn_UI::fatal_error("Tranzac&#355;iile trimise pe email au fost actualizate.", false, true, 'note', "Not&#259;: ", 'Not&#259;');
+    if( TaskAssistant::is_browser() )
+        UI::fatal_error("Tranzac&#355;iile trimise pe email au fost actualizate.", false, true, 'note', "Not&#259;: ", 'Not&#259;');
 
-	fn_CronAssistant::release_lock(__FILE__);
+	TaskAssistant::release_lock(FN_TASK_NAME);
 	
 }
-catch( POP3_Exception $e ){
-	fn_CronAssistant::release_lock(__FILE__);
+catch( EmailAgent_Exception $e ){
 
-    if( strpos( strtolower($e), 'authentication failed' ) === false ) //unknown error
-        fn_CronAssistant::cron_error($e, ($testing or $in_window));
-    else                                                                                   //authentication error
-        fn_CronAssistant::cron_error("Nu se poate realiza autentificarea la {$Settings['host']}. Verfic&#259; numele de utilizator, parola &#351;i tipul de criptare cerute de server &#351;i &#238;ncearc&#259; din nou.", ($testing or $in_window));
+	TaskAssistant::release_lock(FN_TASK_NAME);
+	TaskAssistant::task_error( $e->getMessage() );
+
 }
 
 //---- run the mailupdate cron ---//

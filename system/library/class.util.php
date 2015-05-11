@@ -276,11 +276,20 @@ class Util{
 		return NULL;
 		
 	}
-	
+
+	/**
+	 * Removes empty elements from an array
+	 * @param $array
+	 *
+	 * @return mixed
+	 */
 	public static function clean_array($array){
 		
 		if ( is_array($array) and count($array)) foreach ($array as $key=>$value){
-			if ( empty($value) ) unset($array[$key]);
+			if( is_array($value) )
+				self::clean_array($value);
+			elseif ( empty($value) )
+				unset($array[$key]);
 		}
 			
 		return $array;

@@ -113,6 +113,7 @@ class TaskAssistant{
         }
         else{
 
+	        //TODO add cli support
 	        $msg = ( __t("Error: ") . __t( $msg, $args) );
 
 	        //most servers will send an email with the message

@@ -7,10 +7,16 @@
 
 namespace FinFlow;
 
+/**
+ * Class FN_Exception
+ * @package FinFlow
+ */
 class FN_Exception extends \Exception{
 
 	protected $class_name;
 	protected $function_name;
+
+	protected $__message;
 
 	public function __construct($message, $code=null, $class=null, $function=null){
 
@@ -27,6 +33,14 @@ class FN_Exception extends \Exception{
 
 	public function getFunction(){
 		return $this->function_name;
+	}
+
+	public function __setMessage($msg){
+		$this->__message = $msg;
+	}
+
+	public function __getMessage(){
+		return $this->__message;
 	}
 
 }

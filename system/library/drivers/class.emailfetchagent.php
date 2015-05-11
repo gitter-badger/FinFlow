@@ -11,6 +11,8 @@
 
 namespace FinFlow\Drivers;
 
+use FinFlow\CanValidate;
+
 class EmailFetchAgent {
 
 	const IMAP = 'imap';
@@ -33,24 +35,28 @@ class EmailFetchAgent {
      * currentfolder
      */
     private $folder = "Inbox";
-    
-    
-    
-    
-    /**
-     * initialize imap helper
-     *
-     *
-     * @param string $protocol
-     * @param string $host
-     * @param string $username
-     * @param string $password
-     * @param string $encryption ssl or tls
-     * @param int $port
-     * @param int $timeout
-     * @param $validate_cert
-     */
-    public function __construct($protocol='imap', $host='localhost', $username='anonymous', $password='', $encryption = false, $port = null, $timeout=3, $validate_cert=true) {
+
+	/**
+	 * errors array
+	 * @var array
+	 */
+    protected $errors = array();
+
+
+	/**
+	 * initialize imap helper
+	 * @param string $protocol
+	 * @param string $host
+	 * @param string $username
+	 * @param string $password
+	 * @param bool $encryption
+	 * @param null $port
+	 * @param int $timeout
+	 * @param bool $validate_cert
+	 *
+	 * @throws EmailAgent_Exception
+	 */
+    public function __construct($protocol='imap', $host='localhost', $username='anonymous', $password='', $encryption = false, $port = null, $timeout=10, $validate_cert=true) {
 
 	    $protocol = strtolower($protocol);
 	    $timeout  = intval($timeout);
@@ -58,25 +64,61 @@ class EmailFetchAgent {
 	    $port  = empty($port) ? ( $protocol == self::IMAP ? ( $encryption ? 993 : 143  ) : ( $encryption ? 995 : 110  ) ) : intval($port);
 		$enc   = $encryption ? ( $validate_cert ? ( '/' . $encryption ) : ( '/novalidate-cert/' . $encryption ) ) : '';
 
-	    //{mail.server.com:993/novalidate-cert/pop3/ssl}
+	    //check for valid protocol
+	    if( ( self::IMAP != $protocol ) and ( self::POP3 != $protocol ) )
+		    throw new EmailAgent_Exception(
+			    __t('Protocol <em>%s</em> is not supported!', $protocol),
+			    EmailAgent_Exception::ERR_PROTOCOL_NOT_SUPPORTED
+		    );
+
+
+	    //check if valid host
+	    if( ! CanValidate::hostname($host) )
+		    throw new EmailAgent_Exception(
+			    __t('Invalid host <em>%s</em>! Enter a valid ip address or hostname and try again', $host),
+			    EmailAgent_Exception::ERR_INVALID_HOST
+		    );
+
+	    //build mailbox string
 	    $mailbox = ( $host . ':' . $port . '/' . $protocol . $enc );
 
 	    //set timeout
-	    //imap_timeout(IMAP_OPENTIMEOUT, 1);
-	    ini_set('default_socket_timeout', 1);
+	    $this->setTimeout($timeout);
 
 	    //open the imap connection
-        $this->mailbox    = ( "{" . $mailbox . "}" );
-        $this->connection = imap_open($this->mailbox, $username, $password);
+	    $this->connect($mailbox, $username, $password);
+
+	    if( ! $this->connection )
+		    throw new EmailAgent_Exception(
+			    __t('Could not connect to host <em>%1s</em> via port %2s. Check your connection settings and try again.', $host, $port),
+			    EmailAgent_Exception::ERR_CONNECTION_FAILED
+		    );
+
+
     }
-    
+
+	public function setTimeout($timeout){
+
+		imap_timeout(IMAP_OPENTIMEOUT, $timeout);
+		imap_timeout(IMAP_READTIMEOUT, $timeout);
+		imap_timeout(IMAP_WRITETIMEOUT, $timeout);
+		imap_timeout(IMAP_CLOSETIMEOUT, $timeout);
+
+	}
+
+	public function connect($mailbox, $username, $password=''){
+
+		$this->mailbox    = ( "{" . $mailbox . "}" );
+		$this->connection = @imap_open($this->mailbox, $username, $password);
+
+	}
+
     
     /**
      * close connection
      */
     function __destruct() {
         if( $this->connection !== false ){
-	        ini_restore('default_socket_timeout');
 	        imap_close($this->connection);
         }
     }
@@ -88,7 +130,7 @@ class EmailFetchAgent {
      * @return bool true on success
      */
     public function isConnected() {
-        return $this->imap !== false;
+        return $this->connection !== false;
     }
     
     
@@ -100,6 +142,10 @@ class EmailFetchAgent {
     public function getError() {
         return imap_last_error();
     }
+
+	public function getErrors(){
+		return imap_errors();
+	}
     
     
     /**
@@ -109,7 +155,7 @@ class EmailFetchAgent {
      * @param $folder name
      */
     public function selectFolder($folder) {
-        $result = imap_reopen($this->imap, $this->mailbox . $folder);
+        $result = imap_reopen($this->connection, $this->mailbox . $folder);
         if($result === true)
             $this->folder = $folder;
         return $result;
@@ -122,7 +168,7 @@ class EmailFetchAgent {
      * @return array with foldernames
      */
     public function getFolders() {
-        $folders = imap_list($this->imap, $this->mailbox, "*");
+        $folders = imap_list($this->connection, $this->mailbox, "*");
         return str_replace($this->mailbox, "", $folders);
     }
     
@@ -133,7 +179,7 @@ class EmailFetchAgent {
      * @return int message count
      */
     public function countMessages() {
-        return imap_num_msg($this->imap);
+        return imap_num_msg($this->connection);
     }
     
     
@@ -143,7 +189,7 @@ class EmailFetchAgent {
      * @return int message count
      */
     public function countUnreadMessages() {
-        $result = imap_search($this->imap, 'UNSEEN');
+        $result = imap_search($this->connection, 'UNSEEN');
         if($result===false)
             return false;
         return count($result);
@@ -156,7 +202,7 @@ class EmailFetchAgent {
      * @param $withbody without body
      */
     public function getUnreadMessages($withbody=true){
-        $result = imap_search($this->imap, 'UNSEEN');
+        $result = imap_search($this->connection, 'UNSEEN');
         foreach($result as $k=>$i){
             $emails[]= $this->formatMessage($i, $withbody);
         }
@@ -199,10 +245,10 @@ class EmailFetchAgent {
      * @return array
      */
     protected function formatMessage($id, $withbody=true){
-        $header = imap_headerinfo($this->imap, $id);
+        $header = imap_headerinfo($this->connection, $id);
 
         // fetch unique uid
-        $uid = imap_uid($this->imap, $id);
+        $uid = imap_uid($this->connection, $id);
 
         // get email data
         if ( isset($header->subject) && strlen($header->subject) > 0 ) {
@@ -232,9 +278,10 @@ class EmailFetchAgent {
         }
 
         // get attachments
-        $mailStruct = imap_fetchstructure($this->imap, $id);
-        $attachments = $this->attachments2name($this->getAttachments($this->imap, $id, $mailStruct, ""));
-        if(count($attachments)>0)
+        $mailStruct = imap_fetchstructure($this->connection, $id);
+        $attachments= $this->attachments2name($this->getAttachments($this->connection, $id, $mailStruct, ""));
+
+        if( count($attachments) > 0 )
             $email['attachments'] = $attachments;
 
         return $email;
@@ -258,9 +305,9 @@ class EmailFetchAgent {
      * @param $ids array of ids
      */
     public function deleteMessages($ids) {
-        if( imap_mail_move($this->imap, implode(",", $ids), $this->getTrash(), CP_UID) == false)
+        if( imap_mail_move($this->connection, implode(",", $ids), $this->getTrash(), CP_UID) == false)
                 return false;
-        return imap_expunge($this->imap);
+        return imap_expunge($this->connection);
     }
     
     
@@ -284,9 +331,9 @@ class EmailFetchAgent {
      * @param $target new folder
      */
     public function moveMessages($ids, $target) {
-        if(imap_mail_move($this->imap, implode(",", $ids), $target, CP_UID)===false)
+        if(imap_mail_move($this->connection, implode(",", $ids), $target, CP_UID)===false)
             return false;
-        return imap_expunge($this->imap);
+        return imap_expunge($this->connection);
     }
     
     
@@ -310,7 +357,7 @@ class EmailFetchAgent {
         
         $flags .= (($seen == true) ? '\\Seen ' : ' ');
         echo "\n<br />".$id.": ".$flags;
-        imap_clearflag_full($this->imap, $id, '\\Seen', ST_UID);
+        imap_clearflag_full($this->connection, $id, '\\Seen', ST_UID);
         return imap_setflag_full($this->imap, $id, trim($flags), ST_UID);
     }
     
@@ -323,27 +370,30 @@ class EmailFetchAgent {
      * @param $index of the attachment (default: first attachment)
      */
     public function getAttachment($id, $index = 0) {
+
         // find message
-        $attachments = false;
-        $messageIndex = imap_msgno($this->imap, $id);
-        $header = imap_headerinfo($this->imap, $messageIndex);
-        $mailStruct = imap_fetchstructure($this->imap, $messageIndex);
-        $attachments = $this->getAttachments($this->imap, $messageIndex, $mailStruct, "");
+        $attachments    = false;
+
+        $messageIndex   = imap_msgno($this->connection, $id);
+        $header         = imap_headerinfo($this->connection, $messageIndex);
+        $mailStruct     = imap_fetchstructure($this->connection, $messageIndex);
+        $attachments    = $this->getAttachments($this->connection, $messageIndex, $mailStruct, "");
         
-        if($attachments==false)
+        if( $attachments == false )
             return false;
         
         // find attachment
-        if($index > count($attachments))
+        if( $index > count($attachments ))
             return false;
+
         $attachment = $attachments[$index];
         
         // get attachment body
-        $partStruct = imap_bodystruct($this->imap, imap_msgno($this->imap, $id), $attachment['partNum']);
-        $filename = $partStruct->dparameters[0]->value;
-        $message = imap_fetchbody($this->imap, $id, $attachment['partNum'], FT_UID);
+        $partStruct = imap_bodystruct($this->connection, imap_msgno($this->connection, $id), $attachment['partNum']);
+        $filename   = $partStruct->dparameters[0]->value;
+        $message    = imap_fetchbody($this->connection, $id, $attachment['partNum'], FT_UID);
      
-        switch ($attachment['enc']) {
+        switch ( $attachment['enc'] ) {
             case 0:
             case 1:
                 $message = imap_8bit($message);
@@ -373,7 +423,7 @@ class EmailFetchAgent {
      * @param $name of the folder
      */
     public function addFolder($name) {
-        return imap_createmailbox($this->imap , $this->mailbox . $name);
+        return imap_createmailbox($this->connection , $this->mailbox . $name);
     }
     
     
@@ -384,7 +434,7 @@ class EmailFetchAgent {
      * @param $name of the folder
      */
     public function removeFolder($name) {
-        return imap_deletemailbox($this->imap, $this->mailbox . $name);
+        return imap_deletemailbox($this->connection, $this->mailbox . $name);
     }
     
     
@@ -396,7 +446,7 @@ class EmailFetchAgent {
      * @param $newname of the folder
      */
     public function renameFolder($name, $newname) {
-        return imap_renamemailbox($this->imap, $this->mailbox . $name, $this->mailbox . $newname);
+        return imap_renamemailbox($this->connection, $this->mailbox . $name, $this->mailbox . $newname);
     }
     
     
@@ -408,16 +458,16 @@ class EmailFetchAgent {
     public function purge() {
         // delete trash and spam
         if($this->folder==$this->getTrash() || strtolower($this->folder)=="spam") {
-            if(imap_delete($this->imap,'1:*')===false) {
+            if(imap_delete($this->connection,'1:*')===false) {
                 return false;
             }
-            return imap_expunge($this->imap);
+            return imap_expunge($this->connection);
         
         // move others to trash
         } else {
-            if( imap_mail_move($this->imap,'1:*', $this->getTrash()) == false)
+            if( imap_mail_move($this->connection,'1:*', $this->getTrash()) == false)
                 return false;
-            return imap_expunge($this->imap);
+            return imap_expunge($this->connection);
         }
     }
     
@@ -452,7 +502,7 @@ class EmailFetchAgent {
      * @param $body
      */
     public function saveMessageInSent($header, $body) {
-        return imap_append($this->imap, $this->mailbox . $this->getSent(), $header . "\r\n" . $body . "\r\n", "\\Seen");
+        return imap_append($this->connection, $this->mailbox . $this->getSent(), $header . "\r\n" . $body . "\r\n", "\\Seen");
     }
     
     
@@ -505,9 +555,9 @@ class EmailFetchAgent {
     private function getMessageHeader($id) {
         $count = $this->countMessages();
         for($i=1;$i<=$count;$i++) {
-            $uid = imap_uid($this->imap, $i);
+            $uid = imap_uid($this->connection, $i);
             if($uid==$id) {
-                $header = imap_headerinfo($this->imap, $i);
+                $header = imap_headerinfo($this->connection, $i);
                 return $header;
             }
         }
@@ -581,11 +631,11 @@ class EmailFetchAgent {
      * @param $uid message id
      */
     private function getBody($uid) {
-        $body = $this->get_part($this->imap, $uid, "TEXT/HTML");
+        $body = $this->get_part($this->connection, $uid, "TEXT/HTML");
         $html = true;
         // if HTML body is empty, try getting text body
         if ($body == "") {
-            $body = $this->get_part($this->imap, $uid, "TEXT/PLAIN");
+            $body = $this->get_part($this->connection, $uid, "TEXT/PLAIN");
             $html = false;
         }
         $body = $this->convertToUtf8($body);

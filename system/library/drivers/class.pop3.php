@@ -15,6 +15,11 @@
 
 namespace FinFlow\Drivers;
 
+/**
+ * Class POP3
+ * @package FinFlow\Drivers
+ * @deprecated
+ */
 class POP3 {
 
 	//const ERR_NONE = 0;
