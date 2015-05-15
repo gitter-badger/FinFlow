@@ -294,6 +294,10 @@ class Util{
 			
 		return $array;
 	}
+
+	public static function trim_query_string($query_str){
+		return trim(trim($query_str), "&?=");
+	}
 	
 	public static function cronjob($script, $minute="*", $hour="*", $day="*", $month="*", $days_of_week='*', $executable="php -q", $apply_server_offset=TRUE){
 		

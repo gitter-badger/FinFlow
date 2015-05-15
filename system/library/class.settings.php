@@ -37,12 +37,14 @@ class Settings{
 			$exists = self::get($key, FALSE);
 			
 			if ( $exists ){
-				$fnsql->update(self::$table, array('setting_val'=>$value), array( 'setting_key'=>$key )); $fndb->execute_query( $fnsql->get_query() );
+				$fnsql->update(self::$table, array('setting_val'=>$value), array( 'setting_key'=>$key ));
+				$fndb->execute_query( $fnsql->get_query() );
 			}else 
 				return self::add($key, $value);
 
 		}
-		else self::remove($key);
+		else
+			self::remove($key);
 		
 		return FALSE;
 	}

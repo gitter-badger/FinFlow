@@ -9,10 +9,10 @@ namespace FinFlow;
 
 class Contacts{
 
-    public static $table  = 'fn_contacts';
+    const TABLE = 'fn_contacts';
 
     public static function table(){
-        return ( FN_DB_PREFIX . self::$table );
+        return ( FN_DB_PREFIX . self::TABLE );
     }
 
     public static function add($data){
@@ -20,9 +20,14 @@ class Contacts{
     }
 
     public static function get($contact_id){
-        //TODO
+        //TODO ....
     }
 
+	public static function get_by($var, $key='email'){
+		//TODO...
+
+		return null;
+	}
 
     public static function update($contact_id, $data=array()){
         //TODO

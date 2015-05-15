@@ -113,6 +113,15 @@ class EmailFetchAgent {
 
 	}
 
+	/**
+	 * Close the connection
+	 */
+	public function close(){
+		if( $this->connection !== false ){
+			@imap_close( $this->connection ); $this->connection = false;
+		}
+	}
+
     
     /**
      * close connection

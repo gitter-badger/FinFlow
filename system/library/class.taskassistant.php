@@ -6,6 +6,8 @@ class TaskAssistant{
 
 	const TABLE = 'fn_tasks';
 
+	const OPTION_PREFIX = 'task_';
+
 	const STATE_RUNNING = 'running';
 	const STATE_STOPPED = 'stopped';
 	const STATE_FINISHED= 'finished';
@@ -52,32 +54,70 @@ class TaskAssistant{
 		return "__task_{$skey}";
 	}
 	
-	public static function set_cron_state($cron, $state="finished"){
-		
-		if( !in_array($state, array(self::STATE_FINISHED, self::STATE_RUNNING)) )
+	public static function set_cron_state($name, $state='finished'){
+
+		global $fndb, $fnsql;
+
+		$name = $fndb->escape($name);
+
+		if( ! in_array($state, array(self::STATE_FINISHED, self::STATE_RUNNING)) )
 			die(
-				sprintf("Invalid state <em>%1s</em> . Available states are <em>%2s</em> or <em>%3s</em>.", $state, self::STATE_RUNNING, self::STATE_FINISHED)
+				__t("Invalid state <em>%1s</em> . Available states are <em>%2s</em> or <em>%3s</em>.", $state, self::STATE_RUNNING, self::STATE_FINISHED)
 			);
 		
-		Settings::set(self::ukey($cron), $state);
+		$fnsql->update(self::TABLE, array('status'=>$state), array('task_name'=>$name));
+
+		return $fndb->execute_query( $fnsql->get_query() );
 		
 	}
 	
-	public static function get_cron_state($cron){
-		return Settings::get(self::ukey($cron), self::STATE_UNKNOWN);
+	public static function get_cron_state($name){
+
+		global $fndb, $fnsql;
+
+		$name = $fndb->escape($name);
+
+		$fnsql->select('status', self::TABLE, array('task_name'=>$name));
+
+		$task = $fndb->get_row( $fnsql->get_query() );
+
+		if( $task and isset($task->status) )
+			return $task->status;
+
+		return self::STATE_UNKNOWN;
+
 	}
 	
-	public static function set_lastrun($cron, $lastrun=FALSE){
-		
+	public static function set_lastrun($name, $lastrun=FALSE){
+
+		global $fndb, $fnsql;
+
 		if ( empty($lastrun) )
-			$lastrun = time();
-		
-		Settings::set(self::ukey($cron, "lastrun_"), intval($lastrun));
+			$lastrun = date(FN_MYSQL_DATE);
+
+		$name = $fndb->escape($name);
+
+		$fnsql->update(self::TABLE, array('last_activity'=>$lastrun), array('task_name'=>$name));
+
+		return $fndb->execute_query( $fnsql->get_query() );
 		
 	}
 	
-	public static function get_lastrun($cron){
-		return Settings::get(self::ukey($cron, "lastrun_"), 0);
+	public static function get_lastrun($name){
+
+		global $fndb, $fnsql;
+
+		$name = $fndb->escape($name);
+
+		$fnsql->select('last_activity', self::TABLE, array('task_name'=>$name));
+
+		$task = $fndb->get_row( $fnsql->get_query() );
+
+		if( $task and isset($task->last_activity) )
+			return $task->last_activity;
+
+		return null;
+
 	}
 	
 	public static function get_lock($task_name, $stop=TRUE){
@@ -92,7 +132,7 @@ class TaskAssistant{
 		}elseif ($stop){
             if( self::is_browser() )
                 UI::fatal_error(
-	                sprintf('Task-ul ' . $task_name . ' a fost blocat. Se pare ca o alta instanta a aceluiasi fisier ruleaza in acest moment.')
+	                __t('Task-ul ' . $task_name . ' a fost blocat. Se pare ca o alta instanta a aceluiasi fisier ruleaza in acest moment.')
                 );
             else
 			    die( date(FN_MYSQL_DATE) . " Eroare: Cronul " . $task_name . " a fost blocat. Se pare ca o alta instanta a aceluiasi fisier ruleaza in acest moment." );
@@ -113,7 +153,6 @@ class TaskAssistant{
         }
         else{
 
-	        //TODO add cli support
 	        $msg = ( __t("Error: ") . __t( $msg, $args) );
 
 	        //most servers will send an email with the message
@@ -154,6 +193,42 @@ class TaskAssistant{
 	}
 
 	/**
+	 * Saves a single task option
+	 * @param $name
+	 * @param $option
+	 * @param int $value
+	 *
+	 * @return bool
+	 */
+	public static function save_task_option($name, $option, $value=1){
+		return Settings::set( ( self::OPTION_PREFIX . $name . '_' . $option) , $value);
+	}
+
+	/**
+	 * Saves task options
+	 * @param $name
+	 * @param array $options
+	 *
+	 * @return bool
+	 */
+	public static function save_task_options($name, $options=array()){
+
+		if( is_array($options) and count($options) ) foreach ($options as $option=>$default){
+
+			$value = in($option, true);
+			$value = empty($value) ? $default : $value;
+
+			if( strpos($option, 'password') === false ); else{
+				if( strlen($value) ) $value = Util::encrypt($value, FN_CRYPT_SALT);
+			}
+
+			Settings::set( ( self::OPTION_PREFIX . $name . '_' . $option) , $value);
+
+		}
+
+	}
+
+	/**
 	 * Retrieves a single task option from the database settings table
 	 * @param string name name of the task
 	 * @param string $option name of the option
@@ -162,7 +237,7 @@ class TaskAssistant{
 	 * @return bool|mixed|null
 	 */
 	public static function get_task_option($name, $option, $default=null){
-		return Settings::get( ( 'task_' . $name . '_' . $option) , $default);
+		return Settings::get( ( self::OPTION_PREFIX . $name . '_' . $option) , $default);
 	}
 
 	public static function get_task_options($name, $defaults=array()){
@@ -170,7 +245,7 @@ class TaskAssistant{
 		global $fndb, $fnsql;
 
 		$settings= array();
-		$prefix  = ( 'task_' . $name . '_' );
+		$prefix  = ( self::OPTION_PREFIX . $name . '_' );
 		$keyname = ( $prefix . '%');
 
 		$fnsql->select('setting_key, setting_val', Settings::$table);

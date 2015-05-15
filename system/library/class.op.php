@@ -5,7 +5,7 @@ namespace FinFlow;
 /**
  * Operations Main Class
  * Class fn_OP
- * @version 1.5
+ * @version 1.6
  * @author Adrian7 (adrian@finflow.org)
  */
 class OP{
@@ -15,9 +15,6 @@ class OP{
 
 	public static $table      = 'fn_op';
 	public static $table_meta = 'fn_op_meta';
-
-    public static $uploads_dir = "/uploads";
-    public static $attached    = 'attached';
 
 	public static function getTypesArray(){
 		return array(self::TYPE_IN, self::TYPE_OUT);
@@ -608,27 +605,52 @@ class OP{
 
     }
 
-
+	/**
+	 * Extracts transaction variables from string
+	 * @param $string
+	 * @param string $separator
+	 * @param string $labels_sep
+	 *
+	 * @return array|bool
+	 */
 	public static function extract_op_vars( $string, $separator=" ", $labels_sep=","){
-		
+
+		// type value cc label1,label2,label3 #Account
+		//
+		//--- Examples: ---
 		//in 100 usd PayPal
 		//out 70.12 EUR ACME INC,Hosting LLC,newsite.com
-        //28/7/2013 in 270 GBP HostingProvider INC,Hosting LLC,newsite.com,newsite2.com
-        //19/10/2013 in 190 GBP #PayPal HostingProvider INC,Hosting LLC,newsite.com,newsite2.com
+        //28/7/2012 in 270 GBP HostingProvider INC,Hosting LLC,newsite.com,newsite2.com
+        //19/10/2014 in 190 GBP #PayPal HostingProvider INC,Hosting LLC,newsite.com,newsite2.com
         //out 10 EUR #GoogleWallet
+		//
+		//--- Or via query string ---
+		//optype=in&value=34.22&ccode=AUR&labels=mylabel,anotherlabel&account=MyAcccount
 
-		$string = trim($string);
+		$string = Util::trim_query_string($string);
         $labels = "";
 		
 		$extracted = array(
-            'time'    => NULL,                           //optional time of the transaction
-			'optype'	=> FALSE,                         //mandatory
-			'value'	=> FALSE,	                       //mandatory
-			'ccode'	=> FALSE,	                       //currency code mandatory
-			'labels'	=> "",                                //optional
-            'account'=> ""                                //optional
+            'time'      => time(),                      //time of the transaction - optional
+			'optype'    => false,                       //type - mandatory
+			'value'	    => 1,	                        //value - optional
+			'ccode'	    => Currency::get_default_cc(),	//currency code  - optional
+			'labels'	=> "",                          //labels - optional
+            'account'   => ""                           //account - optional
 		);
-		
+
+		//--- may we parse the string as a query str ---//
+		if( ( strpos($string, '&') > 0 ) and ( strpos($string, '=') > 0 ) ){
+
+			parse_str($string, $extracted);
+
+			if ( $extracted['optype'] and $extracted['value'] and $extracted['ccode']){
+				return $extracted;
+			}
+
+		}
+		//--- may we parse the string as a query str ---//
+
 		$vars = @explode($separator, $string); $k=0;
 		$ioff = $voff = 0;
 
@@ -659,19 +681,29 @@ class OP{
 				$labels.=" {$var}"; continue;
 			}
 			
-			if ( $k == ( 1+ $ioff ) ) $extracted['optype'] = in_array(strtolower($var), array(FN_OP_IN, FN_OP_OUT)) ? strtolower($var) : FALSE;
-			if ( $k == ( 2+ $ioff ) ) $extracted['value']  = floatval($var);
-			if ( $k == ( 3+ $ioff ) ) $extracted['ccode']  = strtoupper($var);
+			if ( $k == ( 1+ $ioff ) )
+				$extracted['optype'] = in_array(strtolower($var), self::getTypesArray()) ? strtolower($var) : false;
+
+			if ( $k == ( 2+ $ioff ) )
+				$extracted['value']  = floatval($var);
+
+			if ( $k == ( 3+ $ioff ) )
+				$extracted['ccode']  = strtoupper($var);
 			
 		}
 
-		if ( strlen($labels) ) $extracted['labels'] = @explode($labels_sep, trim($labels));
-		
-		if ( $extracted['optype'] and $extracted['value'] and $extracted['ccode'] ){
+		if ( strlen($labels) )
+			$extracted['labels'] = @explode($labels_sep, trim($labels));
+
+		if( empty($extracted['ccode']) ){ //fallback to default currency
+			$extracted['ccode'] = Currency::get_default_cc();
+		}
+
+		if ( $extracted['optype'] and $extracted['value'] and $extracted['ccode']){
 			return $extracted;
 		}
 		
-		return FALSE;
+		return false;
 		
 	}
 	
@@ -761,48 +793,77 @@ class OP{
 
     /**
      * Creates a new transaction from the parameters specified
-     * @param $type IN or OUT
-     * @param $value
-     * @param $ccode
-     * @param $account
-     * @param array $labels
+     * @param $type in or out
+     * @param float $value
+     * @param string $ccode currency code
+     * @param $account account slug
+     * @param array $labels list of labels slugs
      * @param null $timestamp
      * @param array $metadata
      * @return bool
      */
-    public static function create($type, $value, $ccode, $account, $labels=array(), $timestamp=NULL, $metadata=array()){
+    public static function create($type, $value, $ccode, $timestamp=null, $account, $labels=array(), $user_id=null, $contact_id=null, $comments='', $metadata=array()){
 		
 		global $fndb, $fnsql;
 		
 		$type = strtolower($type);
 		
-		$currency      = fn_Currency::get_by_code($ccode);
-		$value	       = floatval($value);
-		$type           = in_array($type, array(FN_OP_IN, FN_OP_OUT)) ? $type : FALSE;
-        $date           = empty($timestamp) ? date(FN_MYSQL_DATE) : date(FN_MYSQL_DATE, $timestamp);
+		$currency  = Currency::get_by_code($ccode);
+		$value	   = floatval($value);
+		$type      = in_array( $type, self::getTypesArray() ) ? $type : false;
+        $date      = empty($timestamp) ? date(FN_MYSQL_DATE) : date(FN_MYSQL_DATE, $timestamp);
 
         $currency_id = isset($currency->currency_id) ? $currency->currency_id : 0;
 
 		if ( $currency and isset($currency->currency_id) and $type and $value){
 
-            $preflow = array('currency_id'=>$currency_id, 'value'=>$value);
-            $flow      = self::consistent_flow($type, $value, $currency->currency_id, $date);
+			$trans_id = 0;
+            $flow     = self::consistent_flow($type, $value, $currency->currency_id, $date);
 			
 			extract($flow); //import vars
-			
-			$fnsql->insert(self::$table, array('optype'=>$type, 'value'=>$value, 'currency_id'=>$currency_id, 'sdate'=>$date) );
+
+			$data = array(
+				'optype'        => $type,
+				'value'         => $value,
+				'currency_id'   => $currency_id,
+				'sdate'         => $date
+			);
+
+			if( $user_id )
+				$data['user_id'] = intval($user_id);
+
+			if( $contact_id )
+				$data['contact_id'] = intval($contact_id);
+
+			if( strlen($comments) ){
+				$data['comments'] = strip_tags( trim($comments) );
+			}
+
+			if ( empty($comments) and strlen($metadata['comments']) ){
+				$data['comments'] = strip_tags($metadata['comments']);  unset( $metadata['comments'] );
+			}
+
+			if( empty($contact_id) and isset($metadata['from']) ){
+				//TODO set transaction contact id ...
+			}
+
+			if( empty($user_id) and isset($metadata['to']) ){
+				//TODO
+				$user = User::get_by($metadata['to'], 'email');
+
+				if( $user and isset($user->user_id) )
+					$data['user_id'] = $user->user_id;
+
+			}
+
+			print_r($data); die(); //TODO...
+
+			$fnsql->insert(self::$table,  $data);
 
 			if ( $fndb->execute_query( $fnsql->get_query() ) ){
 				
 				$trans_id = $fndb->last_insert_id;
 				$labelsIds= array();
-
-                //--- set original currency id ---//
-                if( $preflow['currency_id'] != $currency_id ) {
-                    self::save_metadata($trans_id, 'initial_currency_id', $preflow['currency_id']);
-                    self::save_metadata($trans_id, 'initial_value', $preflow['value']);
-                }
-                //--- set original currency id ---//
 
 				//--- add labels and set associations ---//
 				if ( count($labels) ) foreach ($labels as $label){
@@ -893,22 +954,14 @@ class OP{
 
     public static function add_attachment($trans_id, $File){
 
-	    //TODO add support for file management using File class
-        $folder   = FN_UPLOADS_DIR;
-        $filename = ( 'attachment-' . $trans_id . '-' . Util::get_rand_string(7) );
-        $uploaded = Util::file_upload($File, $folder, $filename);
+	    $filepath = File::upload($File);
 
-        if( is_array($uploaded) and ( $uploaded['success'] ) ){
 
-            //--- save attachments and their original names ---//
-            self::save_metadata($trans_id, 'attachments', basename($uploaded['msg']), TRUE, FALSE);
-            self::save_metadata($trans_id, 'attachments_names', $File['name'], TRUE, FALSE);
-            //--- save attachments and their original names ---//
-
-            return self::$attached;
+        if( $filepath ){
+	        $file_id  = File::$last_file_id; return File::associateTransaction($trans_id, $file_id);
         }
 
-        return $uploaded['msg'];
+        return false;
 
     }
 
@@ -957,15 +1010,19 @@ class OP{
             if( isset($vars['accounts']) ){
 
                 $readable.= count($vars['accounts']) > 1 ? " din conturile: " : "  din contul ";
+	            $accounts = array();
 
-                if( count($vars['accounts']) ) foreach($vars['accounts'] as $id) $accounts[] = fn_Accounts::get($id);
+                if( count($vars['accounts']) )
+	                foreach($vars['accounts'] as $id)
+		                $accounts[] = Accounts::get($id);
 
                 if( count($accounts) ) foreach($accounts as $account){
-                    $daccount  = ( '<span class="llabel">' . fn_UI::esc_html( $account->holder_name ) . '</span>' ); $readable.= ($daccount . ", ");
+                    $daccount = ( '<span class="llabel">' . UI::esc_html( $account->holder_name ) . '</span>' );
+	                $readable.= ($daccount . ", ");
                 }
 
                 $readable = trim(trim($readable), ",");
-                $cnt         = substr_count($readable, ", ");
+                $cnt      = substr_count($readable, ", ");
 
                 if( $cnt ) $readable = str_replace(", {$daccount}", " si {$daccount}", $readable);
 
@@ -977,11 +1034,15 @@ class OP{
             if( isset($vars['labels']) ){
 
                 $readable.= count($vars['labels']) > 1 ? " cu etichetele: " : "  cu eticheta: ";
+	            $labels   = array();
 
-                if( count($vars['labels']) ) foreach($vars['labels'] as $id) $labels[] = fn_Label::get_by($id, 'id');
+                if( count($vars['labels']) )
+	                foreach($vars['labels'] as $id)
+		                $labels[] = Label::get_by($id, 'id');
 
                 if( count($labels) ) foreach($labels as $label){
-                    $llabel = ( '<span class="llabel">' . fn_UI::esc_html( $label->title ) . '</span>' ); $readable.= ($llabel . ", ");
+                    $llabel   = ( '<span class="llabel">' . UI::esc_html( $label->title ) . '</span>' );
+	                $readable.= ($llabel . ", ");
                 }
 
                 $readable = trim(trim($readable), ",");

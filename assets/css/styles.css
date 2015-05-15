@@ -17,16 +17,47 @@
   border-width: 2px;
 }
 .alert-danger {
-  border-color: #b53738;
+  border-color: #d93544;
+}
+.alert-warning {
+  border-color: #e7b632;
+}
+.alert-info {
+  border-color: #0084a4;
+}
+.alert-success {
+  border-color: #30d99c;
+}
+.btn {
+  border-width: 2px;
+}
+.btn-default {
+  border-color: #c0c0c0;
+}
+.btn-primary {
+  background: #32ace1;
+  border-color: #0084a4;
+}
+.btn-warning {
+  background: #e7b632;
+  border-color: #cb9f2a;
+}
+.btn-danger {
+  background: #d93544;
+  border-color: #c52f3c;
+}
+.btn-success {
+  background: #30d99c;
+  border-color: #26bc86;
 }
 html,
 body {
   font-family: 'Oxygen', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, Helvetica, sans-serif;
-  font-size: 110%;
+  font-size: 100%;
   font-weight: normal;
   color: #000;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   background: #fafafa;
   background: -moz-linear-gradient(top, #fafafa 0%, #fafafa 13%, #d4d4d4 97%, #d4d4d4 100%);
   background: -webkit-gradient(left top, left bottom, color-stop(0%, #fafafa), color-stop(13%, #fafafa), color-stop(97%, #d4d4d4), color-stop(100%, #d4d4d4));
@@ -35,11 +66,6 @@ body {
   background: -ms-linear-gradient(top, #fafafa 0%, #fafafa 13%, #d4d4d4 97%, #d4d4d4 100%);
   background: linear-gradient(to bottom, #fafafa 0%, #fafafa 13%, #d4d4d4 97%, #d4d4d4 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fafafa', endColorstr='#d4d4d4', GradientType=0);
-}
-.main {
-  min-height: 100%;
-  min-width: 100%;
-  margin: 0 auto;
 }
 body.fatal-error {
   padding-top: 4%;
@@ -51,4 +77,145 @@ body.fatal-error .logo {
 }
 body.fatal-error .logo img {
   width: 85px;
+}
+body.logged-in .wrapper {
+  padding-top: 70px;
+}
+.content-error .error-heading {
+  margin-top: 0px;
+}
+.hidden-screen {
+  display: none;
+}
+.align-center {
+  text-align: center;
+  vertical-align: middle;
+}
+.align-right {
+  text-align: right;
+  vertical-align: middle;
+}
+.align-left {
+  text-align: left;
+  vertical-align: middle;
+}
+.btn-spaced-right,
+.radio-inline-spaced-right {
+  margin-right: 20px;
+}
+.btn-submit {
+  min-width: 24%;
+  max-width: 100%;
+}
+.col-centered {
+  float: none;
+  margin: 0px auto;
+}
+.file-alert-js .alert {
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+.picker,
+.picker__holder {
+  min-width: 320px;
+}
+.panel {
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
+}
+.panel-default .panel-heading {
+  background: #fafafa;
+}
+.panel-heading h1,
+.panel-heading h2,
+.panel-heading h3,
+.panel-heading h4 {
+  margin: 10px;
+}
+.icon-transaction-out,
+.icon-transaction-in {
+  color: #0084a4;
+}
+.wrapper {
+  min-height: 100%;
+  min-width: 100%;
+  margin: 0 auto;
+}
+.brand {
+  text-align: center;
+}
+.brand img {
+  width: 50px;
+  margin: 0px auto;
+  float: none;
+}
+.content-login,
+.content-error {
+  padding-top: 4.3%;
+}
+.content-login .panel,
+.content-error .panel {
+  border-color: #32ace1;
+}
+.content-login .panel-heading,
+.content-error .panel-heading {
+  text-align: center;
+  background: none;
+  border-bottom: none;
+}
+.captcha-img-addon {
+  padding: 0px;
+}
+.form-container {
+  padding: 20px 15px;
+}
+.form-control {
+  font-size: inherit;
+}
+.recurring-choices {
+  display: none;
+}
+.panel-balance {
+  border: 2px #32ace1 solid;
+}
+.header .navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #32ace1;
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
+}
+.header .navbar li.active > a {
+  background: #32ace1;
+  text-decoration: none;
+  color: #ffffff;
+}
+.header .navbar li.active > a:hover {
+  background: #32ace1;
+  color: #ffffff;
+}
+.aside .widget {
+  margin-bottom: 20px;
+}
+.aside .widget-title {
+  border-bottom: 1px solid #eeeeee !important;
+}
+.aside .widget.widget-wclock #displayWClock {
+  text-align: center;
+  font-size: 550%;
+  font-family: "Droid Sans Mono", "Consolas", monospace sans-serif;
+}
+.nav-page-menu {
+  margin-bottom: 20px;
+}
+.nav-page-menu > li.separator {
+  max-width: 10px;
+}
+.nav-page-menu > li > a {
+  background: #ffffff;
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
+  border-color: #eeeeee;
+  border-width: 1px;
+  border-style: solid;
+}
+.nav-page-menu > li.active > a {
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
+  border-color: #0084a4;
 }

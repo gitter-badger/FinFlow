@@ -2,8 +2,6 @@
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
-SET foreign_key_checks = 0;
-SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 DROP TABLE IF EXISTS `fn_accounts`;
 CREATE TABLE `fn_accounts` (
@@ -48,6 +46,18 @@ CREATE TABLE `fn_contacts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `fn_contacts_meta`;
+CREATE TABLE `fn_contacts_meta` (
+  `meta_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `contact_id` int(11) NOT NULL,
+  `meta_key` varchar(255) NOT NULL,
+  `meta_value` text,
+  PRIMARY KEY (`meta_id`),
+  KEY `contact_id` (`contact_id`),
+  CONSTRAINT `fn_contacts_meta_ibfk_1` FOREIGN KEY (`contact_id`) REFERENCES `fn_contacts` (`contact_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `fn_currency`;
 CREATE TABLE `fn_currency` (
   `currency_id` smallint(6) NOT NULL AUTO_INCREMENT,
@@ -73,6 +83,7 @@ CREATE TABLE `fn_files` (
   `file_id` int(11) NOT NULL AUTO_INCREMENT,
   `filename` varchar(255) NOT NULL,
   `mime_type` varchar(255) DEFAULT NULL,
+  `size` bigint(20) DEFAULT '0',
   `date_created` datetime NOT NULL,
   PRIMARY KEY (`file_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -103,6 +114,14 @@ CREATE TABLE `fn_op` (
   `sdate` datetime NOT NULL,
   `mdate` datetime DEFAULT NULL,
   PRIMARY KEY (`trans_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `fn_op_attachments`;
+CREATE TABLE `fn_op_attachments` (
+  `trans_id` bigint(20) NOT NULL,
+  `file_id` int(11) NOT NULL,
+  UNIQUE KEY `trans_id` (`trans_id`,`file_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -146,11 +165,23 @@ CREATE TABLE `fn_op_pending_meta` (
 
 DROP TABLE IF EXISTS `fn_settings`;
 CREATE TABLE `fn_settings` (
-  `setting_key` varchar(225) NOT NULL,
-  `setting_val` varchar(225) DEFAULT NULL,
-  `setting_type` varchar(12) DEFAULT NULL,
+  `setting_key` varchar(255) NOT NULL,
+  `setting_val` varchar(255) DEFAULT NULL,
+  `setting_type` varchar(12) DEFAULT 'string',
   `settting_desc` text,
   UNIQUE KEY `setting_key` (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `fn_tasks`;
+CREATE TABLE `fn_tasks` (
+  `task_id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `task_name` varchar(24) NOT NULL,
+  `status` enum('running','finished','stopped','unknown') NOT NULL DEFAULT 'stopped',
+  `active` enum('yes','no') NOT NULL DEFAULT 'no',
+  `last_activity` datetime DEFAULT NULL,
+  PRIMARY KEY (`task_id`),
+  UNIQUE KEY `task_name` (`task_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -162,7 +193,8 @@ CREATE TABLE `fn_users` (
   `password` varchar(255) NOT NULL,
   `last_login` datetime DEFAULT NULL,
   `last_activity` datetime DEFAULT NULL,
-  `status` enum('offline,online,disabled') DEFAULT NULL,
+  `status` enum('offline,','online') DEFAULT NULL,
+  `enabled` enum('yes,','no') DEFAULT NULL,
   `pw_reset_key` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -178,4 +210,4 @@ CREATE TABLE `fn_users_meta` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2015-05-05 21:15:37
+-- 2015-05-15 13:02:08

@@ -9,6 +9,9 @@ include_once ('task-init.php');
 use FinFlow\UI;
 use FinFlow\TaskAssistant;
 use FinFlow\Util;
+use FinFlow\OP;
+use FinFlow\Contacts;
+use FinFlow\User;
 use FinFlow\CanValidate;
 use FinFlow\Drivers\EmailFetchAgent;
 use FinFlow\Drivers\EmailAgent_Exception;
@@ -21,7 +24,11 @@ $Settings = array(
 		'encryption'	=> 'ssl',
 		'username'	    => 'anonymous',
 		'password'	    => '',
+		'timeout'	    => 10,
 		'validate_cert'	=> true,
+
+		'default_op_user_id' => 1,
+		'restrict_from'      => '',
 );
 
 $Settings = TaskAssistant::get_task_params(FN_TASK_NAME, $Settings);
@@ -30,7 +37,7 @@ $active     = TaskAssistant::is_task_active(FN_TASK_NAME);
 $testing    = isset($_GET['test']) ? TRUE : FALSE;
 $in_browser = TaskAssistant::is_browser();
 
-if ($active){
+if ( $active and strlen($Settings['password']) ){
 	$Settings['password'] = Util::decrypt($Settings['password'], FN_CRYPT_SALT);
 }
 
@@ -40,15 +47,17 @@ if ( empty($Settings['host']) )
 
 //--- validate stuff ---//
 
-if ( !$active and !$testing )
+if ( ! $active and ! $testing )
     TaskAssistant::task_error("The task <em>%1s</em> is deactivated!", array(FN_TASK_NAME));
 
-if ( !$testing and !$active ) 
+if ( ! $testing and ! $active )
 	exit(); //silent exit
 
 //--- validate the hostname --//
 if ( ! CanValidate::hostname($Settings['host']) )
-	TaskAssistant::task_error("Serverul de mail {$Settings['host']} nu poate fi contactat.");
+	TaskAssistant::task_error(
+		__t("The email server at %s cannot be reached. Please check your server's host/address settings and try again.", $Settings['host'])
+	);
 //--- validate the hostname --//
 
 try{
@@ -56,65 +65,106 @@ try{
 	//lock the task
 	TaskAssistant::get_lock(FN_TASK_NAME);
 
-	$MailFetch = new EmailFetchAgent($Settings['protocol'], $Settings['host'], $Settings['username'], $Settings['password'], $Settings['encryption'], $Settings['port'], 10, $Settings['validate_cert']);
-
+	$MailFetch = new EmailFetchAgent($Settings['protocol'], $Settings['host'], $Settings['username'], $Settings['password'], $Settings['encryption'], intval($Settings['port']), intval($Settings['timeout']), intval($Settings['validate_cert']));
 	
 	if ( $testing ){
 		TaskAssistant::release_lock(FN_TASK_NAME);
         UI::fatal_error(
-	        __t('The task has successfully connected to %s.', $Settings['host']),
+	        __t('%1s has successfully connected to <em>%2s</em>.', FN_TASK_NAME, $Settings['host']),
 	        true, true, UI::MSG_SUCCESS, "Info: ", 'Info'
         );
 	}
 
 	$messages = $MailFetch->getMessages();
+	$processed= 0;
+	$created  = 0;
 
-	print_r($messages);
+	if( count($messages) ) foreach($messages as $message){
 
-	die();
-	
-	for($i= 1; $i<=$unread; $i++ ){
-		
-		$message = $MailFetch->getMsg($i); 
-		
-		$params    = array('Data'=>$message);
-		$decoded  = array();
-		
-		$Parser->Decode($params, $decoded);
-		
-		if ( count($decoded) ){
-			
-			$mail = $decoded[0];
-			
-			$subject   = $mail['Headers']['subject:'];
-            $timestamp = @strtotime($mail['Headers']['delivery-date:']);
-			$body	   = $mail['Body'];
-			
-			if ( isset($mail['Parts'][0]['Body']) ) $body = $mail['Parts'][0]['Body'];
-			
-			$vars = fn_OP::extract_op_vars($subject);
+		$processed++;
 
-			if ( $vars === FALSE ); else{
+		$message_id = $message['uid'];
 
-                if( !isset($vars['time']) or empty($vars['time']) ) $vars['time'] = $timestamp;
+		$subject = trim( $message['subject'] );
+		$from    = trim( $message['from'] );
+		$time    = ( $t = @strtotime( $message['date'] ) ) ? $t : time();
+		$contents= trim($message['body']);
 
-				if ( strlen($body) ) $metadata = array('details'=>$body);
+		$metadata = array();
 
-				fn_OP::create($vars['optype'], $vars['value'], $vars['ccode'], $vars['account'], $vars['labels'], $vars['time'], $metadata);
-				
-				$MailFetch->deleteMsg($i);
-				
+		$contact_id = null;
+		$user_id    = null;
+
+		$vars  = OP::extract_op_vars($subject);
+		$saved = false;
+
+		if( $vars and count($vars) and isset($vars['optype']) and isset($vars['value']) ){
+
+			$created++;
+
+			if( $message['from'] ){
+
+				if( is_array($message['from']) )
+					$message['from'] = trim( strval( $message['from'][0] ) );
+
+				$contact = null;
+
+				$from = @explode(' ', $message['from']);
+				$from = strtolower( array_pop($from) );
+
+				if( strlen($Settings['restrict_from']) ){
+
+					$restrict = @explode(',', trim(strtolower($Settings['restrict_from']), ','));
+
+					if( count($restrict) and in_array($from, $restrict) ){
+						$contact = Contacts::get_by($from, 'email');
+					}
+				}
+				else
+					$contact = Contacts::get_by($from, 'email');
+
+				if( $contact )
+					$contact_id = $contact->contact_id;
 			}
-			
+
+			if( $message['to'] ){ //TODO this might be an array
+
+
+				if( is_array($message['to']) )
+					$message['to'] = trim( strval( $message['to'][0] ) );
+
+				$to = @explode(' ', $message['to']);
+				$to = array_pop($to);
+
+				$user = User::get_by($to, 'email');
+
+				if( $user )
+					$user_id = $user->user_id;
+
+			}
+
+			if( empty($user_id) ){
+				$user_id = $Settings['default_op_user_id'];
+			}
+
+			$saved = OP::create($vars['optype'], $vars['value'], $vars['ccode'], $vars['time'], $vars['account'], $vars['labels'], $user_id, $contact_id, $contents, $metadata);
+
 		}
-		
-		
+
+		if( $saved ){
+			$MailFetch->deleteMessage($message_id);
+		}
+
+		//TODO parse attachments
+
 	}
-	
-	$MailFetch->quit(); //disconnect and delete marked messages
+
+	$MailFetch->close();
+
+	die("processed= " . $processed . ' created=' . $created);
 
     if( TaskAssistant::is_browser() )
-        UI::fatal_error("Tranzac&#355;iile trimise pe email au fost actualizate.", false, true, 'note', "Not&#259;: ", 'Not&#259;');
+        UI::fatal_error("Tranzac&#355;iile trimise pe email au fost actualizate.", false, true, UI::MSG_SUCCESS, "Not&#259;: ", 'Not&#259;');
 
 	TaskAssistant::release_lock(FN_TASK_NAME);
 	

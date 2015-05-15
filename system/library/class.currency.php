@@ -162,6 +162,10 @@ class Currency{
 		
 	}
 
+	/**
+	 * Get default currency code
+	 * @return bool
+	 */
     public static function get_default_cc(){
         $d = self::get_default(); return isset($d->ccode) ? $d->ccode : false;
     }

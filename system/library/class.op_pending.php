@@ -9,8 +9,8 @@ namespace FinFlow;
 
 class OP_Pending{
 
-	const TYPE_IN  = 'in';
-	const TYPE_OUT = 'out';
+	const TYPE_IN  = OP::TYPE_IN;
+	const TYPE_OUT = OP::TYPE_OUT;
 
     public static $table  = 'fn_op_pending';
 
@@ -486,7 +486,7 @@ class OP_Pending{
         if ( count($filters) and is_array($filters)){
 
             if ( isset($filters['type']) and $filters['type'] ){
-                if ( !in_array($filters['type'], array(FN_OP_IN, FN_OP_OUT), TRUE) ) return array(); $fnsql->condition('optype', '=', strtolower($filters['type']));
+                if ( !in_array($filters['type'], OP::getTypesArray(), TRUE) ) return array(); $fnsql->condition('optype', '=', strtolower($filters['type']));
             }
 
             if( isset($filters['root_id']) ){
@@ -545,12 +545,17 @@ class OP_Pending{
 
         //--- require start date and end date ---//
         $filters['startdate'] = empty($filters['startdate']) ? date(FN_MYSQL_DATE) : $filters['startdate'];
-        $filters['enddate']  = empty($filters['enddate']) ? date(FN_MYSQL_DATE, @strtotime('+30 days')) : $filters['enddate'];
+        $filters['enddate']   = empty($filters['enddate']) ? date(FN_MYSQL_DATE, @strtotime('+30 days')) : $filters['enddate'];
 
         if ( count($filters) and is_array($filters)){
 
             if ( isset($filters['type']) and $filters['type'] ){
-                if ( !in_array($filters['type'], array(FN_OP_IN, FN_OP_OUT), TRUE) ) return false; $filters['type'] = $fndb->escape($filters['type']); $filters_sql[] = " AND `optype` = '{$filters['type']}' ";
+
+                if ( !in_array($filters['type'], OP::getTypesArray(), TRUE) )
+	                return false; $filters['type'] = $fndb->escape($filters['type']);
+
+	            $filters_sql[] = " AND `optype` = '{$filters['type']}' ";
+
             }
 
             if( isset($filters['root_id']) )
