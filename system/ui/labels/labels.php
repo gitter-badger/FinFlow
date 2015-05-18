@@ -103,7 +103,9 @@ $Labels = Label::get_all($offset, $per_page); ?>
             </div>
 
 			<?php else: ?>
-				<?php UI::msg(sprintf("Nu sunt etichete predefinite! <a href=\"%s\">Adaug&#259; &rarr;</a>.", UI::page_url('labels', array('t'=>'add'), FALSE)), UI::MSG_WARN); ?>
+				<div class="alert alert-warning">
+					<?php __e('There\'s no labels to show. <a href="%s">Add some &rarr; </a>', UI::page_url('labels/add') ); ?>
+				</div>
 			<?php endif;?>
 		<?php endif;?>
 		

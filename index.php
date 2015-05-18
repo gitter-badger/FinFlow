@@ -1,1 +1,1 @@
-<?php include_once 'system/init.php'; fn_UI::start();
+<?php include_once 'system/init.php';

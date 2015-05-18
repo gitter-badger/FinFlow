@@ -382,11 +382,11 @@ class Currency{
             $to = is_object($to) ? self::get($to->currency_id) : ( empty($to) ? self::get_default() : self::get($to) );
         }
 
-        if( fn_Util::is_unittest_environment() ){
-            fn_Log::to_file( "{$func} Converting {$from->ccode} to {$to->ccode} at {$from->cexchange} / {$to->cexchange}");
+        if( Util::is_unittest_environment() ){
+            Log::to_file( "{$func} Converting {$from->ccode} to {$to->ccode} at {$from->cexchange} / {$to->cexchange}");
         }
         else {
-            fn_Log::to_screen("{$func}  Converting {$from->ccode} to {$to->ccode} at {$from->cexchange} / {$to->cexchange}");
+            Log::to_screen("{$func}  Converting {$from->ccode} to {$to->ccode} at {$from->cexchange} / {$to->cexchange}");
         }
 
     }

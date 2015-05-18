@@ -17,7 +17,7 @@ UI::show_errors($errors); ?>
 
 	        sprintf('Nu ai definit&#259; o moned&#259; implicit&#259;!
 					 Verific&#259; set&#259;rile pentru <a href=\"%s\">parserul automat al cursului valutar</a>
-					 sau adaug&#259; mai jos o moned&#259; cu rata de schimb 1.', UI::url('settings/parsers/exchange-rates')
+					 sau adaug&#259; mai jos o moned&#259; cu rata de schimb 1.', UI::url('settings/parsers/exchange-rates', array(), false)
 	        ),
 
 	    UI::MSG_WARN
@@ -51,8 +51,12 @@ endif;?>
             <?php endforeach;?>
         </table>
     </div>
-<?php else:
+<?php else: ?>
 
-        UI::msg(sprintf("Nu sunt monede predefinite. Verific&#259; set&#259;rile pentru <a href=\"%1s\">parserul automat al cursului valutar</a> sau <a href=\"%2s\">adaug&#259; c&#226;teva monede</a> folosind formularul de ad&#259;ugare.", 'index.php?p=settings&t=exrparser', 'index.php?p=currencies&t=add'), fn_UI::$MSG_WARN);
+	<div class="alert alert-warning">
+		<p>
+			<?php __e('There are no currencies to show. Check your settings for the <a href="%1s">exchange rates parser</a> or add some curencies using <a href="%2s">the form</a>.', '#TODO', UI::url('currencies/add/', array(), false)); //TODO add missing links ?>
+		</p>
+	</div>
 
-endif; ?>
+<?php endif; ?>

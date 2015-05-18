@@ -1,0 +1,9 @@
+/.idea
+/.cache
+/config.php
+/application.log
+/setup/.remotehost
+/temp
+/uploads/*
+/logs/*
+/composer.lock

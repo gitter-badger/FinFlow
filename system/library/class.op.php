@@ -4,7 +4,7 @@ namespace FinFlow;
 
 /**
  * Operations Main Class
- * Class fn_OP
+ * Class OP
  * @version 1.6
  * @author Adrian7 (adrian@finflow.org)
  */
@@ -56,8 +56,6 @@ class OP{
 	    );
 
         $fnsql->insert(self::$table,  $data);
-
-	    die( $fnsql->get_query() ); //TODO...
 
         if( $fndb->execute_query( $fnsql->get_query() ) ) {
 
@@ -363,7 +361,7 @@ class OP{
 			$currency_id = intval($filters['currency_id']);
 		}
 		else {
-			$currency = fn_Currency::get_default(); $currency_id = is_object($currency) ? $currency->currency_id : 0;
+			$currency = Currency::get_default(); $currency_id = is_object($currency) ? $currency->currency_id : 0;
 		}
 		
 		//--- first selet sum in all diferent currencies available ---//
@@ -375,7 +373,7 @@ class OP{
 		$fnsql->from();
 		
 		if ( isset($filters['labels']) )
-			$fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
+			$fnsql->left_join(Label::$table_assoc, 'trans_id', 'trans_id');
 		
 		self::apply_filters($filters);
 		
@@ -396,7 +394,7 @@ class OP{
 			$fnsql->from();
 				
 			if ( isset($filters['labels']) )
-				$fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
+				$fnsql->left_join(Label::$table_assoc, 'trans_id', 'trans_id');
 				
 			self::apply_filters( array_merge($filters, array('currency_id'=>$row->currency_id)) );
 
@@ -424,10 +422,10 @@ class OP{
 				$sum = floatval($group->ctotal);
 				
 				if ( ( $sum > 0 ) and ( $currency_id !=  $row->currency_id) ) //convert it
-					$sum = fn_Currency::convert($sum, $row->currency_id, $currency_id, 'id');
+					$sum = Currency::convert($sum, $row->currency_id, $currency_id, 'id');
 				
 				$total = array('sum'=>$sum, 'year'=>$group->year);
-				$hash = ( $group->year . fn_Util::add_leading_zeros($group->month, 2, 1) . fn_Util::add_leading_zeros($group->day, 2, 1) );
+				$hash  = ( $group->year . Util::add_leading_zeros($group->month, 2, 1) . Util::add_leading_zeros($group->day, 2, 1) );
 				
 				if ( isset($group->month) and strlen($group->month) )
 					$total['month'] = $group->month;

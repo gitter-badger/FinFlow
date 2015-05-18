@@ -3,7 +3,7 @@
 /**
  * Application version
  */
-define('FN_VERSION'   , '0.7.1');
+define('FN_VERSION'   , '0.7.2');
 
 /**
  * Corresponding database version
@@ -93,7 +93,7 @@ if( defined('FN_DB_HOST') ){
 
 }
 else{
-	UI::fatal_error("Fisierul de configurare {$cfg_path} nu poate fi incarcat.");
+	UI::fatal_error( __t( "Can't load the %s configuration file.", $cfg_path ) );
 }
 
 //--- phptestunit globals workaround ---//
@@ -102,10 +102,10 @@ $GLOBALS['fnsql'] = $fnsql;
 //--- phptestunit globals workaround ---//
 
 if ( $fndb and ! $fndb->connected )
-    UI::fatal_error('Nu se poate realiza conexiunea cu baza de date pe ' . FN_DB_HOST);
+    UI::fatal_error( __t( "Can't connect to database on %s ", FN_DB_HOST ) );
 
 if ( Settings::get('db_version', 0) == 0 ) //database not installed
-	UI::fatal_error('Baza de date nu a fost instalata pe ' . FN_DB_HOST . ' ...');
+	UI::fatal_error( __t( 'The database has not yet been installed on %s ... .', FN_DB_HOST ) );
 
 //--- setup timezone ---//
 define('FN_TIMEZONE', Settings::get('timezone', 'Europe/London') ); date_default_timezone_set(FN_TIMEZONE);

@@ -43,7 +43,7 @@ class Contacts{
         $offset = intval($offset);
         $limit   = intval($limit);
 
-        $fnsql->select('*', self::$table);
+        $fnsql->select('*', self::TABLE);
         $fnsql->limit($offset, $limit);
 
         return $fndb->get_rows( $fnsql->get_query() );
@@ -55,7 +55,7 @@ class Contacts{
         $contact_id = intval( $contact_id );
         $trans_id     = intval( $trans_id );
 
-        return fn_OP::update($trans_id, array('contact_id'=>$contact_id));
+        return OP::update($trans_id, array('contact_id'=>$contact_id));
 
     }
 

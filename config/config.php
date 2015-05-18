@@ -6,7 +6,7 @@
  */
 
 /** URL-ul de baza al aplicatiei */
-define('FN_URL', 'http://localhost:8087/live');
+define('FN_URL', 'http://localhost:8087/working');
 
 
 /** Setari pentru conexiuna la baza de date, le poti obtine de la furnizorul tau de servicii de gazduire web */
