@@ -295,7 +295,7 @@ class TaskAssistant{
 			else{           //check input and db too
 
 				if( self::is_browser() ){
-					$settings[$key] = ( $value = in($key, $xss_clean) ) ? $value : $db_params[$key];
+					$settings[$key] = isset_in($key) ? in($key, $xss_clean) : $db_params[$key];
 				}
 				else{
 					$settings[$key] = isset($cli_args[$key]) ? $cli_args[$key] : $db_params[$key];

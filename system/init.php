@@ -16,10 +16,9 @@ define('FN_DB_VERSION', '1');
 define('FNPATH', rtrim(str_replace(basename(dirname(__FILE__)), '', dirname(__FILE__)), DIRECTORY_SEPARATOR));
 
 define('FN_SERVER_TIMEZONE'	, date_default_timezone_get());
-define('FN_MYSQL_DATE'		, 'Y-m-d H:i:s');
+define('FN_LOGFILE'         , ( FNPATH . '/logs/fn-' . date('Y-m-d') . '.log') );
 
-define('FN_LOGFILE', ( FNPATH . '/application.log') );
-
+require_once ( FNPATH . '/system/library/constants.php');
 require_once ( FNPATH . '/system/library/autoload.php');
 require_once ( FNPATH . '/system/thirdparty/autoload.php');
 require_once ( FNPATH . '/system/library/helpers.php');

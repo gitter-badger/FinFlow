@@ -43,7 +43,7 @@ if ( $active and strlen($Settings['password']) ){
 
 //--- validate stuff ---//
 if ( empty($Settings['host']) )
-	TaskAssistant::task_error("Adresa serverului de mail nu este configurat&#259;.");
+	TaskAssistant::task_error( __t('Mail server address is missing.') );
 
 //--- validate stuff ---//
 
@@ -63,10 +63,10 @@ if ( ! CanValidate::hostname($Settings['host']) )
 try{
 
 	//lock the task
-	TaskAssistant::get_lock(FN_TASK_NAME);
+	//TODO enable locking TaskAssistant::get_lock(FN_TASK_NAME);
 
 	$MailFetch = new EmailFetchAgent($Settings['protocol'], $Settings['host'], $Settings['username'], $Settings['password'], $Settings['encryption'], intval($Settings['port']), intval($Settings['timeout']), intval($Settings['validate_cert']));
-	
+
 	if ( $testing ){
 		TaskAssistant::release_lock(FN_TASK_NAME);
         UI::fatal_error(
@@ -75,7 +75,7 @@ try{
         );
 	}
 
-	$messages = $MailFetch->getMessages();
+	$messages = $MailFetch->getMessages(true);
 	$processed= 0;
 	$created  = 0;
 
@@ -100,8 +100,12 @@ try{
 
 		if( $vars and count($vars) and isset($vars['optype']) and isset($vars['value']) ){
 
-			$created++;
+			//--- determine transaction time ---//
+			if( empty($vars['time']) )
+				$vars['time'] = $time;
+			//--- determine transaction time ---//
 
+			//--- determine contact id ---//
 			if( $message['from'] ){
 
 				if( is_array($message['from']) )
@@ -119,14 +123,19 @@ try{
 					if( count($restrict) and in_array($from, $restrict) ){
 						$contact = Contacts::get_by($from, 'email');
 					}
+
 				}
 				else
 					$contact = Contacts::get_by($from, 'email');
 
 				if( $contact )
 					$contact_id = $contact->contact_id;
-			}
 
+			}
+			//--- determine contact id ---//
+
+
+			//--- determine user id ---//
 			if( $message['to'] ){ //TODO this might be an array
 
 
@@ -146,13 +155,18 @@ try{
 			if( empty($user_id) ){
 				$user_id = $Settings['default_op_user_id'];
 			}
+			//--- determine user id ---//
+
+			//--- add metadata ---//
+			$metadata['email_body'] = strip_tags( $contents );
+			//--- add metadata ---//
 
 			$saved = OP::create($vars['optype'], $vars['value'], $vars['ccode'], $vars['time'], $vars['account'], $vars['labels'], $user_id, $contact_id, $contents, $metadata);
 
 		}
 
 		if( $saved ){
-			$MailFetch->deleteMessage($message_id);
+			$created++; $MailFetch->deleteMessage($message_id);
 		}
 
 		//TODO parse attachments
@@ -164,7 +178,7 @@ try{
 	die("processed= " . $processed . ' created=' . $created);
 
     if( TaskAssistant::is_browser() )
-        UI::fatal_error("Tranzac&#355;iile trimise pe email au fost actualizate.", false, true, UI::MSG_SUCCESS, "Not&#259;: ", 'Not&#259;');
+        UI::fatal_error("Tranzac&#355;iile trimise pe email au fost actualizate.", false, true, UI::MSG_SUCCESS, 'Info: ', 'Info');
 
 	TaskAssistant::release_lock(FN_TASK_NAME);
 	

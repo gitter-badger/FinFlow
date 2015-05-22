@@ -22,6 +22,10 @@ function in($key, $xss_filter=false){
     return Util::get_input($key, $xss_filter);
 }
 
+function isset_in($key){
+	return ( isset($_GET[$key]) or isset($_POST[$key]) );
+}
+
 /**
  * Returns the value for the array key
  * @param $array

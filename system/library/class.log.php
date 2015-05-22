@@ -2,9 +2,25 @@
 
 namespace FinFlow;
 
-$fn_log_messages = array();
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 class Log{
+
+	protected static $logger = null;
+
+
+	public function __construct($name='fnMainLogger', $type='file', $output=null){
+
+		if( empty(self::$logger) ){
+			//TODO implement logger support ...
+		}
+
+	}
+
+	public static function getLogger(){
+		//TODO
+	}
 
     /**
      * Logs a message in the log file. Log file is defined in the constant FN_LOGFILE

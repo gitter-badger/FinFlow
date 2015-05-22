@@ -629,12 +629,12 @@ class OP{
         $labels = "";
 		
 		$extracted = array(
-            'time'      => time(),                      //time of the transaction - optional
-			'optype'    => false,                       //type - mandatory
-			'value'	    => 1,	                        //value - optional
-			'ccode'	    => Currency::get_default_cc(),	//currency code  - optional
-			'labels'	=> "",                          //labels - optional
-            'account'   => ""                           //account - optional
+            'time'      => null,                      //time of the transaction - optional
+			'optype'    => false,                     //type - mandatory
+			'value'	    => 1,	                      //value - optional
+			'ccode'	    => Currency::get_default_cc(),//currency code  - optional
+			'labels'	=> "",                        //labels - optional
+            'account'   => ""                         //account - optional
 		);
 
 		//--- may we parse the string as a query str ---//
@@ -716,16 +716,16 @@ class OP{
 
             //--- if the label has a parent also associate the parent label ---//
 
-            $label = fn_Label::get_by_id($label_id); if( $label and isset($label->parent_id) and ( $label->parent_id > 0 ) ) {
+            $label = Label::get_by_id($label_id); if( $label and isset($label->parent_id) and ( $label->parent_id > 0 ) ) {
 
-                $fnsql->insert(fn_Label::$table_assoc, array('label_id'=>$label->parent_id, 'trans_id'=>$trans_id));
+                $fnsql->insert(Label::$table_assoc, array('label_id'=>$label->parent_id, 'trans_id'=>$trans_id));
                 $fndb->execute_query( $fnsql->get_query() );
 
             }
 
             //--- if the label has a parent also associate the parent label ---//
 
-			$fnsql->insert(fn_Label::$table_assoc, array('label_id'=>$label_id, 'trans_id'=>$trans_id));
+			$fnsql->insert(Label::$table_assoc, array('label_id'=>$label_id, 'trans_id'=>$trans_id));
 
 			return $fndb->execute_query( $fnsql->get_query() );
 
@@ -833,14 +833,6 @@ class OP{
 			if( $contact_id )
 				$data['contact_id'] = intval($contact_id);
 
-			if( strlen($comments) ){
-				$data['comments'] = strip_tags( trim($comments) );
-			}
-
-			if ( empty($comments) and strlen($metadata['comments']) ){
-				$data['comments'] = strip_tags($metadata['comments']);  unset( $metadata['comments'] );
-			}
-
 			if( empty($contact_id) and isset($metadata['from']) ){
 				//TODO set transaction contact id ...
 			}
@@ -854,9 +846,17 @@ class OP{
 
 			}
 
-			print_r($data); die(); //TODO...
+			$comments = empty($comments) ? ( isset($metadata['comments']) ? $metadata['comments'] : null ) : $comments;
+
+			if( strlen($comments) ){
+				$data['comments'] = substr(strip_tags( trim($comments) ), 0, 255);
+			}
+
+			$data = $fndb->escape($data);
 
 			$fnsql->insert(self::$table,  $data);
+
+			//TODO die( $fnsql->get_query() );
 
 			if ( $fndb->execute_query( $fnsql->get_query() ) ){
 				
