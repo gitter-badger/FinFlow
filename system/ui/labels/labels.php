@@ -86,7 +86,7 @@ $Labels = Label::get_all($offset, $per_page); ?>
                             <td><?php echo $label->slug; ?></td>
                             <td><?php echo Label::get_ops_count($label->label_id); ?></td>
                             <td class="align-center">
-                                <button class="btn btn-default" onclick="confirm_delete('<?php UI::page_url('labels', array('del'=>$label->label_id)); ?>')">
+                                <button class="btn btn-default" onclick="confirm_delete('<?php UI::url('labels', array('del'=>$label->label_id)); ?>')">
                                     <span class="fa fa-remove"></span>
                                 </button>
                             </td>

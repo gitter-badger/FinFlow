@@ -17,7 +17,7 @@ use FinFlow\OP;
 
 	<div class="panel-body">
 
-		<form class="form form-horizontal filter" action="<?php UI::url('transactions/list'); ?>" name="filter-transactions-form" id="filterTransactionsForm" method="get">
+		<form class="form form-horizontal filter" action="<?php UI::url('transactions/list'); ?>" name="filter-transactions-form" id="filterTransactionsForm" method="get" onsubmit="alert('hello!');">
 
 			<div class="form-group">
 				<label class="control-label col-lg-3">Din: </label>

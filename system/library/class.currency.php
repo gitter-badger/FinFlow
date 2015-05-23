@@ -325,7 +325,7 @@ class Currency{
         if( $Row and isset($Row->cexchange) )
             return $Row;
         else if( $rlevel > 0 ){ //no recorded data for the currency found
-            fn_Log::to_file("Nu exista inregistrare in istoric pentru moneda " . $currency_id, "Alerta:"); return self::get($currency_id);
+            Log::info("Nu exista inregistrare in istoric pentru moneda " . $currency_id, "Alerta:"); return self::get($currency_id);
         }
 
         return self::get_closest_historic_record($currency_id, $date, ++$rlevel);
@@ -342,7 +342,7 @@ class Currency{
 
         $currency_id = intval($currency_id);
 
-        $fnsql->select('trans_id,currency_id', fn_OP::$table, array('currency_id'=>$currency_id));
+        $fnsql->select('trans_id,currency_id', OP::$table, array('currency_id'=>$currency_id));
         $fnsql->limit(0, 1);
 
         $Row = $fndb->get_row( $fnsql->get_query() );
@@ -372,7 +372,7 @@ class Currency{
      */
     public static function log_exchange($from, $to, $func=null){
 
-        $func = empty($func) ? (__CLASS__ . '::' . __FUNCTION__) : ( is_array($func) ? implode('::', $func) : $func );
+        $func = empty($func) ? ( __CLASS__ . '::' . __FUNCTION__ ) : ( is_array($func) ? implode('::', $func) : $func );
 
         if( ! isset($from->ccode) ){
             $from = is_object($from) ? self::get($from->currency_id) : ( empty($from) ? self::get_default() : self::get($from) );
@@ -383,10 +383,10 @@ class Currency{
         }
 
         if( Util::is_unittest_environment() ){
-            Log::to_file( "{$func} Converting {$from->ccode} to {$to->ccode} at {$from->cexchange} / {$to->cexchange}");
+            Log::debug( "{$func} Converting {$from->ccode} to {$to->ccode} at {$from->cexchange} / {$to->cexchange}");
         }
         else {
-            Log::to_screen("{$func}  Converting {$from->ccode} to {$to->ccode} at {$from->cexchange} / {$to->cexchange}");
+            Log::debug("{$func}  Converting {$from->ccode} to {$to->ccode} at {$from->cexchange} / {$to->cexchange}");
         }
 
     }
@@ -458,9 +458,9 @@ class Currency{
 
         if( isset($Currencies->currency) ) foreach($Currencies->currency as $currency){
 
-            $id        = intval($currency->ID); //keep the ID for reference
-            $code    = strval($currency->code);
-            $symbol = fn_Util::unescape_xml( strval($currency->symbol) );
+            $id     = intval($currency->ID); //keep the ID for reference
+            $code   = strval($currency->code);
+            $symbol = Util::unescape_xml( strval($currency->symbol) );
 
             $exists = self::get_by_code( $code, 'currency_id' );
 

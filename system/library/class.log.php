@@ -5,98 +5,128 @@ namespace FinFlow;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+/**
+ * Class Log
+ * @package FinFlow
+ * @property Logger $logger
+ */
 class Log{
 
 	protected static $logger = null;
+	protected static $level  = 0;
 
+	const DEBUG     = Logger::DEBUG;
+	const INFO      = Logger::INFO;
+	const WARNING   = Logger::WARNING;
+	const ERROR     = Logger::ERROR;
+	const CRITICAL  = Logger::CRITICAL;
+	const ALERT     = Logger::ALERT;
 
-	public function __construct($name='fnMainLogger', $type='file', $output=null){
+	//const EMERGENCY = Logger::EMERGENCY;
+	//const NOTICE    = Logger::NOTICE;
 
-		if( empty(self::$logger) ){
-			//TODO implement logger support ...
-		}
+	const LEVEL_DEBUG    = 0;
+	const LEVEL_INFO     = 10;
+	const LEVEL_ERROR    = 20;
+	const LEVEL_CRITICAL = 30;
 
+	const LEVEL_DEFAULT         = self::LEVEL_CRITICAL;
+	const LOGGER_INIT_EXCEPTION = 'The logger has not been initialized. Use init() to initialize the logger.';
+
+	public static function init($handler=null, $level=null, $name=null){
+
+		if( empty($handler) )
+			$handler = new StreamHandler( FN_LOGFILE );
+
+		if( empty($level) )
+			$level = self::LEVEL_DEFAULT;
+
+		if( empty($name) )
+			$name = ( 'FinFlow v' . FN_VERSION );
+
+		self::$logger = new Logger($name);
+
+		self::addHandler( $handler );
+		self::setLevel($level);
+	}
+
+	public static function addHandler($handler){
+		if( self::$logger )
+			self::$logger->pushHandler($handler);
+		else
+			self::exception(self::LOGGER_INIT_EXCEPTION);
+	}
+
+	public static function setLevel($level){
+		self::$level = $level;
+	}
+
+	public static function setThreshold($threshold){
+		self::$level = $threshold;
 	}
 
 	public static function getLogger(){
-		//TODO
+		return self::$logger;
 	}
 
-    /**
-     * Logs a message in the log file. Log file is defined in the constant FN_LOGFILE
-     * @param $msg
-     * @param string $prefix
-     * @param int $sizelimit
-     * @return bool
-     */
-    public static function to_file($msg, $prefix="MESSAGE: ", $sizelimit=1){ //TODO add sizelimit support
+	public static function info($msg){
 
-        if( defined('FN_DEBUG') and !FN_DEBUG ) return false; //debug deactivated
+		if( self::$level > self::LEVEL_INFO  )
+			return;
 
-        if( defined('FN_LOGFILE')  ){
+		if( self::$logger )
+			self::$logger->addInfo($msg);
+		else
+			self::exception(self::LOGGER_INIT_EXCEPTION);
+	}
 
-            if( @file_exists(FN_LOGFILE) ); else @file_put_contents(FN_LOGFILE, 'Jurnal FinFlow -' . FN_VERSION . "\n\n", FILE_APPEND);
+	public static function debug($msg){
 
-            $now               = date(FN_MYSQL_DATE);
-            $sizelimitBytes = ($sizelimit * 1024 * 1024);
-            $filesize          = intval( @filesize(FN_LOGFILE) );
-            $logfile            = @fopen(FN_LOGFILE, 'a');
+		if( self::$level > self::LEVEL_DEBUG  )
+			return;
 
-            if( $logfile ){
+		if( self::$logger )
+			self::$logger->addDebug($msg);
+		else
+			self::exception(self::LOGGER_INIT_EXCEPTION);
+	}
 
-                if( $filesize > $sizelimitBytes ) @ftruncate($logfile, $sizelimitBytes);
+	public static function warning($msg){
 
-                @fwrite($logfile,  "{$now} {$prefix} {$msg}\n");  @fclose($logfile);
+		if( self::$level > self::LEVEL_INFO )
+			return;
 
-                return true;
+		if( self::$logger )
+			self::$logger->addWarning($msg);
+		else
+			self::exception(self::LOGGER_INIT_EXCEPTION);
+	}
 
-            }
+	public static function error($msg){
 
-            return false;
+		if( self::$level > self::LEVEL_ERROR)
+			return;
 
-        }
-        else fn_UI::fatal_error("Constanta FN_LOGFILE nu este definita!");
+		if( self::$logger )
+			self::$logger->addError($msg);
+		else
+			self::exception(self::LOGGER_INIT_EXCEPTION);
 
-    }
+	}
 
-    /**
-     * Logs a message to be displayed on the screen log
-     * @param $msg
-     * @param string $prefix
-     * @return null
-     */
-    public static function to_screen($msg, $prefix="MESSAGE: "){
+	public static function critical($msg){
 
-        global $fn_log_messages;
+		if( self::$level > self::LEVEL_CRITICAL )
+			return;
 
-        if( defined('FN_DEBUG') and ! FN_DEBUG ) return false; //debug deactivated
+		if( self::$logger )
+			self::$logger->addCritical($msg);
+		else
+			self::exception(self::LOGGER_INIT_EXCEPTION);
+	}
 
-        $now = date(FN_MYSQL_DATE);
-
-        $fn_log_messages[] = ("{$now} {$prefix} {$msg}\n");
-
-    }
-
-    /**
-     * Displays the log to screen
-     * @param int $limit
-     */
-    public static function display($limit=125){
-
-        global $fn_log_messages;
-
-        if( empty($fn_log_messages) ) return;
-
-       $messages = array_slice ($fn_log_messages, 0 , $limit);
-
-        echo('<div class="fn-log-messages bottom"><div class="heading">Console</div><div class="console pre-wrap"><pre>');
-
-        if( count($messages) ) foreach($messages as $message){
-            echo($message);
-        }
-
-        echo('</pre></div></div>');
-
-    }
+	public static function exception($msg){
+		throw new \Exception($msg);
+	}
 
 }

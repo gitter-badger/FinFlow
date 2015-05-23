@@ -39,7 +39,7 @@ class UI{
      * @param bool $dismissable
      * @param bool $translate
      */
-	public static function msg($msg, $type="note", $dismissable=true, $translate=true){
+	public static function msg($msg, $type="note", $dismissable=true, $translate=false){
 		if ( strlen($msg) ) echo '<div class="alert alert-' . $type . '"> ' . ( $dismissable ? '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">x</span></button>' : '' ) . $msg . ' </div>';
 	}
 
@@ -269,25 +269,28 @@ class UI{
 		if ( is_array($errors) ) 
 			foreach ($errors as $msg) self::msg($msg, self::MSG_ERROR);
 		else 
-			self::msg($errors, 'error');
+			self::msg($errors, self::MSG_ERROR);
 	}
 	
 	public static function show_notes($notes){
 		if ( is_array($notes) )
 			foreach ($notes as $msg) self::msg($msg, self::MSG_NOTE);
 		else
-			self::msg($notes, 'note');
+			self::msg($notes, self::MSG_NOTE);
 	}
 
     public static function show_warnings($warnings){
         if ( is_array($warnings) )
             foreach ($warnings as $msg) self::msg($msg, self::MSG_WARN);
         else
-            self::msg($warnings, 'warning');
+            self::msg($warnings, self::MSG_WARN);
     }
 
-	public static function show_success(){
-		//TODO...
+	public static function show_success($message){
+		if ( is_array($message) )
+			foreach ($message as $msg) self::msg($msg, self::MSG_SUCCESS);
+		else
+			self::msg($message, self::MSG_SUCCESS);
 	}
 	
 	

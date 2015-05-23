@@ -173,8 +173,10 @@ class Label{
             $fndb->execute_query( $fnsql->get_query() );
             //--- update children to parent '0' ---//
 
-	        $fnsql->delete(self::$table, array('label_id'=>$label_id));  //--- remove label ---//
-				
+			//--- remove label ---//
+	        $fnsql->delete(self::$table, array('label_id'=>$label_id));
+			//--- remove label ---//
+
 		    return  $fndb->execute_query( $fnsql->get_query() );
 
 		}

@@ -7,6 +7,7 @@ define('FN_TASK_NAME', 'op_mailparse');
 include_once ('task-init.php');
 
 use FinFlow\UI;
+use FinFlow\Log;
 use FinFlow\TaskAssistant;
 use FinFlow\Util;
 use FinFlow\OP;
@@ -63,7 +64,7 @@ if ( ! CanValidate::hostname($Settings['host']) )
 try{
 
 	//lock the task
-	//TODO enable locking TaskAssistant::get_lock(FN_TASK_NAME);
+	TaskAssistant::get_lock(FN_TASK_NAME);
 
 	$MailFetch = new EmailFetchAgent($Settings['protocol'], $Settings['host'], $Settings['username'], $Settings['password'], $Settings['encryption'], intval($Settings['port']), intval($Settings['timeout']), intval($Settings['validate_cert']));
 
@@ -163,10 +164,13 @@ try{
 
 			$saved = OP::create($vars['optype'], $vars['value'], $vars['ccode'], $vars['time'], $vars['account'], $vars['labels'], $user_id, $contact_id, $contents, $metadata);
 
+			if( ! $saved ){
+				Log::info(FN_TASK_NAME . ' Failed to parse email transaction type=' . $vars['optype'] . ' ccode=' . $vars['ccode']);
+			}
 		}
 
 		if( $saved ){
-			$created++; $MailFetch->deleteMessage($message_id);
+			$created++; $saved = false; $MailFetch->deleteMessage($message_id);
 		}
 
 		//TODO parse attachments
@@ -175,10 +179,14 @@ try{
 
 	$MailFetch->close();
 
-	die("processed= " . $processed . ' created=' . $created);
+    if( TaskAssistant::is_browser() ){
 
-    if( TaskAssistant::is_browser() )
-        UI::fatal_error("Tranzac&#355;iile trimise pe email au fost actualizate.", false, true, UI::MSG_SUCCESS, 'Info: ', 'Info');
+	    $msg = __t('Mailbox transactions have been updated. ');
+	    $msg.= __t('Emails processed %s. ', $processed);
+	    $msg.= __t('Transactions added %s.', $created);
+
+	    UI::fatal_error($msg, false, true, UI::MSG_NOTE, 'Info: ', 'Info');
+    }
 
 	TaskAssistant::release_lock(FN_TASK_NAME);
 	

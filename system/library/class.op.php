@@ -181,14 +181,16 @@ class OP{
 
         global $fndb, $fnsql;
 
+	    $labelsFilterON = ( ! empty($filters['labels']) or ! empty($filters['ignore_labels']) );
+
 
         $fnsql->init(SQLStatement::$SELECT);
         $fnsql->table(self::$table);
-        $fnsql->count('trans_id', 'total');
+        $fnsql->count('trans_id', 'total', $labelsFilterON);
         $fnsql->from(self::$table);
 
-        if ( isset($filters['labels']) )
-            $fnsql->left_join(fn_Label::$table_assoc, 'trans_id', 'trans_id');
+        if ( $labelsFilterON )
+            $fnsql->left_join(Label::$table_assoc, 'trans_id', 'trans_id');
 
         $filters = array_merge($filters);
 
@@ -196,7 +198,8 @@ class OP{
 
         $Row = $fndb->get_row( $fnsql->get_query() );
 
-        if( isset($Row->total) ) return $Row->total;
+        if( isset($Row->total) )
+	        return $Row->total;
 
         return 0;
 
@@ -206,25 +209,28 @@ class OP{
 	public static function get_operations($filters, $start=0, $count=125){
 		
 		global $fndb, $fnsql;
-			
 
 		$fnsql->init(SQLStatement::$SELECT);
 		$fnsql->table(self::$table);
+
+		if ( ! empty($filters['labels']) or ! empty($filters['ignore_labels']) )
+			$fnsql->distinct();
+
 		$fnsql->fields('*');
 		$fnsql->from(self::$table);
 
-		if ( isset($filters['labels']) )
+		if ( ! empty($filters['labels']) or ! empty($filters['ignore_labels']) )
 			$fnsql->left_join(Label::$table_assoc, 'trans_id', 'trans_id');
 		
 		$filters = array_merge($filters, array('start'=>$start, 'count'=>$count));
 
-        if( !isset($filters['orderby']) ) {
+        if( ! isset($filters['orderby']) ) {
             $filters['orderby'] = array('sdate', 'trans_id');
-            $filters['order']     = 'DESC';
+            $filters['order']   = 'DESC';
         }
 
 		self::apply_filters($filters);
-		
+
 		return $fndb->get_rows( $fnsql->get_query() );
 		
 	}
@@ -303,8 +309,6 @@ class OP{
 			
 			//delete trans
 			$fnsql->delete(self::$table, array('trans_id'=>$trans_id));
-
-			die( $fnsql->get_query() ); //TODO...
 
 			return $fndb->execute_query( $fnsql->get_query() );
 			
@@ -453,7 +457,8 @@ class OP{
 
         global $fndb, $fnsql;
 
-        $Total = 0;
+        $Total          = 0;
+		$labelsFilterON = ( ! empty( $filters['labels'] ) or ! empty( $filters['ignore_labels'] ) );
 
         //--- first select sums in all different currencies available ---//
 
@@ -470,7 +475,7 @@ class OP{
         $fnsql->distinct('currency_id');
         $fnsql->from();
 
-        if ( isset($filters['labels']) or isset($filters['ignore_labels']) )
+        if ( $labelsFilterON )
             $fnsql->left_join(Label::$table_assoc, 'trans_id', 'trans_id');
 
         self::apply_filters($filters);
@@ -480,15 +485,36 @@ class OP{
         if ( count($Rows) ) foreach ($Rows as $row){
 
             //--- now get the value of the transactions in this one currency ---//
-            $fnsql->init(SQLStatement::$SELECT);
-            $fnsql->table(self::$table);
-            $fnsql->sum('value', 'ctotal');
-            $fnsql->from();
 
-            if ( isset($filters['labels']) )
-                $fnsql->left_join(Label::$table_assoc, 'trans_id', 'trans_id');
+	        $fnsql->init(SQLStatement::$SELECT);
+	        $fnsql->table(self::$table);
 
+	        if ( $labelsFilterON ){
+
+		        $fnsql->distinct('trans_id', self::$table);
+		        $fnsql->fields('value', null, true);
+		        $fnsql->from();
+		        $fnsql->left_join(Label::$table_assoc, 'trans_id', 'trans_id');
+
+	        }
+	        else{
+		        $fnsql->sum('value', 'ctotal');
+		        $fnsql->from();
+
+	        }
+
+	        //apply filters
             self::apply_filters( array_merge($filters, array('currency_id'=>$row->currency_id)) );
+
+	        if ( $labelsFilterON ){
+
+		        $query = $fnsql->get_query();
+
+		        $fnsql->init(SQLStatement::$SELECT);
+		        $fnsql->sum('value', 'ctotal');
+		        $fnsql->from($query, 'T1');
+
+	        }
 
             $sum = $fndb->get_row( $fnsql->get_query() );
             $sum = floatval($sum->ctotal);
@@ -838,7 +864,7 @@ class OP{
 			}
 
 			if( empty($user_id) and isset($metadata['to']) ){
-				//TODO
+
 				$user = User::get_by($metadata['to'], 'email');
 
 				if( $user and isset($user->user_id) )
@@ -856,11 +882,10 @@ class OP{
 
 			$fnsql->insert(self::$table,  $data);
 
-			//TODO die( $fnsql->get_query() );
-
 			if ( $fndb->execute_query( $fnsql->get_query() ) ){
 				
 				$trans_id = $fndb->last_insert_id;
+				$labels   = is_array($labels)?: array( strval($labels) );
 				$labelsIds= array();
 
 				//--- add labels and set associations ---//
@@ -986,8 +1011,8 @@ class OP{
             $sd = date($date_format, @strtotime($vars['startdate']));
             $ed = date($date_format, @strtotime($vars['enddate']));
 
-            $sd = ('<span class="date sdate">' . fn_UI::translate_date($sd) . '</span>' );
-            $ed = ('<span class="date edate">' . fn_UI::translate_date($ed) . '</span>');
+            $sd = ('<span class="date sdate">' . UI::translate_date($sd) . '</span>' );
+            $ed = ('<span class="date edate">' . UI::translate_date($ed) . '</span>');
 
             $period = " pe perioada {$sd} - {$ed}";
         }
@@ -1058,125 +1083,4 @@ class OP{
         return strlen($readable) ? ( $before . trim($readable) . $after ) : "";
 
     }
-
-	/**
-	 * @return array
-	 * @deprecated
-	 */
-    public static function get_export_array(){
-
-        global $fndb, $fnsql;
-
-        $Export = array();
-
-        $fnsql->select('*', self::$table); $Rows = $fndb->get_rows( $fnsql->get_query() );
-
-        if( $Rows and count($Rows) ) foreach($Rows as $row){
-            $trans = array();
-
-            //--- prepare metadata ---//
-            $metadata = array();
-
-            $metadata['details']          = self::get_metadata($row->trans_id, 'details' , "");
-            $metadata['attachments']      = self::get_metadata($row->trans_id, 'attachments', "");
-            $metadata['attachments_names'] = self::get_metadata($row->trans_id, 'attachments_names', "");
-
-            $metadata = Util::clean_array($metadata);
-
-            if( count($metadata) ) {
-                $encodedmeta = array(); foreach($metadata as $key=>$value) $encodedmeta[$key] = base64_encode($value);
-            }
-            else $encodedmeta = array();
-
-            $metadata = @serialize($encodedmeta);
-
-            //--- prepare metadata ---//
-
-            //--- prepare associated labels ---//
-            $fnsql->select('label_id', fn_Label::$table_assoc, array('trans_id'=>$row->trans_id));
-            $labels = $fndb->get_rows( $fnsql->get_query() );
-
-            $labelsList = array(); if( $labels and count($labels) ) foreach($labels as $label) $labelsList[] = $label->label_id;
-
-            $labelsIDs = count($labelsList) ? implode(",", $labelsList) : "";
-            //--- prepare associated labels ---//
-
-            $trans['ID']                = $row->trans_id;      //keep the trans id for reference
-            $trans['cid']              = $row->currency_id;//keep the currency id for reference
-            $trans['type']            = $row->optype;
-            $trans['value']          = $row->value;
-            $trans['date']           = $row->sdate;
-            $trans['comments']   = $row->comments;
-            $trans['metadata']    = $metadata;
-            $trans['labels']         = $labelsIDs;
-            $trans['account']      = $row->account_id;
-
-            $Export[] = $trans;
-        }
-
-        return $Export;
-
-    }
-
-
-    /**
-     * @param $Transactions
-     * @param $currenciesIDs
-     * @param $labelsIDs
-     * @param array $accountsIDs
-     * @return int number of transactions imported
-     * @deprecated
-     */
-    public static function import_osmxml($Transactions, $currenciesIDs, $labelsIDs, $accountsIDs=array()){
-
-        $imported=0;
-
-        if( isset($Transactions->transaction) ) foreach($Transactions->transaction as $op){
-
-            $id = intval($op->ID); $cid = intval($op->cid);
-
-            $currency_id = isset( $currenciesIDs[$cid] ) ? intval( $currenciesIDs[$cid] ) : 0;
-
-            if( empty($currency_id) ) continue; //entries without a currency ID are invalid
-
-            $type         = $op->type == FN_OP_IN ? FN_OP_IN : FN_OP_OUT;
-            $value        = floatval( $op->value );
-            $comments = strval($op->comments);
-            $date         = $op->date;
-
-            $labels     = strval( $op->labels );
-            $labels     = strlen( $labels ) ? @explode(",", $labels) : array();
-
-            $ea_id = intval( $op->account ); //account id
-
-            $metadata = strlen($op->metadata) ? @unserialize($op->metadata) : array();
-
-            $trans_id = self::add($type, $value, $currency_id, $comments, $date);
-
-            if( $trans_id ){
-
-                //associate labels
-                if( count($labels) ) foreach($labels as $eid){ $eid = intval($eid);
-                    $label_id =  isset( $labelsIDs[$eid] ) ? intval( $labelsIDs[$eid] ) : 0; if( $label_id ) self::associate_label($trans_id, $label_id);
-                }
-
-                //add trans to account
-                if($ea_id and count($accountsIDs)) {
-                    $account_id = isset($accountsIDs[$ea_id]) ? $accountsIDs[$ea_id] : 0; if( $account_id ) fn_Accounts::add_trans($account_id, $trans_id);
-                }
-
-                //save metadata
-                if( count($metadata) ) foreach($metadata as $key=>$serialized){
-                    $value = base64_decode($serialized); if(strlen($value)) self::save_metadata($trans_id, $key, $value);
-                }
-
-                $imported++;
-            }
-
-        }
-
-        return $imported;
-
-    }
-	
 }

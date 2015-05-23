@@ -54,8 +54,11 @@ class Accounts{
         $Account = self::get($account_id);
 
         if( count($Account) and isset($Account->account_id) ) {
-            $real_balance = ($Account->balance + $Account->balance_won) - $Account->balance_spent;
-            return fn_Currency::convert($real_balance, $Account->account_currency_id, $currency_id, 'id');
+
+	        $real_balance = ($Account->balance + $Account->balance_won) - $Account->balance_spent;
+
+            return Currency::convert($real_balance, $Account->account_currency_id, $currency_id, 'id');
+
         }
 
         return 0;
@@ -118,17 +121,20 @@ class Accounts{
     }
 
     public static function add($data){
+
         global $fndb, $fnsql;
 
-        if( empty($data['account_slug']) ) $data['account_slug'] = fn_Util::make_slug( $data['holder_name'] );
+        if( empty($data['account_slug']) )
+	        $data['account_slug'] = Util::make_slug( $data['holder_name'] );
 
         $data  = $fndb->escape( $data );
 
         $fnsql->insert(self::$table, $data);
 
-       if( $fndb->execute_query( $fnsql->get_query() ) ) return $fndb->last_insert_id;
+        if( $fndb->execute_query( $fnsql->get_query() ) )
+	       return $fndb->last_insert_id;
 
-        return false;
+	    return false;
 
     }
 
@@ -151,7 +157,7 @@ class Accounts{
         $account_id = intval($account_id);
 
         //--- remove associated transactions ---//
-        $fnsql->update(fn_OP::$table, array('account_id'=>0), array('account_id'=>$account_id));
+        $fnsql->update(OP::$table, array('account_id'=>0), array('account_id'=>$account_id));
         $fndb->execute_query( $fnsql->get_query() );
         //--- remove associated transactions ---//
 
@@ -195,7 +201,7 @@ class Accounts{
 
         $account_id = intval($account_id);
 
-        $fnsql->select('*', fn_OP::$table, array('account_id'=>$account_id));
+        $fnsql->select('*', OP::$table, array('account_id'=>$account_id));
 
         return $fndb->get_rows( $fnsql->get_query() );
 
@@ -238,23 +244,26 @@ class Accounts{
         $account_id = intval( $account_id );
         $trans_id     = intval( $trans_id );
 
-        return fn_OP::update($trans_id, array('account_id'=>$account_id));
+        return OP::update($trans_id, array('account_id'=>$account_id));
 
     }
 
     public static function add_trans($account_id, $trans_id){
         global $fndb, $fnsql;
 
-        $account_id = intval($account_id); $account = self::get($account_id);
-        $trans_id     = intval($trans_id);     $trans      = fn_OP::get( $trans_id );
+        $account_id = intval($account_id);
+	    $account    = self::get($account_id);
+
+        $trans_id  = intval($trans_id);
+	    $trans     = OP::get( $trans_id );
 
         if( $account and $trans){
 
-            $field      = ( $trans->optype == FN_OP_IN ) ? 'balance_won' : 'balance_spent';
-            $previous= ( $trans->optype == FN_OP_IN ) ? floatval($account->balance_won) : floatval($account->balance_spent);
+            $field   = ( $trans->optype == OP::TYPE_OUT ) ? 'balance_won' : 'balance_spent';
+            $previous= ( $trans->optype == OP::TYPE_IN ) ? floatval($account->balance_won) : floatval($account->balance_spent);
 
             if( $account->account_currency_id != $trans->currency_id )
-                $cvalue = fn_Currency::historically_convert($trans->value, $trans->currency_id, $account->account_currency_id, $trans->sdate, 'id');
+                $cvalue = Currency::historically_convert($trans->value, $trans->currency_id, $account->account_currency_id, $trans->sdate, 'id');
             else
                 $cvalue = floatval( $trans->value );
 
@@ -265,7 +274,11 @@ class Accounts{
                 $fnsql->update(self::$table, array($field=>$value), array('account_id'=>$account_id));
 
                 if( $fndb->execute_query( $fnsql->get_query() ) ){
-                    self::assoc_trans($account_id, $trans_id); return fn_OP::update($trans_id, array('value'=>$cvalue, 'currency_id'=>$account->account_currency_id));
+
+                    self::assoc_trans($account_id, $trans_id);
+
+	                return OP::update($trans_id, array('value'=>$cvalue, 'currency_id'=>$account->account_currency_id));
+
                 }
 
             }

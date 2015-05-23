@@ -46,11 +46,6 @@
 
 </div>
 
-
-<!--- debug output --->
-<?php if( ( defined('FN_DEBUG') and FN_DEBUG ) or Util::is_development_environment() ) Log::display(); ?>
-<!--- debug output --->
-
 <script type="text/javascript" src="<?php UI::asset_url('assets/js/jquery.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php UI::asset_url('assets/js/bootstrap.min.js'); ?>"></script>
 <script type="text/javascript" src="<?php UI::asset_url('assets/js/fn.js'); ?>"></script>

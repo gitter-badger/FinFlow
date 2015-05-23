@@ -107,7 +107,7 @@ class File{
 
 	public static $last_file_id;
 
-	public function save($path){
+	public static function save($path){
 
 		global $fndb, $fnsql;
 

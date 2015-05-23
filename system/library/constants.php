@@ -7,10 +7,10 @@
 
 
 //--- Log Levels ---//
-define('LOG_LEVEL_ERROR', 0);
-define('LOG_LEVEL_WARN' , 1);
-define('LOG_LEVEL_INFO' , 2);
-define('LOG_LEVEL_DEBUG', 3);
+define('LOG_LEVEL_ERROR', 30);
+define('LOG_LEVEL_WARN' , 10);
+define('LOG_LEVEL_INFO' , 10);
+define('LOG_LEVEL_DEBUG', 0);
 //--- Log Levels ---//
 
 //--- MySQL Date format ---//

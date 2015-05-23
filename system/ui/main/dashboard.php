@@ -130,9 +130,6 @@ $CronTasks = TaskAssistant::get_registered_tasks();
                             <a class="btn btn-default" title="<?php echo UI::esc_attr( $transaction->comments ); ?>" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>')">
                                 <span class="fa fa-info-circle"></span>
                             </a>
-                            <button class="btn btn-default" onclick="confirm_delete('<?php UI::page_url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">
-                                <span class="fa fa-remove"></span>
-                            </button>
                         </td>
                     </tr>
                 <?php endforeach; ?>

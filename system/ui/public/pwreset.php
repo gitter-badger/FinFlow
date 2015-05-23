@@ -118,7 +118,7 @@ Captcha::init(); $captcha_url = ( FN_URL . '/captcha/?o=1' ); ?>
 										</div>
 									</div>
 									<div class="form-group">
-										<label class="control-label col-lg-4" for="verify">Verificare:</label>
+										<label class="control-label col-lg-4" for="verify">Human?:</label>
 										<div class="col-lg-8">
 											<div class="input-group">
 												<?php if( Captcha::supports_img() ): ?>

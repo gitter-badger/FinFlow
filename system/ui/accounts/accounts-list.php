@@ -39,11 +39,11 @@ use FinFlow\Accounts;
 
                     <td class="align-center">
 
-                        <button class="btn btn-default" onclick="window.location.href='<?php UI::page_url('accounts/edit/', array('id'=>$account->account_id)); ?>';">
+                        <button class="btn btn-default" onclick="window.location.href='<?php UI::url('accounts/edit/', array('id'=>$account->account_id)); ?>';">
                             <span class="fa fa-edit"></span>
                         </button>
 
-                        <button class="btn btn-default" onclick="confirm_delete('<?php UI::page_url('accounts', array('del'=>$account->account_id)); ?>')">
+                        <button class="btn btn-default" onclick="confirm_delete('<?php UI::url('accounts', array('del'=>$account->account_id)); ?>')">
                             <span class="fa fa-remove"></span>
                         </button>
 

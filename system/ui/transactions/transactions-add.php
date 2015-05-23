@@ -25,13 +25,13 @@ if ( isset($_POST['add']) ){
 	$contact_id = isset($_POST['contact_id']) ? intval($_POST['contact_id']) : 0;
 
 	if ( $value <= 0 )
-		$errors[] = "Valoare tranzac&#355;iei lipse&#351;te.";
+		$errors[] = __t('Please enter a value!');
 
 	if( strtotime($date) === false)
-		$errors[] = "Data specificat&#259; este invalida";
+		$errors[] = __t('Please enter a date!');
 
 	if ( !in_array(post('optype'), OP::getTypesArray()) )
-		$errors[] = "Tipul tranzac&#355;iei este invalid.";
+		$errors[] = __t('Please select the transaction type!');
 
 	if( ! isset($_POST['add_pending']) and (strtotime($date) > time() ) )
 		$errors[] = "Data tranzactiei este in viitor. Foloseste caracteristica &quot;in asteptare&quot; pentru a adauga tranzactii in viitor.";
@@ -115,7 +115,8 @@ if ( isset($_POST['add']) ){
 				//--- create first child transaction ---//
 
 			}
-			else $errors[] = "Eroare SQL: {$fndb->error} .";
+			else
+				$errors[] = "Eroare SQL: {$fndb->error} .";
 
 			//--- add a pending transaction ---//
 
@@ -129,13 +130,17 @@ if ( isset($_POST['add']) ){
 			if ( $trans_id ){
 
 				//--- associate to an account (if any selected) ---//
-				if( $account_id ) Accounts::add_trans($account_id, $trans_id);
+				if( $account_id )
+					Accounts::add_trans($account_id, $trans_id);
 				//--- associate to an account (if any selected) ---//
 
-				if ( post('labels') and count($_POST['labels']) ) foreach ($_POST['labels'] as $label_id){
-					OP::associate_label($trans_id, $label_id);
+
+				if ( post('labels', false) and count($_POST['labels']) ) {
+					foreach ($_POST['labels'] as $label_id)
+						OP::associate_label($trans_id, $label_id);
 				}
-				else $warnings[] = "Nu s-a asociat nici o etichet&#259; pentru aceast&#259; tranzac&#355;ie.";
+				else
+					$warnings[] = __t('No labels have been associated to the transaction');
 
 				//--- upload files if any ---//
 				if( count( $_FILES ) ) {
@@ -156,14 +161,15 @@ if ( isset($_POST['add']) ){
 				//--- upload files if any ---//
 
 				//--- associate with a contact (if any selected) ---//
-				if( $contact_id ) Contacts::assoc_trans($contact_id, $trans_id);
+				if( $contact_id )
+					Contacts::assoc_trans($contact_id, $trans_id);
 				//--- associate with a contact (if any selected) ---//
 
-				$notices[] = "Tranzac&#355;ia a fost adaugat&#259;.";
+				$notices[] = __t('Transaction #%s has been saved.', $trans_id);
 
 			}
 			else
-				$errors[] = "Eroare SQL: {$fndb->error} .";
+				$errors[] = __t('<strong>Ops! SQL Error:</strong> %s', $fndb->error);
 
 			//--- add a normal transaction ---//
 		}

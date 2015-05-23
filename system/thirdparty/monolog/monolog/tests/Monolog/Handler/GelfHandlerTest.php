@@ -11,27 +11,17 @@
 
 namespace Monolog\Handler;
 
+use Gelf\Message;
 use Monolog\TestCase;
 use Monolog\Logger;
 use Monolog\Formatter\GelfMessageFormatter;
-use Gelf\MessagePublisher;
-use Gelf\Message;
-
-class MockMessagePublisher extends MessagePublisher
-{
-    public function publish(Message $message) {
-        $this->lastMessage = $message;
-    }
-
-    public $lastMessage = null;
-}
 
 class GelfHandlerTest extends TestCase
 {
     public function setUp()
     {
-        if (!class_exists("Gelf\MessagePublisher")) {
-            $this->markTestSkipped("mlehner/gelf-php not installed");
+        if (!class_exists('Gelf\Publisher') || !class_exists('Gelf\Message')) {
+            $this->markTestSkipped("graylog2/gelf-php not installed");
         }
     }
 
@@ -47,56 +37,81 @@ class GelfHandlerTest extends TestCase
     protected function getHandler($messagePublisher)
     {
         $handler = new GelfHandler($messagePublisher);
+
         return $handler;
     }
 
     protected function getMessagePublisher()
     {
-        return new MockMessagePublisher('localhost');
+        return $this->getMock('Gelf\Publisher', array('publish'), array(), '', false);
     }
 
     public function testDebug()
     {
+        $record = $this->getRecord(Logger::DEBUG, "A test debug message");
+        $expectedMessage = new Message();
+        $expectedMessage
+            ->setLevel(7)
+            ->setFacility("test")
+            ->setShortMessage($record['message'])
+            ->setTimestamp($record['datetime'])
+        ;
+
         $messagePublisher = $this->getMessagePublisher();
+        $messagePublisher->expects($this->once())
+            ->method('publish')
+            ->with($expectedMessage);
+
         $handler = $this->getHandler($messagePublisher);
 
-        $record = $this->getRecord(Logger::DEBUG, "A test debug message");
         $handler->handle($record);
-
-        $this->assertEquals(LOG_DEBUG, $messagePublisher->lastMessage->getLevel());
-        $this->assertEquals('test', $messagePublisher->lastMessage->getFacility());
-        $this->assertEquals($record['message'], $messagePublisher->lastMessage->getShortMessage());
-        $this->assertEquals(null, $messagePublisher->lastMessage->getFullMessage());
     }
 
     public function testWarning()
     {
+        $record = $this->getRecord(Logger::WARNING, "A test warning message");
+        $expectedMessage = new Message();
+        $expectedMessage
+            ->setLevel(4)
+            ->setFacility("test")
+            ->setShortMessage($record['message'])
+            ->setTimestamp($record['datetime'])
+        ;
+
         $messagePublisher = $this->getMessagePublisher();
+        $messagePublisher->expects($this->once())
+            ->method('publish')
+            ->with($expectedMessage);
+
         $handler = $this->getHandler($messagePublisher);
 
-        $record = $this->getRecord(Logger::WARNING, "A test warning message");
         $handler->handle($record);
-
-        $this->assertEquals(LOG_WARNING, $messagePublisher->lastMessage->getLevel());
-        $this->assertEquals('test', $messagePublisher->lastMessage->getFacility());
-        $this->assertEquals($record['message'], $messagePublisher->lastMessage->getShortMessage());
-        $this->assertEquals(null, $messagePublisher->lastMessage->getFullMessage());
     }
 
     public function testInjectedGelfMessageFormatter()
     {
-        $messagePublisher = $this->getMessagePublisher();
-        $handler = $this->getHandler($messagePublisher);
-
-        $handler->setFormatter(new GelfMessageFormatter('mysystem', 'EXT', 'CTX'));
-
         $record = $this->getRecord(Logger::WARNING, "A test warning message");
         $record['extra']['blarg'] = 'yep';
         $record['context']['from'] = 'logger';
-        $handler->handle($record);
 
-        $this->assertEquals('mysystem', $messagePublisher->lastMessage->getHost());
-        $this->assertArrayHasKey('_EXTblarg', $messagePublisher->lastMessage->toArray());
-        $this->assertArrayHasKey('_CTXfrom', $messagePublisher->lastMessage->toArray());
+        $expectedMessage = new Message();
+        $expectedMessage
+            ->setLevel(4)
+            ->setFacility("test")
+            ->setHost("mysystem")
+            ->setShortMessage($record['message'])
+            ->setTimestamp($record['datetime'])
+            ->setAdditional("EXTblarg", 'yep')
+            ->setAdditional("CTXfrom", 'logger')
+        ;
+
+        $messagePublisher = $this->getMessagePublisher();
+        $messagePublisher->expects($this->once())
+            ->method('publish')
+            ->with($expectedMessage);
+
+        $handler = $this->getHandler($messagePublisher);
+        $handler->setFormatter(new GelfMessageFormatter('mysystem', 'EXT', 'CTX'));
+        $handler->handle($record);
     }
 }

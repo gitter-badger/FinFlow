@@ -77,24 +77,24 @@ function submit_http_query(formId, prefix, separator, link){
 	
 	//inputs
 	$(formId + " input").each(function(){
-		iname 	= $(this).attr('name');
-		ival 		= $(this).val();
+		iname= $(this).attr('name');
+		ival = $(this).val();
 		
 		add_httpquery_term(iname, ival, prefix, separator);
 	});
 	
 	//select
 	$(formId + " select").each(function(){
-		iname 	= $(this).attr('name');
-		ival 		= $(this).val();
+		iname= $(this).attr('name');
+		ival = $(this).val();
 		
 		add_httpquery_term(iname, ival, prefix, separator);
 	});
 	
 	//textarea
 	$(formId + " textarea").each(function(){
-		iname 	= $(this).attr('name');
-		ival 		= $(this).text();
+		iname= $(this).attr('name');
+		ival = $(this).text();
 		
 		add_httpquery_term(iname, ival, prefix, separator);
 	});
@@ -109,8 +109,8 @@ function transactions_filter_submit(){
 	
 	$('#sdate').val(syear + "-"+ smonth + "-" + sday); //Y-m-d
 	$('#edate').val(eyear + "-"+ emonth + "-" + eday);
-	
-	submit_http_query('#filterTransactionsForm', '&', '&', "");
+
+	submit_http_query('#filterTransactionsForm');
 	
 }
 
@@ -160,9 +160,9 @@ function fn_form_defaults(formId){
 }
 
 function fn_cconvert(ajaxURL, inputResult){
-	var ccfromID 	= $('#cc_from_id').val();
-	var cctoID 		= $('#cc_to_id').val();
-	var ccsum		= parseFloat($('#cc_sum').val());
+	var ccfromID = $('#cc_from_id').val();
+	var cctoID 	 = $('#cc_to_id').val();
+	var ccsum	 = parseFloat($('#cc_sum').val());
 	
 	if (ccsum > 0){
 		$.post(ajaxURL, {from: ccfromID, to: cctoID, sum: ccsum}, function(data){
@@ -287,7 +287,9 @@ $(document).ready(function(){
 	$('#emonth').change(function(){ emonth = $(this).val(); });
 	$('#eyear').change(function(){ eyear = $(this).val(); });
 	
-	$('#filterTransactionsBtn').click(function(){ transactions_filter_submit(); });
+	$('#filterTransactionsBtn').click(function(){
+        transactions_filter_submit();
+    });
 	
 	$('#clock_tz').change(function(){ fn_clock_set_tzoffset($(this).val()); });
 

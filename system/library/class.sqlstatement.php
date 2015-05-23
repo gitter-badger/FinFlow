@@ -170,44 +170,53 @@ class SQLStatement{
         $this->query.= ( $tables . ' ' );
     }
 	
-	public function fields( $fields = array(), $table="" ){
+	public function fields( $fields = array(), $table="", $comma=false ){
 		
-		if ( empty($table) ) $table = $this->table;
+		if ( empty($table) )
+			$table = $this->table;
 		
-		$commasep = $table == $this->table ? "" : ",";
+		$commasep = ( $table == $this->table ? ( $comma ? ',' : '' ) : ',' );
 		
 		if ($fields == '*') {
-			$this->query.= "{$commasep} `{$table}`.*";
-			
-			return ;
+			$this->query.= "{$commasep} `{$table}`.*"; return ;
 		}
 		
-		if( !is_array($fields) ){
+		if( ! is_array($fields) ){
 			
 			if (strrpos($fields, ",")){
 				$fields = trim(trim($fields), ",");
 				$fields = explode(",", $fields);
 			}
-			else $fields = array( trim($fields) );
+			else
+				$fields = array( trim($fields) );
 		} 
 		
 		if ( is_array($fields) ) {
 			
 			if ( $this->queryType != SQLStatement::$UPDATE ){
 				//trim the fields
-				$tmpfields = array(); foreach ($fields as $field) $tmpfields[] = trim($field); $fields = $tmpfields;
+				$tmpfields = array();
+
+				foreach ($fields as $field)
+					$tmpfields[] = trim($field);
+
+				$fields = $tmpfields;
+
 			}
 			
-			if ( $this->queryType == SQLStatement::$SELECT ) $this->query.= ( "{$commasep} `{$table}`.`" . trim( trim(implode("`, `{$table}`.`", $fields), ",") ) . "`" );
+			if ( $this->queryType == SQLStatement::$SELECT )
+				$this->query.= ( "{$commasep} `{$table}`.`" . trim( trim(implode("`, `{$table}`.`", $fields), ",") ) . "`" );
 			
-			if ( $this->queryType == SQLStatement::$INSERT ) $this->query.= ( " `{$table}`(`" . trim( trim(implode("`, `", $fields), ",") ) . "`)" );
+			if ( $this->queryType == SQLStatement::$INSERT )
+				$this->query.= ( " `{$table}`(`" . trim( trim(implode("`, `", $fields), ",") ) . "`)" );
 			
 			if ( $this->queryType == SQLStatement::$UPDATE ){  
 				
 				$this->query.=  " SET";
-				$tmpstring	  = "";
+				$tmpstring	 = "";
 				
-				foreach ($fields as $field=>$value) $tmpstring.= ( ", `{$table}`.`{$field}`='{$value}' " ); 
+				foreach ($fields as $field=>$value)
+					$tmpstring.= ( ", `{$table}`.`{$field}`='{$value}' " );
 				
 				$this->query.= trim($tmpstring, ",");
 				
@@ -219,11 +228,11 @@ class SQLStatement{
 		
 	}
 	
-	public function distinct($field, $table=NULL){
+	public function distinct($field=null, $table=NULL){
 		if ($table)
-			 $this->query	.= " DISTINCT `{$table}`.`{$field}`";
+			$this->query .= ( " DISTINCT `{$table}`" . ( $field ? ".`{$field}`" : '' ) );
 		else 
-			$this->query	.= " DISTINCT `{$field}`";
+			$this->query .= ( " DISTINCT " . ( $field ? "`{$field}`" : '' ) );
 	}
 	
 	public function table($table, $append=FALSE){
@@ -231,15 +240,29 @@ class SQLStatement{
 		
 		if ($append ) $this->query.= " `{$this->table}`";
 	}
-	
-	public function from($table=""){
+
+	/**
+	 * Adds the FROM condition to query string
+	 * @param $table
+	 * @param string $alias
+	 */
+	public function from($table='', $alias=''){
 		
-		if ( empty($table) ) 
-			$table = $this->table;
-		else 
-			$this->table($table);
-		
-		$this->query.= " FROM `{$this->table}`";
+		if( strpos($table, self::$SELECT) === false ){ //is a regular table/view
+
+			if ( ! empty($table) )
+				$this->table($table);
+
+			$this->query.= " FROM `{$this->table}`";
+
+		}
+		else{                                          //is a query
+			$this->query.= ( ' FROM ( ' . trim($table) . ' ) ' );
+		}
+
+		if( ! empty($alias) )
+			$this->query.= " `{$alias}`";
+
 	}
 	
 	public function condition($field, $operator, $value, $junction='AND', $table="", $quoted=TRUE, $groupindex=FALSE){
@@ -390,11 +413,15 @@ class SQLStatement{
 		$this->join($table, $field_s, $field_d, "INNER");
 	}
 	
-	public function count($field, $as=NULL){
+	public function count($field, $as=NULL, $distinct=false){
+
+		$distinct = $distinct ? ' DISTINCT ' : '';
+
+
 		if ( empty($as) )
-			$this->query.= " COUNT(`{$this->table}`.`{$field}`)";
+			$this->query.= " COUNT({$distinct}`{$this->table}`.`{$field}`)";
 		else 
-			$this->query.= " COUNT(`{$this->table}`.`{$field}`) AS `{$as}`";
+			$this->query.= " COUNT({$distinct}`{$this->table}`.`{$field}`) AS `{$as}`";
 	}
 	
 	public function limit($offset=0, $count=25){
@@ -565,13 +592,35 @@ class SQLStatement{
 		
 	}
 
-    /**
+	/**
+	 * Prepends the string to the current query string
+	 * @param $string
+	 */
+	public function query_prepend($string){
+		if( strlen($string) )
+			$this->query = ( trim($string) . ' ' . $this->query );
+	}
+
+
+	/**
      * Appends the string to the current query string
      * @param $string
      */
     public function query_append($string){
-        if( strlen($string) ) $this->query.= $string;
+        if( strlen($string) )
+	        $this->query.= ( ' ' . trim($string) );
     }
+
+	/**
+	 * Wraps the current query between the string before and string after
+	 * @param string $before
+	 * @param string $after
+	 *
+	 * @return string
+	 */
+	public function query_wrap($before, $after=''){
+		$this->query = (trim($before) . ' ' . $this->query . ' ' . trim($after)); return $this->query;
+	}
 
 	/**
 	 * Formats a query string based on args. Accepts variable number of arguments.

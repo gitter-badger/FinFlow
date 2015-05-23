@@ -24,6 +24,7 @@ require_once ( FNPATH . '/system/thirdparty/autoload.php');
 require_once ( FNPATH . '/system/library/helpers.php');
 
 use FinFlow\UI;
+use FinFlow\Log;
 use FinFlow\Util;
 use FinFlow\MySQLiDB;
 use FinFlow\SQLStatement;
@@ -48,7 +49,14 @@ $cfg_path = Util::cfg_file_path(); @include_once ( $cfg_path );
 
 //--- init debug ---//
 if( ( defined('FN_DEBUG') and FN_DEBUG ) or Util::is_development_environment() ) {
-    @ini_set('display_errors', 'On'); @error_reporting(E_ALL);
+
+    @ini_set('display_errors', 'On');
+	@error_reporting(E_ALL);
+
+	Log::init();
+	Log::addHandler( new Monolog\Handler\BrowserConsoleHandler() );
+	Log::setLevel(Log::LEVEL_DEBUG);
+
 }
 //--- init debug ---//
 
