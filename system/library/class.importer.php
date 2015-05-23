@@ -1,44 +1,57 @@
 <?php
 
-include_once( 'class.gcrypt.php' );
+namespace FinFlow;
 
-class fn_Importer{
+use Goodby\CSV\Import\Standard\Lexer;
+use Goodby\CSV\Import\Standard\Interpreter;
+use Goodby\CSV\Import\Standard\LexerConfig;
 
-    public $Errors = array();
+class Importer{
 
-    private $XML       = NULL;
-    private $filepath = 'export.xml';
+    public $errors = array();
 
+    private $file     = NULL;
+    private $fileType = 'csv';
 
-    public function __construct($filepath='finflow-export.data'){
-        $this->filepath = trim($filepath);
+	protected $columnsMatch = array(
+		'optype',
+		'value',
+		'ccode',
+		'account',
+		'user',
+		'contact',
+		'labels',
+		'comments'
+	);
 
-        //--- try to guess the file type based on file extension ---//
-        //--- try to guess the file type based on file extension ---//
+	protected $interpreter = null;
+	protected $config      = null;
+
+    public function __construct($filepath){
+
+	    if( file_exists($filepath) ){
+		    $this->file = $filepath; $this->init();
+	    }
+	    else
+		    throw new \Exception("File {$filepath} not found!");
     }
 
-    public function determine_import_type(){
-        //TODO ...
-    }
+	public function import($config=array()){
 
-    /**
-     * Imports data from file
-     * @param string $type
-     * @return bool|int
-     */
-    public function import($type=false){ //TODO add mysqldump support
+		$ext    = File::getExtension($this->file);
+		$method = ( 'import_' . $ext );
 
-        switch($type){
+		if( method_exists(__CLASS__, $method) ){
+			$result = call_user_func(array(__CLASS__, $method), $config); return $result;
+		}
+		else
+			throw new \Exception("{$ext} import is not supported.");
 
-            case 'xml': return $this->import_xml();
-            case 'mysql': return $this->import_mysqldump();
-            case 'csv': return $this->import_csv();
+	}
 
-        }
-
-        return false; //no compatible file found
-
-    }
+	public function get_file_header($config=array()){
+		//TODO...
+	}
 
 
     /**
@@ -112,24 +125,55 @@ class fn_Importer{
 
     }
 
-    public function get_archived_file_extension(){
-        //TODO...
-    }
+    public function import_csv($config=array(), $columnMatch=array()){
 
-    public function import_mysqldump(){
+	    $config       = Util::clean_array($config);
+	    $this->config = new LexerConfig();
+
+	    $this->config->setToCharset('UTF-8');
+	    $this->config->setDelimiter(',');
+	    $this->config->getIgnoreHeaderLine();
+
+	    //--- apply user config ---//
+	    if( isset($config['delimiter']) )
+		    $this->config->setDelimiter($config['delimiter']);
+
+	    if( isset($config['enclosure']) )
+		    $this->config->setEnclosure($config['enclosure']);
+
+	    if( isset($config['escape']) )
+		    $this->config->setEscape($config['escape']);
+
+	    if( isset($config['charset']) )
+		    $this->config->setFromCharset($config['charset']);
+
+	    if( isset($config['ignore_header']) )
+		    $this->config->setIgnoreHeaderLine($config['ignore_header']);
+
+	    //--- apply user config ---//
+
+	    $lexer = new Lexer($this->config);
+
+	    $this->interpreter = new Interpreter( $lexer );
+	    $this->columnsMatch= count($columnMatch) ? $columnMatch : $this->columnsMatch;
+
+	    $this->interpreter->addObserver(function(array $columns) use ($this){
+			print_r($columns); die();
+	    });
+
         //TODO add support for mysqldump
     }
 
-    public function import_csv(){
-        //TODO add support for mysqldump
-    }
+	public function import_tsv(){
+		//TODO add support for tsv
+	}
 
-    public function guess_csv_fields(){
-        //TODO...
-    }
+	public function import_xls(){
+		//TODO add support for xls
+	}
 
-    public function remove_file(){
-        return @unlink($this->filepath);
+    public function cleanup(){
+        @unlink( $this->filepath );
     }
 
 }

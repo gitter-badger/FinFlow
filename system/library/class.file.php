@@ -120,7 +120,6 @@ class File{
 
 			$fnsql->insert(self::TABLE, array('filename'=>$filename, 'mime_type'=>$mime, 'size'=>$size, 'date_created'=>$date));
 
-
 			if( $fndb->execute_query( $fnsql->get_query() ) ){
 				self::$last_file_id = $fndb->last_insert_id; return $fndb->last_insert_id;
 			}
@@ -210,7 +209,7 @@ class File{
 
 	}
 
-	public static function download($id){
+	public static function download($id, $mime=false){
 		//TODO...
 	}
 
@@ -250,6 +249,10 @@ class File{
 
 		return isset( self::$mime_types[$ext] ) ? self::$mime_types[$ext] : 'application/octet-stream';
 
+	}
+
+	public static function getExtension($filename){
+		return Util::get_file_extension($filename);
 	}
 
 	public static function associateTransaction($trans_id, $file_id){

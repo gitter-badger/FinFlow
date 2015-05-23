@@ -101,28 +101,28 @@ if( ! isset($_POST['span']) or empty($_POST['span']) ) $_POST['span'] = null; ?>
 
 		<ul class="nav nav-justified nav-pills nav-page-menu" role="menubar">
 			<li class="dropdown <?php echo av($activetab, 'list'); ?>">
-				<a href="<?php UI::page_url('performance/list'); ?>" class="dropdown-toggle" data-toggle="dropdown">Rulaj <b class="caret"></b></a>
+				<a href="<?php UI::url('performance/list'); ?>" class="dropdown-toggle" data-toggle="dropdown">Rulaj <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-                  	<li><a href="<?php UI::page_url('performance/list', array('sdate'=>Util::get_relative_time(0, 3, 0, $currmonthstart)) ); ?>">Ultimele 3 luni</a></li>
-                  	<li><a href="<?php UI::page_url('performance/list', array('sdate'=>Util::get_relative_time(0, 6, 0, $currmonthstart)) ); ?>">Ultimele 6 luni</a></li>
-                 	<li><a href="<?php UI::page_url('performance/list', array('sdate'=>Util::get_relative_time(0, 0, 1, $currmonthstart)) ); ?>">Ultimul an</a></li>
-                 	<li><a href="<?php UI::page_url('performance/list', array('sdate'=>Util::get_relative_time(0, 0, 3, $currmonthstart)) ); ?>">Ultimii 3 ani</a></li>
-                 	<li><a href="<?php UI::page_url('performance/list', array('sdate'=>Util::get_relative_time(0, 0, 5, $currmonthstart)) ); ?>">Ultimii 5 ani</a></li>
-                 	<li><a href="<?php UI::page_url('performance/list', array('sdate'=>'1970-01-01')); ?>">Toate</a></li>
+                  	<li><a href="<?php UI::url('performance/list', array('sdate'=>Util::get_relative_time(0, 3, 0, $currmonthstart)) ); ?>">Ultimele 3 luni</a></li>
+                  	<li><a href="<?php UI::url('performance/list', array('sdate'=>Util::get_relative_time(0, 6, 0, $currmonthstart)) ); ?>">Ultimele 6 luni</a></li>
+                 	<li><a href="<?php UI::url('performance/list', array('sdate'=>Util::get_relative_time(0, 0, 1, $currmonthstart)) ); ?>">Ultimul an</a></li>
+                 	<li><a href="<?php UI::url('performance/list', array('sdate'=>Util::get_relative_time(0, 0, 3, $currmonthstart)) ); ?>">Ultimii 3 ani</a></li>
+                 	<li><a href="<?php UI::url('performance/list', array('sdate'=>Util::get_relative_time(0, 0, 5, $currmonthstart)) ); ?>">Ultimii 5 ani</a></li>
+                 	<li><a href="<?php UI::url('performance/list', array('sdate'=>'1970-01-01')); ?>">Toate</a></li>
                 </ul>
 			</li>
 
 			<li class="separator"></li>
 
 			<li class="dropdown <?php echo av($activetab, 'list2'); ?>">
-				<a href="<?php UI::page_url('performance/list2'); ?>" class="dropdown-toggle" data-toggle="dropdown">Evolu&#355;ie balan&#355;&#259; <b class="caret"></b></a>
+				<a href="<?php UI::url('performance/list2'); ?>" class="dropdown-toggle" data-toggle="dropdown">Evolu&#355;ie balan&#355;&#259; <b class="caret"></b></a>
 				<ul class="dropdown-menu">
-                  	<li><a href="<?php UI::page_url('performance/list2', array('sdate'=>Util::get_relative_time(0, 3, 0, $currmonthstart)) ); ?>">Ultimele 3 luni</a></li>
-                  	<li><a href="<?php UI::page_url('performance/list2', array('sdate'=>Util::get_relative_time(0, 6, 0, $currmonthstart)) ); ?>">Ultimele 6 luni</a></li>
-                 	<li><a href="<?php UI::page_url('performance/list2', array('sdate'=>Util::get_relative_time(0, 0, 1, $currmonthstart)) ); ?>">Ultimul an</a></li>
-                 	<li><a href="<?php UI::page_url('performance/list2', array('sdate'=>Util::get_relative_time(0, 0, 3, $currmonthstart)) ); ?>">Ultimii 3 ani</a></li>
-                 	<li><a href="<?php UI::page_url('performance/list2', array('sdate'=>Util::get_relative_time(0, 0, 5, $currmonthstart)) ); ?>">Ultimii 5 ani</a></li>
-                 	<li><a href="<?php UI::page_url('performance/list2', array('sdate'=>'1970-01-01')); ?>">Toate</a></li>
+                  	<li><a href="<?php UI::url('performance/list2', array('sdate'=>Util::get_relative_time(0, 3, 0, $currmonthstart)) ); ?>">Ultimele 3 luni</a></li>
+                  	<li><a href="<?php UI::url('performance/list2', array('sdate'=>Util::get_relative_time(0, 6, 0, $currmonthstart)) ); ?>">Ultimele 6 luni</a></li>
+                 	<li><a href="<?php UI::url('performance/list2', array('sdate'=>Util::get_relative_time(0, 0, 1, $currmonthstart)) ); ?>">Ultimul an</a></li>
+                 	<li><a href="<?php UI::url('performance/list2', array('sdate'=>Util::get_relative_time(0, 0, 3, $currmonthstart)) ); ?>">Ultimii 3 ani</a></li>
+                 	<li><a href="<?php UI::url('performance/list2', array('sdate'=>Util::get_relative_time(0, 0, 5, $currmonthstart)) ); ?>">Ultimii 5 ani</a></li>
+                 	<li><a href="<?php UI::url('performance/list2', array('sdate'=>'1970-01-01')); ?>">Toate</a></li>
                 </ul>
 			</li>
 
@@ -134,34 +134,55 @@ if( ! isset($_POST['span']) or empty($_POST['span']) ) $_POST['span'] = null; ?>
 
         <?php if( is_object($Chart) and is_object($Chart->series) ) : ?>
 
-            <?php if ($_section == 'list'): ?>
+	        <div class="panel panel-default">
+		        <div class="panel-heading">
+			        <h4>Performance</h4>
+		        </div>
 
-                <div class="chart" id="chartTransactionsGrowth"></div>
-		        <?php UI::enqueue_inline( $Chart->render("chartTransactionsGrowth" ), 'js'); ?>
+		        <div class="panel-body">
 
-            <?php endif;?>
+			        <?php if ($_section == 'list'): ?>
 
-            <?php if ($_section == 'list2'): ?>
+				        <div class="chart" id="chartTransactionsGrowth"></div>
+				        <?php UI::enqueue_inline( $Chart->render("chartTransactionsGrowth" ), 'js'); ?>
 
-                <div class="chart" id="chartBalanceEvolution"></div>
-		        <?php UI::enqueue_inline($Chart->render("chartBalanceEvolution"), 'js'); ?>
+			        <?php endif;?>
 
-            <?php endif;?>
+			        <?php if ($_section == 'list2'): ?>
 
-            <br class="clear"/>
+				        <div class="chart" id="chartBalanceEvolution"></div>
+				        <?php UI::enqueue_inline($Chart->render("chartBalanceEvolution"), 'js'); ?>
 
-            <form class="form form-horizontal" id="granularitySelectForm" method="post" target="_self">
-                <div class="form-group">
-                    <label class="control-label col-lg-3" for="span">E&#351;antionare:</label>
-                    <div class="col-lg-3">
-                        <select name="span" id="span" class="form-control" onchange="document.getElementById('granularitySelectForm').submit();">
-                            <option value="monthly" <?php echo UI::selected_or_not('monthly', $_POST['span']); ?>>lunar</option>
-                            <option value="yearly" <?php echo UI::selected_or_not('yearly', $_POST['span']); ?>>anual</option>
-                            <option value="daily" <?php echo UI::selected_or_not('daily', $_POST['span']); ?>>zilnic</option>
-                        </select>
-                    </div>
-                </div>
-            </form>
+			        <?php endif;?>
+
+			        <br class="clear"/>
+
+		        </div>
+
+		        <div class="panel-footer">
+
+			        <form class="form form-horizontal" id="granularitySelectForm" method="post" target="_self">
+				        <div class="form-group">
+					        <label class="control-label col-lg-3" for="span">E&#351;antionare:</label>
+					        <div class="col-lg-3">
+						        <select name="span" id="span" class="form-control" onchange="document.getElementById('granularitySelectForm').submit();">
+							        <option value="monthly" <?php echo UI::selected_or_not('monthly', $_POST['span']); ?>>
+								        <?php __e('monthly'); ?>
+							        </option>
+							        <option value="yearly" <?php echo UI::selected_or_not('yearly', $_POST['span']); ?>>
+								        <?php __e('yearly'); ?>
+							        </option>
+							        <option value="daily" <?php echo UI::selected_or_not('daily', $_POST['span']); ?>>
+								        <?php __e('daily'); ?>
+							        </option>
+						        </select>
+					        </div>
+				        </div>
+			        </form>
+
+		        </div>
+
+	        </div>
 
         <?php else: ?>
             <div class="alert alert-warning">

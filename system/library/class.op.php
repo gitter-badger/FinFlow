@@ -169,10 +169,10 @@ class OP{
 				$start = intval($filters['start']); $count = intval($filters['count']); $fnsql->limit($start, $count);
 			}
 			
-			return TRUE;
+			return true;
 		}
 		
-		return FALSE;
+		return false;
 		
 	}
 
@@ -275,7 +275,7 @@ class OP{
 
             $trans = self::get($trans_id);
 
-            $fnsql->select('*', fn_Accounts::$table, array('account_id'=>$trans->account_id));
+            $fnsql->select('*', Accounts::$table, array('account_id'=>$trans->account_id));
 
             return $fndb->get_row( $fnsql->get_query() );
 
@@ -407,10 +407,14 @@ class OP{
             //--- order by date DESC ---//
             switch($span){
 
-                case 'yearly': $fnsql->orderby(array('year'), "", 'ASC'); break;
-                case 'daily': $fnsql->orderby(array('year', 'month', 'day'), "", 'ASC'); break;
+                case 'yearly':
+	                $fnsql->orderby(array('year'), "", 'ASC'); break;
 
-               default: $fnsql->orderby(array('year', 'month'), "", 'ASC');
+                case 'daily' :
+	                $fnsql->orderby(array('year', 'month', 'day'), "", 'ASC'); break;
+
+               default:
+	               $fnsql->orderby(array('year', 'month'), "", 'ASC');
 
             }
             //--- order by date DESC ---//
@@ -737,15 +741,31 @@ class OP{
 		
 		$trans_id = intval($trans_id);
 		$label_id = intval($label_id);
-		
+
+		$static_labels = self::get($trans_id, 'labels');
+		$static_labels = trim($static_labels->labels, ',');
+		$static_labels = empty($static_labels) ? array() : @explode(',', $static_labels);
+
+		$label = Label::get_by_id($label_id);
+
 		if ( $label_id and $trans_id ){
 
             //--- if the label has a parent also associate the parent label ---//
 
-            $label = Label::get_by_id($label_id); if( $label and isset($label->parent_id) and ( $label->parent_id > 0 ) ) {
+			if( $label and isset($label->parent_id) and ( $label->parent_id > 0 ) ) {
 
                 $fnsql->insert(Label::$table_assoc, array('label_id'=>$label->parent_id, 'trans_id'=>$trans_id));
-                $fndb->execute_query( $fnsql->get_query() );
+
+				$updated = $fndb->execute_query( $fnsql->get_query() );
+
+				if( $updated ){
+
+					$parent = Label::get_by_id($label->parent_id);
+
+					if( ! in_array($parent->title, $static_labels) )
+						$static_labels[] = $fndb->escape($parent->title);
+
+				}
 
             }
 
@@ -753,9 +773,22 @@ class OP{
 
 			$fnsql->insert(Label::$table_assoc, array('label_id'=>$label_id, 'trans_id'=>$trans_id));
 
-			return $fndb->execute_query( $fnsql->get_query() );
+			$updated = $fndb->execute_query( $fnsql->get_query() );
+
+			if ( $updated  ){
+
+				if ( ! in_array($label->title, $static_labels) )
+					$static_labels[] = $fndb->escape($label->title);
+
+				$fnsql->update(self::$table, array('labels'=>@implode(',', $static_labels)), array('trans_id'=>$trans_id));
+
+				return $fndb->execute_query( $fnsql->get_query() );
+
+			}
 
 		}
+
+		return false;
 		
 	}
 	
@@ -945,16 +978,21 @@ class OP{
 	}
 	
 	
-	public static function get($trans_id){
+	public static function get($trans_id, $fields='*'){
 		
 		global $fndb, $fnsql;
 		
 		$trans_id = intval($trans_id);
 		
 		if($trans_id){
-			$fnsql->select('*', self::$table, array('trans_id'=>$trans_id));
+
+			if( is_array($fields) )
+				$fields = @implode(', ', trim($fields, ','));
+
+			$fnsql->select($fields, self::$table, array('trans_id'=>$trans_id));
 			
 			return $fndb->get_row( $fnsql->get_query() );
+
 		}
 		
 		

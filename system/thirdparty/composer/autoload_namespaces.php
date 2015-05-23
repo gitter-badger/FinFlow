@@ -7,4 +7,5 @@ $baseDir = dirname(dirname($vendorDir));
 
 return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log'),
+    'Goodby\\CSV' => array($vendorDir . '/goodby/csv/src'),
 );

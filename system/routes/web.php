@@ -29,7 +29,13 @@ if( User::is_authenticated() ){
 
 	//pages and sections
 	$router->respond('/[:page]/[:section]/?', function($request){
-		UI::start($request->page);
+
+		if( ($request->page == 'transactions') and ( $request->section == 'detail' )){
+			UI::component('transactions/transaction-details');
+		}
+		else
+			UI::start($request->page);
+
 	});
 
 	//serve dashboard page by default

@@ -27,49 +27,52 @@ $Transactions = OP::get_operations($filters, $start, $count);
 	        </h4>
         </div>
 
-	    <div class="collapse in" id="collapseInfo">
-		    <table class="table table-striped list report" id="reportInfo">
+	    <table class="table table-striped list report" id="reportInfo">
+		    <tr>
+			    <td>Rulaj: </td>
+			    <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Total); ?></td>
+		    </tr>
+		    <?php if ( ! isset($filters['type']) or $filters['type'] == OP::TYPE_IN): ?>
 			    <tr>
-				    <td>Rulaj: </td>
-				    <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Total); ?></td>
+				    <td>Venit: </td>
+				    <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Income); ?></td>
 			    </tr>
-			    <?php if ( ! isset($filters['type']) or $filters['type'] == OP::TYPE_IN): ?>
-				    <tr>
-					    <td>Venit: </td>
-					    <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Income); ?></td>
-				    </tr>
-			    <?php endif;?>
-			    <?php if ( ! isset($filters['type']) or $filters['type'] == OP::TYPE_OUT): ?>
-				    <tr>
-					    <td>Cheltuieli: </td>
-					    <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Outcome); ?></td>
-				    </tr>
-			    <?php endif; ?>
-			    <?php if ( !isset($filters['type']) ): ?>
-				    <tr class="highlight">
-					    <td>Balan&#355;a: </td>
-					    <td class="align-right">
-						    <strong> <?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Income - $Outcome); ?> </strong>
-					    </td>
-				    </tr>
-			    <?php endif; ?>
-		    </table>
-	    </div>
+		    <?php endif;?>
+		    <?php if ( ! isset($filters['type']) or $filters['type'] == OP::TYPE_OUT): ?>
+			    <tr>
+				    <td>Cheltuieli: </td>
+				    <td class="align-right"><?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Outcome); ?></td>
+			    </tr>
+		    <?php endif; ?>
+		    <?php if ( !isset($filters['type']) ): ?>
+			    <tr class="highlight">
+				    <td>Balan&#355;a: </td>
+				    <td class="align-right">
+					    <strong> <?php echo $Currency->ccode; ?> <?php echo Util::format_nr($Income - $Outcome); ?> </strong>
+				    </td>
+			    </tr>
+		    <?php endif; ?>
+	    </table>
 
     </div>
 
     <div class="panel panel-default">
         <table class="table table-striped list transactions" id="transactionsList">
             <tr>
-                <th>ID</th>
-                <th>Tip</th>
-                <th>Suma</th>
-                <th>Moneda</th>
-                <th>Data</th>
-                <th>Etichete</th>
-                <th>&nbsp;</th>
+                <th><?php __e('ID'); ?></th>
+                <th><?php __e('Type'); ?></th>
+                <th><?php __e('Value'); ?></th>
+                <th><?php __e('Currency'); ?></th>
+                <th><?php __e('Date'); ?></th>
+                <th><?php __e('Labels'); ?></th>
+                <th class="td-col-actions">&nbsp;</th>
             </tr>
-            <?php foreach ($Transactions as $transaction): $currency = Currency::get($transaction->currency_id); ?>
+            <?php foreach ($Transactions as $transaction):
+
+	            $currency = Currency::get($transaction->currency_id);
+	            $labels   = ! empty($transaction->labels) ? @explode(',', $transaction->labels) : array();
+
+	        ?>
                 <tr>
                     <td>#<?php echo $transaction->trans_id; ?></td>
                     <td><?php UI::transaction_icon( $transaction->optype ) ?></td>
@@ -77,12 +80,12 @@ $Transactions = OP::get_operations($filters, $start, $count);
                     <td><?php echo $currency->ccode; ?></td>
                     <td><?php echo UI::translate_date( date(FN_DAY_FORMAT, strtotime($transaction->sdate)) ); ?></td>
                     <td>
-                        <?php $labels = OP::get_labels($transaction->trans_id); $lc=0; if (count($labels))  foreach ($labels as $label): $lc++; ?>
-                            <?php echo UI::esc_html($label->title); ?><?php if ( $lc < count($labels) ) echo ", "; ?>
+                        <?php $lc=0; if ( count($labels) ) foreach ($labels as $label): $lc++; ?>
+                            <?php echo UI::esc_html($label); ?><?php if ( $lc < count($labels) ) echo ", "; ?>
                         <?php endforeach; ?>
                     </td>
                     <td>
-                        <a class="btn btn-default" title="<?php echo UI::esc_attr( $transaction->comments ); ?>" onclick="fn_popup('<?php echo (FN_URL . "/snippets/transaction-details.php?id={$transaction->trans_id}"); ?>')">
+                        <a class="btn btn-default" onclick="fn_popup('<?php UI::url('transactions/detail', array('id'=>$transaction->trans_id)); ?>')">
                             <span class="fa fa-info-circle"></span>
                         </a>
                         <button class="btn btn-default" onclick="confirm_delete('<?php UI::url('transactions', array_merge($_GET, array('del'=>$transaction->trans_id))); ?>')">

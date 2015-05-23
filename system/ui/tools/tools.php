@@ -1,26 +1,43 @@
 <?php if ( !defined('FNPATH') ) exit();
 
-$tab = isset($_GET['t']) ? urldecode($_GET['t']) : 'import'; $activetab = array(); $activetab[$tab] = 'active'; ?>
+use FinFlow\UI;
+
+$_section = ( $s = url_part(2) ) ? $s : 'list';
+$errors   = $warnings = $notices = array();
+
+?>
 
 <div class="row">
-    <div class="<?php fn_UI::main_container_grid_class(); ?>">
+    <div class="col-lg-8 col-md-8">
 
-        <ul class="nav nav-tabs">
-            <li class="<?php echo av($activetab, 'import'); ?>"><a href="<?php fn_UI::page_url('tools', array('t'=>'import'))?>">Import</a></li>
-            <li class="<?php echo av($activetab, 'export'); ?>"><a href="<?php fn_UI::page_url('tools', array('t'=>'export'))?>">Export </a></li>
-            <!--- <li class="<?php echo av($activetab, 'backup'); ?>"><a href="<?php fn_UI::page_url('tools', array('t'=>'backup'))?>">Backup </a></li> --->
-        </ul>
+	    <div class="panel panel-default">
 
-        <?php fn_UI::msg("Atentie! Aceasta catacteristica este experimentala.", fn_UI::$MSG_WARN); ?>
+		    <div class="panel-heading"><h4><?php __e('Available tools'); ?></h4></div>
 
-        <?php if ( $tab == 'import' ) include_once 'tools-import.php'; ?>
+		    <div class="panel-body">
 
-        <?php if ( $tab == 'export' ) include_once 'tools-export.php'; ?>
+			    <div class="row">
+				    <div class="col-lg-4">
+					    <a href="<?php UI::url('tools/import'); ?>">Import</a>
+				    </div>
+				    <div class="col-lg-4">
+					    Export
+				    </div>
+				    <div class="col-lg-4">
+					    Backup
+				    </div>
+				    <div class="col-lg-4">
+					    Archive
+				    </div>
+			    </div>
 
-        <?php if ( $tab == 'backup' ) include_once 'tools-backup.php'; ?>
+		    </div>
+
+	    </div>
+
 
     </div>
 
-    <?php include_once ( FNPATH . '/snippets/sidebar.php' ); ?>
+	<?php UI::component('main/sidebar'); ?>
 
 </div>
