@@ -8,6 +8,53 @@
 use FinFlow\UI;
 use FinFlow\Util;
 
+function is_browser(){
+	return ( php_sapi_name() != 'cli' ) and strlen($_SERVER['REMOTE_ADDR']);
+}
+
+function is_cli(){
+	return ( php_sapi_name() == 'cli' ) and empty($_SERVER['REMOTE_ADDR']);
+}
+
+/**
+ * Detects https protocol
+ * @return bool
+ */
+function is_ssl(){
+
+	//behind a load balancer;
+	if ( isset($_SERVER['HTTP_X_FORWARDED_PROTO']) and $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' )
+		$_SERVER['HTTPS'] = 'on';
+
+	//fastcgi_param HTTPS on;
+	if ( isset($_SERVER['HTTPS']) ) {
+
+		if ( 'on' == strtolower($_SERVER['HTTPS']) )
+			return true;
+
+		if ( '1' == $_SERVER['HTTPS'] )
+			return true;
+
+	}
+
+	//last if the port is 443, best guess it's ssl;
+	elseif ( isset($_SERVER['SERVER_PORT']) and ( '443' == $_SERVER['SERVER_PORT'] ) ) {
+		return true;
+	}
+
+	return false;
+
+}
+
+/**
+ * Alias of is_ssl
+ * @return bool
+ * @see is_ssl()
+ */
+function is_https(){
+	return is_ssl();
+}
+
 function get_input($key, $xss_filter=false){ //TODO add cli support
     return Util::get_input($key, $xss_filter);
 }
@@ -55,6 +102,52 @@ function post($key, $xss_filter=true){
  */
 function get($key, $xss_filter=true){
     return Util::array_value($_GET, $key, $xss_filter);
+}
+
+/**
+ * Returns the value for the $_FILES key
+ * @param $key
+ * @return array|null
+ */
+function ufile($key){
+	return Util::array_value($_POST, $key, false);
+}
+
+/**
+ * Parse arguments; if $args input is missing will parse all vars from $_GET, $_POST and $argv
+ * @param array $args
+ * @param bool $urldecode
+ * @param bool $xss_filter
+ *
+ * @return array|mixed|string
+ */
+function parse_args($args=array(), $urldecode=true, $xss_filter=true){
+
+	global $argv;
+
+	if( empty($args) ){
+		$args = is_cli() ? Util::xss_filter( $argv ) : Util::xss_filter( array_merge($_GET, $_POST) );
+	}
+
+	if( is_object($args) )
+		$args = get_object_vars($args);
+
+	if( is_string($args) and strlen($args) ){
+
+		$args_str = $urldecode ? urldecode($args) : $args;
+		$args_str = trim(trim($args_str), '?&');
+
+		if( strpos($args_str, '&') === false ){
+			$args = array($args_str=>'');
+		}
+		else{
+			$args = array(); parse_str($args_str, $args);
+		}
+
+	}
+
+	return $xss_filter ? Util::xss_filter( $args ) : $args;
+
 }
 
 /**

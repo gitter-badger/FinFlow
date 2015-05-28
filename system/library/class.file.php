@@ -1,7 +1,7 @@
 <?php
 /**
  * FinFlow 1.0 - File upload/download/delete interface
- * @author Adrian S. (adrian@studentmoneysaver.co.uk)
+ * @author Adrian S. (adrian@finflow.org)
  * @version 1.0
  */
 
@@ -17,7 +17,7 @@ class File{
 	 * @var array
 	 */
 	protected static $allowed_extensions = array(
-		'pdf', 'png', 'jpg', 'gif', 'doc', 'xls', 'docx', 'xlsx', 'psd', 'odt', 'ods', 'odf', 'txt', 'rtf', 'ppt', 'pptx', 'mp3', 'ogg', 'mp4', 'avi', 'mkv', 'zip', 'gz', 'tar', 'swf', 'fla', 'aac'
+		'pdf', 'png', 'jpg', 'gif', 'doc', 'xls', 'csv', 'tsv', 'docx', 'xlsx', 'psd', 'odt', 'ods', 'odf', 'txt', 'rtf', 'ppt', 'pptx', 'mp3', 'ogg', 'mp4', 'avi', 'mkv', 'zip', 'gz', 'tar', 'swf', 'fla', 'aac'
 	);
 
 	/**

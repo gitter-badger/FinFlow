@@ -8,10 +8,14 @@ use Goodby\CSV\Import\Standard\LexerConfig;
 
 class Importer{
 
-    public $errors = array();
+    public $errors      = array();
+	public $lineIndex   = 0;
+
+	protected $linesMax = 65535;
 
     private $file     = NULL;
     private $fileType = 'csv';
+	private $header   = array();
 
 	protected $columnsMatch = array(
 		'optype',
@@ -30,7 +34,7 @@ class Importer{
     public function __construct($filepath){
 
 	    if( file_exists($filepath) ){
-		    $this->file = $filepath; $this->init();
+		    $this->file = $filepath;
 	    }
 	    else
 		    throw new \Exception("File {$filepath} not found!");
@@ -45,94 +49,42 @@ class Importer{
 			$result = call_user_func(array(__CLASS__, $method), $config); return $result;
 		}
 		else
-			throw new \Exception("{$ext} import is not supported.");
+			throw new \Exception(__t('%s file import is not supported.', $ext));
 
 	}
 
 	public function get_file_header($config=array()){
-		//TODO...
+
+		$fileResource = fopen($this->file, 'r');
+
+		die($this->file);//TODO...
+
+		if( $fileResource ){
+
+			@fseek($fileResource, 0); $headerLine = @fgets($this->file);
+
+			if( $headerLine ){
+				$filename = ( FN_CACHE_FOLDER . '/temp-' . Util::random_string() ); @file_put_contents( $filename , $headerLine);
+			}
+
+			die( $filename ); //TODO...
+
+			$config['ignore_header'] = false;
+
+			$this->import($config);
+
+		}
+
 	}
 
-
-    /**
-     * Imports data from a FinFlow export xml file
-     * @return bool|int
-     * @deprecated
-     */
-    public function import_xml(){
-
-        $contents = @file_get_contents( $this->filepath );
-
-        if( $contents ){
-
-            if( strrpos($contents, '<FinFlowExportXML') === false ) //it is an encrypted file
-                $contentXML = fn_gCrypt::decrypt($contents);
-            else
-                $contentXML = $contents;
-
-        }
-        else{
-            $this->Errors[] = "Fisierul pentru import, nu contine date sau este inaccesibil."; return false;
-        }
-
-
-        libxml_use_internal_errors(true);
-
-        $this->XML = simplexml_load_string($contentXML);
-
-        if( empty($this->XML) ){
-
-            $xmlErrors = libxml_get_errors();
-
-            if( count($xmlErrors) ) foreach($xmlErrors as $error)
-                $this->Errors[] = "Eroare xml la linia {$error->line} coloana {$error->column} cu mesajul: {$error->message} .";
-            else
-                $this->Errors[] = "Fisierul ales pentru import nu este un fisier export valid FinFlow.";
-
-            libxml_clear_errors();
-
-            return false;
-
-        }
-
-        $version = @$this->XML->attributes()->version;
-
-        //--- import data ---//
-
-        $data_count = 0;
-
-        //settings
-        $scount = fn_Settings::import_osmxml( $this->XML->settings ); $data_count+= $scount;
-
-        //currencies
-        $SyncCurrencies = fn_Currency::import_osmxml( $this->XML->currencies ); $data_count+= count($SyncCurrencies);
-
-        //currencies history
-        $hcount = fn_Currency::import_osmxml_history($this->XML->history, $SyncCurrencies); $data_count+= $hcount;
-
-        //labels
-        $SyncLabels = fn_Label::import_osmxml($this->XML->labels); $data_count+= count($SyncLabels);
-
-        //accounts
-        $SyncAccounts = fn_Accounts::import_osmxml($this->XML->accounts, $SyncCurrencies); $data_count+= count($SyncAccounts);
-
-        //transactions
-        $tcount = fn_OP::import_osmxml($this->XML->transactions, $SyncCurrencies, $SyncLabels, $SyncAccounts); $data_count+= $tcount;
-
-        return $data_count; //how many records have been imported
-
-        //--- import data ---//
-
-    }
-
-    public function import_csv($config=array(), $columnMatch=array()){
+    public function import_csv($config=array(), $columnMatch=array(), $lines=65535){
 
 	    $config       = Util::clean_array($config);
 	    $this->config = new LexerConfig();
 
 	    $this->config->setToCharset('UTF-8');
 	    $this->config->setDelimiter(',');
-	    $this->config->getIgnoreHeaderLine();
+	    $this->config->setIgnoreHeaderLine(true);
 
 	    //--- apply user config ---//
 	    if( isset($config['delimiter']) )
@@ -150,18 +102,27 @@ class Importer{
 	    if( isset($config['ignore_header']) )
 		    $this->config->setIgnoreHeaderLine($config['ignore_header']);
 
+	    if( isset($config['ignore_header']) )
+		    $this->config->setIgnoreHeaderLine( boolval($config['ignore_header']) );
+
 	    //--- apply user config ---//
 
 	    $lexer = new Lexer($this->config);
 
+	    $this->linesMax    = intval($lines);
 	    $this->interpreter = new Interpreter( $lexer );
 	    $this->columnsMatch= count($columnMatch) ? $columnMatch : $this->columnsMatch;
 
-	    $this->interpreter->addObserver(function(array $columns) use ($this){
-			print_r($columns); die();
+	    if( ! isset($config['strict']) )
+		    $this->interpreter->unstrict();
+
+	    $this->interpreter->addObserver(function(array $columns){
+		    $this->lineIndex++; print_r($columns); die(); //TODO...
 	    });
 
         //TODO add support for mysqldump
+	    $lexer->parse($this->file, $this->interpreter);
+
     }
 
 	public function import_tsv(){

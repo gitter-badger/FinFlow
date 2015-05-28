@@ -2,6 +2,8 @@
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 DROP TABLE IF EXISTS `fn_accounts`;
 CREATE TABLE `fn_accounts` (
@@ -89,6 +91,16 @@ CREATE TABLE `fn_files` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `fn_import`;
+CREATE TABLE `fn_import` (
+  `config_id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `config_title` varchar(255) NOT NULL,
+  `config_data` text,
+  `columns_data` text,
+  PRIMARY KEY (`config_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `fn_labels`;
 CREATE TABLE `fn_labels` (
   `label_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -111,6 +123,7 @@ CREATE TABLE `fn_op` (
   `account_id` int(11) NOT NULL DEFAULT '0',
   `contact_id` int(11) NOT NULL DEFAULT '0',
   `comments` varchar(255) DEFAULT NULL,
+  `labels` varchar(255) DEFAULT NULL,
   `sdate` datetime NOT NULL,
   `mdate` datetime DEFAULT NULL,
   PRIMARY KEY (`trans_id`)
@@ -180,6 +193,7 @@ CREATE TABLE `fn_tasks` (
   `status` enum('running','finished','stopped','unknown') NOT NULL DEFAULT 'stopped',
   `active` enum('yes','no') NOT NULL DEFAULT 'no',
   `last_activity` datetime DEFAULT NULL,
+  `description` text,
   PRIMARY KEY (`task_id`),
   UNIQUE KEY `task_name` (`task_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -210,4 +224,4 @@ CREATE TABLE `fn_users_meta` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2015-05-15 13:02:08
+-- 2015-05-23 17:17:25

@@ -93,6 +93,11 @@ class CanValidate{
 		return $result != $host;
 		
 	}
+
+
+	public static function is_uploaded_file($name){
+		return ( isset($_FILES[$name]) and is_array($_FILES[$name]) and strlen($_FILES[$name]['name']) );
+	}
 }
 
 ?>
