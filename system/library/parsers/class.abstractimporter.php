@@ -12,7 +12,7 @@ abstract class AbstractImporter{
 	abstract function set($key, $value=1);
 	abstract function get($key);
 	abstract function getColumns();
-	abstract function import();
+	abstract function import($observer);
 	abstract function getErrors();
 	abstract function addError($message);
 }

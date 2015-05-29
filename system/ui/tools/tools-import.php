@@ -1,9 +1,10 @@
 <?php if ( !defined('FNPATH') ) exit();
 
-use FinFlow\Importer;
 use FinFlow\UI;
+use FinFlow\OP;
 use FinFlow\File;
 use FinFlow\CanValidate;
+use FinFlow\Import;
 
 $imported = false;
 $errors   = $notices = array();
@@ -19,11 +20,11 @@ if( isset($_POST['import']) ){
 
         if( $uploaded ){
 
-            $Importer = new Importer($uploaded);
+            $Importer = Import::getImporter($uploaded);
 
             try{
 
-	            $imported = $Importer->get_file_header();
+	            OP::import($Importer);
 
             }
             catch(Exception $e){
@@ -34,7 +35,7 @@ if( isset($_POST['import']) ){
 
         }
         else
-	        $errors = File::getErrors();
+	        $errors = array_merge(array('Could not upload file!'), File::getErrors());
 
     }
     else

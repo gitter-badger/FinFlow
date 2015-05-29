@@ -110,7 +110,7 @@ function get($key, $xss_filter=true){
  * @return array|null
  */
 function ufile($key){
-	return Util::array_value($_POST, $key, false);
+	return Util::array_value($_FILES, $key, false);
 }
 
 /**

@@ -1,6 +1,7 @@
 <?php
 
 namespace FinFlow;
+use FinFlow\Parsers\AbstractImporter;
 
 /**
  * Operations Main Class
@@ -1121,4 +1122,15 @@ class OP{
         return strlen($readable) ? ( $before . trim($readable) . $after ) : "";
 
     }
+
+
+	public static function import(AbstractImporter $importer, $columns=array()){
+
+		$importerCols = $importer->getColumns();
+
+		$importer->import(function($values){
+			//TODO...
+		});
+		//TODO implement importer
+	}
 }

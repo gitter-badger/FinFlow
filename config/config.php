@@ -31,7 +31,7 @@ define('FN_YEAR_FORMAT'		, 'Y');
 define('FN_RESULTS_PER_PAGE', 15);
 
 /**Numele directorului cache*/
-define('FN_CACHE_FOLDER', '/var/www/live/.cache');
+define('FN_CACHE_FOLDER', '/var/www/working/.cache');
 define('FN_CACHE_EXPIRE', 7200);
 
 /**Activeaza debuging*/
