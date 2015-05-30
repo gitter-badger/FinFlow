@@ -137,7 +137,7 @@ try{
 
 
 			//--- determine user id ---//
-			if( $message['to'] ){ //TODO this might be an array
+			if( $message['to'] ){
 
 
 				if( is_array($message['to']) )

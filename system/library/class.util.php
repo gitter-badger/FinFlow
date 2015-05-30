@@ -200,8 +200,15 @@ class Util{
         $value = isset($array[$key]) ? $array[$key] : null; if( $value ) return ( $xss_filter ? self::xss_filter($value) : $value ); return null;
     }
 
+
+	/**
+	 * Filters input for xss
+	 * @param string|array $input
+	 *
+	 * @return mixed
+	 */
     public static function xss_filter($input){
-        return filter_var($input, FILTER_SANITIZE_STRING);
+        return is_array($input) ? filter_var_array($input, FILTER_SANITIZE_STRING) : filter_var($input, FILTER_SANITIZE_STRING);
     }
 
 	public static function get_relative_time($days="", $months="", $years="", $relative=NULL, $past=TRUE, $format='Y-m-d'){
@@ -342,64 +349,7 @@ class Util{
 		$seed = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length) . substr(md5( time() + mt_rand(1, 9999999)), $length); return substr( str_shuffle($seed), 0, $length );
 	}
 
-    /**
-     * Simple encrypt/decrypt function
-     * @param $input
-     * @param bool $encrypt
-     * @return string
-     * @deprecated
-     */
-    public static function passcrypt($input, $encrypt=TRUE){
-		
-			$hashtable = array(	
-						'a'=>'x', 'b'=>'d', 'c'=>'s', 'd'=>'n', 'e'=>'u', 'f'=>'l', 'g'=>'t', 'h'=>'p',
-						'i'=>'a', 'j'=>'i', 'k'=>'c', 'l'=>'z', 'm'=>'r', 'n'=>'w', 'o'=>'e', 'p'=>'j',
-						'q'=>'y', 'r'=>'f', 's'=>'h', 't'=>'g', 'u'=>'m', 'v'=>'q', 'w'=>'b', 'x'=>'v', 
-						'y'=>'o', 'z'=>'k', '1'=>'8', '2'=>'5', '3'=>'9', '4'=>'6', '5'=>'7', '6'=>'0', 
-						'7'=>'1', '8'=>'4', '9'=>'3', '0'=>'2', '.'=>',', '~'=>'&', '&'=>')', '*'=>'%',
-                        '^'=>'~', '+'=>'*', ' '=>'@'
-			);
-			
-			if ( !$encrypt ) $input = str_rot13(base64_decode($input));
-			
-			$input_array = str_split($input);
-			$output 	  	  = "";
-			
-			$k = 0;
-			
-			foreach ($input_array as $in){
-			
-				$found = FALSE; $in = (string) $in;
-				
-				foreach ($hashtable as $letter=>$replace){
-					
-					if ( $encrypt and ( $in == $letter ) ) {
-						$found=1; $output.= $replace;  break; 
-					}
-					
-					if ( !$encrypt and ($in == $replace) ) { 
-						$found=1; $output.= $letter; break; 
-					}
-					
-					if ( $encrypt and ( strtoupper($in) == strtoupper($letter) ) ) {
-						$found=1; $output.= strtoupper($replace);  break;
-					}
-						
-					if ( !$encrypt and (strtoupper($in) == strtoupper($replace)) ) {
-						$found=1; $output.= strtoupper($letter); break;
-					}
-					
-				}
-				
-				if ( !$found ) $output.= $in;
-				
-			}
-			
-			return $encrypt ? base64_encode(str_rot13( $output )) : $output;
-			
-	}
-
-
+	//TODO move to highcarts helper
     public static function highchart_prepare_data($Sums, $currency_code="RON", $series_color=FALSE, $negative_color=FALSE){
 
         $chartdtspan  	= "";
@@ -444,7 +394,6 @@ class Util{
 
         return array('series'=>$series, 'chartdtspan'=>$chartdtspan, 'categories'=>$categories);
     }
-
 	
 	public static function highchart($renderTo, $type, $title="Chart", $categories=array(), $yAxisTitle=FALSE, $series=array(), $disableLegend=FALSE){
 		
@@ -536,6 +485,12 @@ class Util{
         return strtolower( self::transliterate($string, "-") );
     }
 
+	/**
+	 * @param int $length
+	 *
+	 * @return string
+	 * @deprecated
+	 */
     public static function get_rand_string($length=12){
 	    //TODO better random string support
         return substr(md5( time() + rand(1, 9999) ), 0, $length);
@@ -601,10 +556,16 @@ class Util{
     }
 
 
+	/**
+	 * @param bool $force
+	 *
+	 * @return bool
+	 * @deprecated
+	 */
     public static function is_https($force=FALSE){
 
         if( $force )
-            return TRUE;
+            return true;
         else
             if( isset($_SERVER['HTTPS']) and $_SERVER['HTTPS'] and ( $_SERVER['HTTPS'] != 'off' ) ) return TRUE;
 
@@ -652,6 +613,15 @@ class Util{
         return $url;
     }
 
+	public static function get_hostname($url=null){
+
+		if( empty($url) )
+			$url = FN_URL;
+
+		return @parse_url($url, PHP_URL_HOST);
+
+	}
+
     public static function get_file_path($url){
         if( strpos(self::get_base_url(), $url) === FALSE )
             return ( rtrim(FNPATH, "/") . "/" . ltrim($url, "/") );
@@ -676,9 +646,15 @@ class Util{
      * @return string
      */
     public static function fmt_filesize( $size ){
-        if ($size >= 1073741824) return ( round(($size / 1073741824), 2) . " GB" );
-        if ($size >= 1048576) return ( round(($size / 1048576), 2) . " MB" );
-        if ($size >= 1024) return ( round(($size / 1024), 2) . " KB" );
+
+        if ($size >= 1073741824)
+	        return ( round(($size / 1073741824), 2) . " GB" );
+
+        if ($size >= 1048576)
+	        return ( round(($size / 1048576), 2) . " MB" );
+
+        if ($size >= 1024)
+	        return ( round(($size / 1024), 2) . " KB" );
 
         return ($size . ' bytes');
     }
@@ -730,6 +706,18 @@ class Util{
         return strtolower( substr($filename, strrpos($filename, ".")+1) );
     }
 
+	/**
+	 * Uploads a file to the server
+	 * @param $file
+	 * @param $folder
+	 * @param null $filename
+	 * @param string $prefix
+	 * @param string $suffix
+	 * @param array $allowExtensions
+	 *
+	 * @return array|bool
+	 * @deprecated
+	 */
     public static function file_upload($file, $folder, $filename=NULL, $prefix="", $suffix="", $allowExtensions=array()){
 
         if( is_array($file) and empty($file['error']) ){
@@ -788,15 +776,25 @@ class Util{
     }
 
 
+	/**
+	 * Expands zip archive
+	 * @param $path
+	 * @param bool $dir
+	 * @param array $entries
+	 *
+	 * @return bool|string
+	 */
     public static function unzip($path, $dir=FALSE, $entries=array()){
 
-        if( empty($dir) ) $dir = dirname($path);
+        if( empty($dir) )
+	        $dir = dirname($path);
 
-        if( !class_exists('ZipArchive') ) return FALSE;
+        if( !class_exists('ZipArchive') )
+	        return false;
 
-        $zip = new ZipArchive;
+        $zip = new ZipArchive();
 
-        if ($zip->open($path) === TRUE) {
+        if ( true === $zip->open($path) ) {
 
             if( count($entries) )
                 $zip->extractTo($dir, $entries);
@@ -808,7 +806,7 @@ class Util{
             return $dir;
         }
 
-        return FALSE;
+        return false;
 
     }
 
@@ -848,18 +846,18 @@ class Util{
      */
     public static function fcopy($spath, $dstpath, $clean_dst=FALSE, $rlevel=0) {
 
-        //echo ('copying: ' . $spath . ' -> ' . $dstpath . '<br/>'); //TODO
-
-        $spath    = rtrim($spath, DIRECTORY_SEPARATOR);
+        $spath   = rtrim($spath, DIRECTORY_SEPARATOR);
         $dstpath = rtrim($dstpath, DIRECTORY_SEPARATOR);
 
         if( $clean_dst and file_exists ( $dstpath ) ){
-            if( is_file($dstpath) ) @unlink($dstpath); else self::remove_dir($dstpath);
+            if( is_file($dstpath) )
+	            @unlink($dstpath); else self::remove_dir($dstpath);
         }
 
         if ( is_dir ( $spath ) ) {
 
-            if( $clean_dst or $rlevel) @mkdir($dstpath);
+            if( $clean_dst or $rlevel)
+	            @mkdir($dstpath);
 
             $files = scandir ( $spath );
 
@@ -872,7 +870,8 @@ class Util{
     }
 
     public static function get_cache_folder_path(){
-        if( defined('FN_CACHE_FOLDER') ) return rtrim( (strpos(FN_CACHE_FOLDER, DIRECTORY_SEPARATOR) === false ) ? ( FNPATH . DIRECTORY_SEPARATOR . FN_CACHE_FOLDER ) : (  strpos(FN_CACHE_FOLDER, DIRECTORY_SEPARATOR) == 0 ) ? FN_CACHE_FOLDER : ( FNPATH . DIRECTORY_SEPARATOR . FN_CACHE_FOLDER ), DIRECTORY_SEPARATOR);
+        if( defined('FN_CACHE_FOLDER') )
+	        return rtrim( (strpos(FN_CACHE_FOLDER, DIRECTORY_SEPARATOR) === false ) ? ( FNPATH . DIRECTORY_SEPARATOR . FN_CACHE_FOLDER ) : (  strpos(FN_CACHE_FOLDER, DIRECTORY_SEPARATOR) == 0 ) ? FN_CACHE_FOLDER : ( FNPATH . DIRECTORY_SEPARATOR . FN_CACHE_FOLDER ), DIRECTORY_SEPARATOR);
     }
 
     public static function get_cache_file_path($filename){
@@ -883,6 +882,12 @@ class Util{
         return $relative_path ? self::get_cache_folder_path() : self::get_cache_file_path($relative_path);
     }
 
+	/**
+	 * @param $value
+	 *
+	 * @return mixed
+	 * @deprecated
+	 */
     public static function escape_xml($value){
 
         $value = str_replace('&', '&amp;', $value);
@@ -894,6 +899,12 @@ class Util{
         return $value;
     }
 
+	/**
+	 * @param $value
+	 *
+	 * @return mixed
+	 * @deprecated
+	 */
     public static function unescape_xml($value){
 
         $value = str_replace('&amp;', '&', $value);
@@ -931,7 +942,14 @@ class Util{
      * @return string
      */
     public static function cfg_file_path($default='/config/config.php'){
-        $env = FN_ENVIRONMENT; if( file_exists( FNPATH . "/config/config-{$env}.php") ) return ( FNPATH . "/config-{$env}.php" ); return ( FNPATH . $default );
+
+        $env = FN_ENVIRONMENT;
+
+	    if( file_exists( FNPATH . "/config/config-{$env}.php") )
+		    return ( FNPATH . "/config-{$env}.php" );
+
+	    return ( FNPATH . $default );
+
     }
 
     public static function is_development_environment(){

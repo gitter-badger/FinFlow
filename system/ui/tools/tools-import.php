@@ -24,7 +24,9 @@ if( isset($_POST['import']) ){
 
             try{
 
-	            OP::import($Importer);
+	            $fileColumns = $Importer->getColumns();
+	            print_r($fileColumns);
+	            //OP::import($Importer);
 
             }
             catch(Exception $e){

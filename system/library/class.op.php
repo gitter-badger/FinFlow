@@ -17,6 +17,60 @@ class OP{
 	public static $table      = 'fn_op';
 	public static $table_meta = 'fn_op_meta';
 
+	public static function getArgsArray($all=false){
+
+		if( $all )
+			return array(
+				'optype'    => null,
+				'value'     => 0,
+
+				'ccode'     => Currency::get_default_cc(),
+				'timestamp' => time(),
+				'account'   => null,
+				'labels'    => array(),
+				'user_id'   => null,
+				'contact_id'=> null,
+				'comments'  => null
+			);
+		else
+			return array(
+			'optype'        => null,
+			'value'         => 0,
+
+			'ccode'    => 1,
+			'timestamp'=> 0
+		);
+
+
+	}
+
+	public static function getHumanReadableArgsArray($all=false){
+		if( $all )
+			return array(
+				'optype'    => 'type',
+				'value'     => 'value',
+
+				'ccode'     => 'currency code',
+				'date'      => 'date',
+				'account'   => 'account',
+				'labels'    => 'labels',
+				'user_id'   => 'user id',
+				'contact_id'=> 'contact ID',
+				'comments'  => 'comments',
+
+				'meta_from' => 'contact email',
+				'meta_to'   => 'user email',
+			);
+		else
+			return array(
+				'optype'=> 'type',
+				'value' => 'value',
+
+				'ccode' => 'currency code',
+				'date'  => 'date'
+			);
+	}
+
 	public static function getTypesArray(){
 		return array(self::TYPE_IN, self::TYPE_OUT);
 	}
@@ -74,7 +128,13 @@ class OP{
         return false;
 
     }
-	
+
+	/**
+	 * Applies filters to select query
+	 * @param array $filters
+	 *
+	 * @return bool
+	 */
 	public static function apply_filters($filters=array()){
 		
 		global $fndb, $fnsql; $fnsql->resetGroupIndex();
@@ -177,7 +237,12 @@ class OP{
 		
 	}
 
-
+	/**
+	 * Finds transactions count
+	 * @param $filters
+	 *
+	 * @return int
+	 */
     public static function get_total($filters){
 
         global $fndb, $fnsql;
@@ -206,7 +271,14 @@ class OP{
 
     }
 
-	
+	/**
+	 * Finds transactions
+	 * @param $filters
+	 * @param int $start
+	 * @param int $count
+	 *
+	 * @return array|null
+	 */
 	public static function get_operations($filters, $start=0, $count=125){
 		
 		global $fndb, $fnsql;
@@ -267,6 +339,12 @@ class OP{
 		
 	}
 
+	/**
+	 * Finds transaction account
+	 * @param $trans_id
+	 *
+	 * @return null
+	 */
     public static function get_account($trans_id){
         global $fndb, $fnsql;
 
@@ -283,7 +361,13 @@ class OP{
         }
 
     }
-	
+
+	/**
+	 * Removes transaction
+	 * @param $trans_id
+	 *
+	 * @return bool
+	 */
 	public static function remove($trans_id){
 
 		global $fndb, $fnsql;
@@ -317,7 +401,11 @@ class OP{
 		
 		return FALSE;
 	}
-	
+
+	/**
+	 * Applies period selection
+	 * @param string $span
+	 */
 	public static function apply_timely_selection($span='monthly'){
 		
 		global $fndb, $fnsql;
@@ -735,7 +823,14 @@ class OP{
 		return false;
 		
 	}
-	
+
+	/**
+	 * Associates label to transactions
+	 * @param $trans_id
+	 * @param $label_id
+	 *
+	 * @return bool
+	 */
 	public static function associate_label($trans_id, $label_id){
 
 		global $fndb, $fnsql; 
@@ -792,8 +887,17 @@ class OP{
 		return false;
 		
 	}
-	
-	
+
+	/**
+	 * Saves transaction metadata
+	 * @param $trans_id
+	 * @param $key
+	 * @param $value
+	 * @param bool $multiple
+	 * @param bool $overwrite
+	 *
+	 * @return bool
+	 */
 	public static function save_metadata($trans_id, $key, $value, $multiple=FALSE, $overwrite=TRUE){
 		
 		global $fndb, $fnsql;
@@ -829,8 +933,15 @@ class OP{
 		return $fndb->execute_query( $fnsql->get_query() );
 		
 	}
-	
-	
+
+	/**
+	 * Gets transaction metadata
+	 * @param $trans_id
+	 * @param $key
+	 * @param null $default
+	 *
+	 * @return null
+	 */
 	public static function get_metadata($trans_id, $key, $default=NULL){
 		
 		global $fndb, $fnsql;
@@ -977,8 +1088,46 @@ class OP{
 		return FALSE;
 		
 	}
-	
-	
+
+	public static function createFrom($data){
+
+		$data = parse_args($data);
+		$data = array_merge(self::getArgsArray(true), $data);
+		$meta = array();
+
+		foreach($data as $key=>$value){
+			if( strpos($key, 'meta_') === 0 )
+				$meta[ str_replace('meta_', '', $key) ] = $value;
+		}
+
+		if( $data['labels'] and ! is_array($data['labels']) )
+			$data['labels'] = @explode(',', trim($data['labels']));
+
+		if( isset($data['date']) and empty($data['timestamp']) )
+			$data['timestamp'] = @strtotime( $data['date'] );
+
+		return self::create(
+			$data['optype'],
+			$data['value'],
+			$data['ccode'],
+			$data['timestamp'],
+			$data['account'],
+			$data['labels'],
+			$data['user_id'],
+			$data['contact_id'],
+			$data['comments'],
+			$meta
+		);
+
+	}
+
+	/**
+	 * Gets a single transaction
+	 * @param $trans_id
+	 * @param string $fields
+	 *
+	 * @return null
+	 */
 	public static function get($trans_id, $fields='*'){
 		
 		global $fndb, $fnsql;
@@ -1000,6 +1149,13 @@ class OP{
 		return null;
 	}
 
+	/**
+	 * Updates transaction
+	 * @param $trans_id
+	 * @param $data
+	 *
+	 * @return bool
+	 */
     public static function update($trans_id, $data){
         global $fndb, $fnsql;
 
@@ -1014,10 +1170,16 @@ class OP{
 
     }
 
+	/**
+	 * Adds file attachment to transaction
+	 * @param $trans_id
+	 * @param $File
+	 *
+	 * @return bool
+	 */
     public static function add_attachment($trans_id, $File){
 
 	    $filepath = File::upload($File);
-
 
         if( $filepath ){
 	        $file_id  = File::$last_file_id; return File::associateTransaction($trans_id, $file_id);
@@ -1027,14 +1189,28 @@ class OP{
 
     }
 
-    public static function get_attachment_link($attachment){
-        return ( rtrim(FN_URL, "/") . self::$uploads_dir . "/" . trim($attachment, "/") );
+	/**
+	 * Generates attachment download link
+	 * @param $attachment_id
+	 *
+	 * @return string
+	 */
+    public static function get_attachment_link($attachment_id){
+        //TODO return ( rtrim(FN_URL, "/") . self::$uploads_dir . "/" . trim($attachment, "/") );
     }
 
     public static function get_attachment_path($attachment){
         return ( rtrim(FNPATH, "/") . self::$uploads_dir . "/" . trim($attachment, "/") );
     }
 
+	/**
+	 * @param $vars
+	 * @param string $before
+	 * @param string $after
+	 * @param string $date_format
+	 *
+	 * @return string
+	 */
     public static function get_filter_readable_string($vars, $before='', $after='', $date_format='j F Y'){
 
         if( empty($vars) ) $vars = $_GET;
@@ -1123,13 +1299,46 @@ class OP{
 
     }
 
-
+	/**
+	 * Imports transactions
+	 * @param AbstractImporter $importer
+	 * @param array $columns
+	 */
 	public static function import(AbstractImporter $importer, $columns=array()){
 
-		$importerCols = $importer->getColumns();
+		$imported = 0;
 
-		$importer->import(function($values){
-			//TODO...
+		$importer->import(function($values) use($columns, $imported){
+
+			$values = parse_args($values, false);
+
+			if( isset($values['type']) and isset($values['value']) ){ //overriding columns match
+				$values = array_merge($values, self::$op_defaults);
+			}
+			else {                                                    //use column match
+
+				$tvalues = array();
+
+				foreach($values as $index=>$value)
+					if( $key = array_search($index, $columns) )
+						$tvalues[$key] = $value;
+
+				$values = $tvalues;
+
+			}
+
+			if(  empty($values) )
+				return false;
+
+			print_r($values); die("it's dead jim!");
+
+			$saved = self::createFrom($values);
+
+			if( $saved )
+				$imported++;
+
+			//self::create();
+
 		});
 		//TODO implement importer
 	}

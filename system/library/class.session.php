@@ -7,6 +7,8 @@
 
 namespace FinFlow;
 
+use FinFlow\Drivers\AbstractCache;
+
 $Session = false;
 
 class Session{
@@ -20,18 +22,61 @@ class Session{
 	const DRIVER_APC        = 'apc';
 	const DRIVER_MEMCACHED  = 'memcached';
 
-	//TODO implement session class
+	protected static $instance = null;
+	protected static $driver   = null;
 
-	public function __construct($driver, $config=array()){
+	protected $engine = null;
+
+	private function __construct(AbstractCache $cache){
+		$this->engine = $cache;
+	}
+
+	private function __start(){
+		$this->engine->init();
+	}
+
+	private function __set($key, $value=1){
+		$this->engine->set($key, $value);
+	}
+
+	private function __get($key){
+		$this->engine->get($key);
+	}
+
+	private function __destroy(){
+		$this->engine->clean();
+	}
+
+	private function __wakeup(){
+		return null;
+	}
+
+	private function __clone(){
+		throw new \Exception("Cloning not allowed");
+	}
+
+	public static function getInstance($driver, $config=array()){
+
+		if( null == self::$instance ){
+
+			//TODO ... switch()
+
+		}
+
+		return self::$instance;
+
+	}
+
+	public static function start($driver, $config=array()){
+		self::getInstance($driver, $config);
+	}
+
+	public static function restart(){
 		//TODO...
 	}
 
-	public function start(){
-		global $Session; if( empty($Session) ) $Session = new Session(self::DRIVER_DEFAULT);
-	}
-
-	public function restart(){
-		//TODO...
+	public static function destroy(){
+		//TODO..
 	}
 
 	public static function getCurrentSession($autostart=true){

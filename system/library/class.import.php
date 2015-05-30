@@ -43,4 +43,12 @@ class Import{
 
 	}
 
+	public static function getFileImporter($path){
+		//TODO...
+	}
+
+	public static function getGenericImporter($name){
+		//TODO...
+	}
+
 }
