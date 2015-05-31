@@ -23,6 +23,7 @@ if( User::is_authenticated() ){
 		UI::start('extras/logout');
 	});
 
+	//main section
 	$router->respond('/[:section]/?', function($request){
 		UI::start($request->section);
 	});

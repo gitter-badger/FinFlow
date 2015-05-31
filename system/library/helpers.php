@@ -239,6 +239,15 @@ function __e($msg, $args=array()){
 	echo __t($msg, $argsarray);
 }
 
+
+function esc_html($html){
+	return htmlentities($html, ENT_QUOTES, 'UTF-8', false);
+}
+
+function esc_attr($value){
+	return htmlspecialchars($value, ENT_QUOTES, 'UTF-8', false);
+}
+
 function create_form_nonce($name, $ttl=90){
 
 	$nonces = $_SESSION['fn_nonces'];

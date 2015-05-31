@@ -34,8 +34,9 @@ class Import{
 				}
 
 			}
-			else
-				throw new \Exception(__t('Extension %s is not supported.', $ext));
+			else{
+				@unlink($path); throw new \Exception(__t('Extension %s is not supported.', $ext));
+			}
 
 		}
 		else

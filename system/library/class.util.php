@@ -346,7 +346,8 @@ class Util{
 	 * @return string
 	 */
 	public static function random_string($length=12){
-		$seed = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length) . substr(md5( time() + mt_rand(1, 9999999)), $length); return substr( str_shuffle($seed), 0, $length );
+		$seed = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&*#$!^()[];?<>"), 0, $length) . substr(md5( time() + mt_rand(1, 9999999)), $length);
+		return substr( str_shuffle($seed), 0, $length );
 	}
 
 	//TODO move to highcarts helper

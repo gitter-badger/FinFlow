@@ -32,6 +32,8 @@ class UI{
     protected static $inline_js  = array();
     protected static $inline_css = array();
 
+	protected static $headers_sent= false;
+
     /**
      * Returns an html formatted message
      * @param $msg
@@ -180,7 +182,12 @@ class UI{
     }
 
 	public static function start($component=false, $args=array()){
-		$component = empty($component) ? 'main/dashboard' : trim( Util::xss_filter($component) ); include_once (FNPATH . '/system/ui/main.php');
+
+		self::$headers_sent = true;
+
+		$component = empty($component) ? 'main/dashboard' : trim( Util::xss_filter($component) );
+
+		include_once (FNPATH . '/system/ui/main.php');
 	}
 
 	/**
@@ -189,7 +196,20 @@ class UI{
 	 * @param array $vars
 	 */
 	public static function component($template, $vars=array()){
-		global $fndb, $fnsql; @extract($vars, EXTR_SKIP); $anon_tpl_path = ( FNPATH . '/system/ui/' . Util::xss_filter( trim( $template ) ) . '.php' ); if( file_exists( $anon_tpl_path ) ) include $anon_tpl_path; else ( headers_sent() ? self::msg("UI Template {$anon_tpl_path} not found... .") : self::fatal_error("UI Template {$anon_tpl_path} not found... .") );
+
+		@extract($vars, EXTR_SKIP);
+
+		$anon_tpl_path = ( FNPATH . '/system/ui/' . Util::xss_filter( trim( $template ) ) . '.php' );
+
+		if( file_exists( $anon_tpl_path ) )
+			include $anon_tpl_path;
+		else
+			( self::headers_sent() ? self::msg("UI Template {$anon_tpl_path} not found... .", self::MSG_ERROR) : self::fatal_error("UI Template {$anon_tpl_path} not found... .") );
+	}
+
+
+	public static function headers_sent(){
+		return ( headers_sent() or self::$headers_sent );
 	}
 
 	public static function header_nocache($legacy=false){

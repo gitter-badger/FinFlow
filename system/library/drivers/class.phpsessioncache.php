@@ -58,7 +58,7 @@ class PHPSessionCache extends AbstractCache{
 
 	public function init($config=array()){
 
-		$cookie_name = substr(md5(FN_CRYPT_SALT . '-' . strtotime('-3 days', strtotime( date('Y-m-d 07:07:07') )) ), 0, 12);
+		$cookie_name = substr(md5(FN_CRYPT_SALT . '-' . date('Y-m-d 07:07:07') ), 0, 12);
 		$this->prefix= substr(md5($cookie_name), 0, 7);
 
 		$_defaults = array(

@@ -29,7 +29,7 @@ class Cache{
 
 	/**
 	 * Fires a new cache
-	 * @param $engine
+	 * @param $engine one of self::ENGINE_* options
 	 * @param array $config
 	 *
 	 * @return FileCache|PHPSessionCache
