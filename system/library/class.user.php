@@ -141,7 +141,7 @@ class User{
 	
 	
 	public static function is_authenticated(){
-		return (isset($_SESSION['fn_user_id']) and isset($_SESSION['fn_authentication']) and ( $_SESSION['fn_user_id'] > 0 ) );
+		return ( Session::get('fn_authentication') and ( Session::get('fn_user_id') > 0 ) );
 	}
 	
 	public static function authenticate($email, $password){
@@ -155,9 +155,11 @@ class User{
 		$user = $fndb->get_row( $fnsql->get_query() );
 
 		if ( count($user) and isset($user->user_id) and password_verify($password, $user->password) ){
-			//TODO use session class
-			$_SESSION['fn_user_id'] 	    = $user->user_id;
-			$_SESSION['fn_authentication']	= TRUE;
+
+			Session::restart();
+
+			Session::set('fn_user_id', $user->user_id);
+			Session::set('fn_authentication', true);
 
             $fnsql->update(self::$table, array('last_login'=>date(FN_MYSQL_DATE)), array('user_id'=>$user->user_id));
             $fndb->execute_query( $fnsql->get_query() );
@@ -169,20 +171,15 @@ class User{
 	}
 
 	public static function get_current_user_id(){
-		if( isset($_SESSION['fn_user_id']) ) return $_SESSION['fn_user_id'];
+		return intval( Session::get('fn_user_id') );
 	}
 	
 	public static function logout(){
-		
-		$_SESSION['fn_user_id'] = 0;
-		
-		unset($_SESSION['fn_user_id']);
-		unset($_SESSION['fn_authentication']);
-		
+		Session::destroy();
 	}
 
     public static function current_user_id(){
-        if( isset($_SESSION['fn_user_id']) ) return intval($_SESSION['fn_user_id']); return 0;
+        return intval( Session::get('fn_user_id') );
     }
 
 

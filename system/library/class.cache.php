@@ -27,7 +27,14 @@ class Cache{
 	}
 
 
-	public function fire($engine, $config=array()){
+	/**
+	 * Fires a new cache
+	 * @param $engine
+	 * @param array $config
+	 *
+	 * @return FileCache|PHPSessionCache
+	 */
+	public static function fire($engine, $config=array()){
 
 		if( array_key_exists($engine, self::getSupportedEngines()) ){
 
@@ -39,7 +46,10 @@ class Cache{
 				case self::ENGINE_FILE:
 					return new FileCache($config);
 
-				//TODO...
+				default:
+					throw new \InvalidArgumentException(
+						__t('Engine %s is not supported.', $engine)
+					);
 
 			}
 

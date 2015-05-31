@@ -14,4 +14,6 @@ abstract class AbstractCache{
 	abstract function remove($key);
 	abstract function clean();
 	abstract function stats();
+	abstract function getLastAccessTime();
+	abstract function getLastUpdateTime();
 }

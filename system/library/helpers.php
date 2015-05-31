@@ -114,6 +114,17 @@ function ufile($key){
 }
 
 /**
+ * Returns the cookie value
+ * @param $key
+ * @param bool $xss_filter
+ *
+ * @return mixed|null
+ */
+function cookie($key, $xss_filter=true){
+	return Util::array_value($_COOKIE, $key, $xss_filter);
+}
+
+/**
  * Parse arguments; if $args input is missing will parse all vars from $_GET, $_POST and $argv
  * @param array $args
  * @param bool $urldecode

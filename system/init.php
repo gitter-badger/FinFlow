@@ -24,6 +24,7 @@ require_once ( FNPATH . '/system/thirdparty/autoload.php');
 require_once ( FNPATH . '/system/library/helpers.php');
 
 use FinFlow\UI;
+use FinFlow\Session;
 use FinFlow\Log;
 use FinFlow\Util;
 use FinFlow\MySQLiDB;
@@ -125,7 +126,7 @@ define('FN_TIMEZONE', Settings::get('timezone', 'Europe/London') ); date_default
 //--- setup session ---//
 //TODO
 if( ! FN_IS_CRON )
-	session_start();
+	Session::start(Session::DRIVER_PHP);
 //--- setup session ---//
 
 //--- setup headers ---//

@@ -622,6 +622,31 @@ class Util{
 
 	}
 
+	public static function get_port($url=null, $default=80){
+		if( empty($url) )
+			$url = FN_URL;
+
+		$port = @parse_url($url, PHP_URL_PORT);
+
+		return empty($port) ? $default : $port;
+
+	}
+
+	public static function get_cookie_domain($url=null, $wildcard=false){
+
+		$domain = self::get_hostname($url);
+
+		if( strpos($domain, '.') < 2 ) //HTTP protocol won't allow setting cookies for TLDs
+			return null;
+
+		if( $wildcard and ( substr_count($domain, '.') == 1 ) ){
+			$domain = ( '.' . $domain );
+		}
+
+		return $wildcard ? substr($domain, strpos($domain, '.'), strlen($domain)) : $domain;
+
+	}
+
     public static function get_file_path($url){
         if( strpos(self::get_base_url(), $url) === FALSE )
             return ( rtrim(FNPATH, "/") . "/" . ltrim($url, "/") );

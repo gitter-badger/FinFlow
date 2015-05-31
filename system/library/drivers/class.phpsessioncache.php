@@ -12,9 +12,22 @@ use FinFlow\Util;
 
 class PHPSessionCache extends AbstractCache{
 
-	const PREFIX = 'fn_';
+	/**
+	 * Indicates maximum available TTL for a cache var
+	 */
+	const MAX_TTL = 86400;
 
-	protected $cfg = array();
+	/**
+	 * Session name
+	 * @var string
+	 */
+	protected $cookie = 'cache_session';
+
+	protected $prefix ='cache_';
+
+	protected $cfg           = array();
+	protected $lastAccessTime = 0;
+	protected $lastUpdateTime = 0;
 
 	public function __construct($config=array(), $autoinit=true){
 
@@ -30,49 +43,85 @@ class PHPSessionCache extends AbstractCache{
 
 	}
 
+	protected function upLastAccessTime($both=true){
+
+		$this->lastAccessTime = time();
+
+		if( $both )
+			$this->upLastUpdateTime();
+
+	}
+
+	protected function upLastUpdateTime(){
+		$this->lastUpdateTime = time();
+	}
+
 	public function init($config=array()){
 
+		$cookie_name = substr(md5(FN_CRYPT_SALT . '-' . strtotime('-3 days', strtotime( date('Y-m-d 07:07:07') )) ), 0, 12);
+		$this->prefix= substr(md5($cookie_name), 0, 7);
+
 		$_defaults = array(
+			'name'      => $cookie_name,
 			'lifetime'  => 7200,
 			'path'      => '/',
-			'domain'    => Util::get_hostname(),
+			'domain'    => Util::get_cookie_domain(),
 			'secure'    => is_ssl(),
 		);
 
-		if( empty($config) ){
-			$this->cfg = array_merge($_defaults, $this->cfg);
+		$this->cfg = array_merge($_defaults, $this->cfg, parse_args($config));
+
+		if( ! empty($this->cfg['name']) ){
+			session_name($this->cfg['name']);
 		}
-		else
-			$this->cfg = array_merge($_defaults, parse_args($config));
 
+		$this->cookie = session_name();
+
+		session_set_cookie_params(
+			$this->cfg['lifetime'],
+			$this->cfg['path'],
+			$this->cfg['domain'],
+			$this->cfg['secure']
+		);
+
+		//start php session
 		if( ! session_id() )
-			session_set_cookie_params(
-				$this->cfg['lifetime'],
-				$this->cfg['path'],
-				$this->cfg['domain'],
-				$this->cfg['secure']
-			);
+			session_start();
 
-		@session_start();
-
-		Log::debug('Started session with id=' . session_id());
+		$this->upLastAccessTime();
 
 	}
 
 	public function set($key, $value=1){
-		$_SESSION[self::PREFIX . $key] = $value;
+		$this->upLastAccessTime(); $_SESSION[$this->prefix . $key] = $value;
 	}
 
 	public function get($key){
-		return isset($_SESSION[self::PREFIX . $key]) ? $_SESSION[self::PREFIX . $key] : null;
+		$this->upLastAccessTime(); return isset($_SESSION[$this->prefix . $key]) ? $_SESSION[$this->prefix . $key] : null;
 	}
 
 	public function remove($key){
-		unset( $_SESSION[self::PREFIX . $key] );
+		$this->upLastAccessTime(); unset( $_SESSION[$this->prefix . $key] );
 	}
 
 	public function clean(){
 		session_destroy();
+	}
+
+	public function getLastAccessTime(){
+		return $this->lastAccessTime;
+	}
+
+	public function getLastUpdateTime(){
+		return $this->lastUpdateTime;
+	}
+
+	public function getCookieName(){
+		return $this->cookie;
+	}
+
+	public function getSessionId(){
+		return session_id();
 	}
 
 	/**
