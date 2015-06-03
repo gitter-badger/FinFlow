@@ -7,6 +7,8 @@
 
 namespace FinFlow\Parsers;
 
+use FinFlow\File;
+use FinFlow\Helpers\HTML\HTML;
 use FinFlow\Util;
 use Goodby\CSV\Import\Standard\Lexer;
 use Goodby\CSV\Import\Standard\Interpreter;
@@ -105,8 +107,9 @@ class CSVImporter extends AbstractImporter{
 			@fseek($fileResource, 0);
 
 			$headerLine = @fgets($fileResource);
+			$tmp_file   = File::makeTemporaryFile();
 
-			if( $headerLine and ( $tmp_file = ( FN_CACHE_FOLDER . '/temp-' . Util::random_string() ) )){
+			if( $headerLine ){
 
 				if( @file_put_contents( $tmp_file , $headerLine) ){
 
@@ -143,12 +146,66 @@ class CSVImporter extends AbstractImporter{
 
 	}
 
-	public function import($observer, $file=false){
+	public function getSample(){
+
+		$sampleLines = array(1, 2, 9, 25, 64, 169, 441, 1156, 3025, 7921, 20736, 54289);
+		$line_index  = $this->get('ignore_header') ? 0 : 1;
+		$tmp_file    = File::makeTemporaryFile();
+
+		$fileResource = fopen($this->file, 'r');
+
+		if( $fileResource ) {
+
+			@fseek( $fileResource, 0 );
+
+			while($line = fgets($fileResource) ){
+
+				if( ( $line_index > 0 ) and in_array($line_index, $sampleLines) )
+					@file_put_contents($tmp_file, $line, FILE_APPEND);
+
+				$line_index++;
+
+			}
+
+			return @filesize($tmp_file) ? $tmp_file : false;
+
+		}
+		else{
+			throw new \Exception(__t('Could not open file %s.', $this->file));
+		}
+
+	}
+
+	public function preview($columnsHints=false, $columnsNames=array(), $override=array(), $output='table'){
+
+		$input_file = $this->getSample();
+
+		if( ! $input_file )
+			throw new \Exception(__t('Could not save temporary sample file'));
+
+		switch($output){
+
+			case 'table':{
+
+				$rows = array();
+
+				$this->import(function($fields) use($rows){
+					//TODO...
+				}, $input_file);
+			}
+
+		}
+
+		@unlink($input_file);
+
+	}
+
+	public function import($observer, $file=null){
 
 		$file = $file ?: $this->file;
 
 		if( ! is_callable($observer) )
-			throw new \InvalidArgumentException('Please pass in a callable!');
+			throw new \InvalidArgumentException('Observer should be a callable. (e.g. anonymous function)');
 
 		try{
 			$this->interpreter->addObserver($observer);

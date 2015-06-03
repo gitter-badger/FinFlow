@@ -209,6 +209,10 @@ class File{
 
 	}
 
+	public static function anonUpload($file, $folder=null){
+		//TODO upload a file with a random filename...
+	}
+
 	public static function download($id, $mime=false){
 		//TODO...
 	}
@@ -265,6 +269,35 @@ class File{
 		$fnsql->insert(self::TABLE_ASSOC, array('trans_id'=>$trans_id, 'file_id'=>$file_id));
 
 		return $fndb->execute_query( $fnsql->get_query() );
+
+	}
+
+	public static function makeTemporaryFile($prefix='__tmp', $folder=null, $lifetime=300){
+
+		$folder   = empty($folder) ? FN_CACHE_FOLDER : @realpath($folder);
+		$folder   = rtrim($folder, DIRECTORY_SEPARATOR);
+
+		$filename = ( $prefix . Util::random_filename(7) );
+		$filename = ($folder . DIRECTORY_SEPARATOR . $filename . '__' . date('YmdHis', time()+intval($lifetime)) . '.tmp');
+
+		if( $handle = @fopen($filename, 'w') ){
+			fclose($handle); return $filename;
+		}
+
+		return false;
+	}
+
+	public function cleanTemporaryFiles($prefix='__tmp', $folder=null, $max_lifetime=300){
+
+		$folder   = empty($folder) ? FN_CACHE_FOLDER : @realpath($folder);
+		$folder   = rtrim($folder, DIRECTORY_SEPARATOR);
+
+		$files = glob($folder . DIRECTORY_SEPARATOR . $prefix . "*");
+		$then  = ( time() - $max_lifetime );
+
+		foreach ($files as $file)
+			if ( is_file($file) and ( filemtime($file) < $then ))
+				@unlink($file);
 
 	}
 }

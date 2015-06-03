@@ -93,7 +93,7 @@ class Tag{
 		$is_template = ( strpos($tag, self::INNER_HTML_TPL_HINT) === false ) ? false : true;
 
 		if( $is_template )
-			$tag = str_replace(self::INNER_HTML_TPL_HINT, $html, $tag);
+			$tag = str_replace(self::INNER_HTML_TPL_HINT, strval($html), $tag);
 		else
 			$tag.= $html;
 
@@ -141,6 +141,7 @@ class Tag{
 
 		$tag = self::setAttributes($tag, $attributes, false);
 
+
 		if( $innerhtml )
 			$tag = self::inner($tag, $innerhtml);
 
@@ -148,7 +149,7 @@ class Tag{
 
 	}
 
-	public static function __tag($name, $attributes=array(), $innerhtml=''){
+	public static function __create($name, $attributes=array(), $innerhtml=''){
 		return self::make($name, $attributes, $innerhtml);
 	}
 

@@ -350,6 +350,17 @@ class Util{
 		return substr( str_shuffle($seed), 0, $length );
 	}
 
+	/**
+	 * Generates a random string which could be used as filename
+	 * @param int $length
+	 *
+	 * @return string
+	 */
+	public static function random_filename($length=12){
+		$seed = substr(str_shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"), 0, $length) . substr(md5( time() + mt_rand(1, 9999999)), $length);
+		return substr( str_shuffle($seed), 0, $length );
+	}
+
 	//TODO move to highcarts helper
     public static function highchart_prepare_data($Sums, $currency_code="RON", $series_color=FALSE, $negative_color=FALSE){
 

@@ -57,8 +57,8 @@ class Session{
 
 	private function __start(){
 
-		//TODO..
-		//
+		//TODO...
+		//Implement session stickyness
 
 
 

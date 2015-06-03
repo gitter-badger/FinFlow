@@ -54,8 +54,6 @@ class OP{
 				'date'      => 'date',
 				'account'   => 'account',
 				'labels'    => 'labels',
-				'user_id'   => 'user id',
-				'contact_id'=> 'contact ID',
 				'comments'  => 'comments',
 
 				'meta_from' => 'contact email',

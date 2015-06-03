@@ -268,6 +268,13 @@ function fn_resize_to_height(element, paddingBottom){
     return maxHeight;
 }
 
+function fn_check_highlight(element, target){
+    if( $(element).is(':checked') )
+        $(target).addClass('selected');
+    else
+        $(target).removeClass('selected');
+}
+
 $(document).ready(function(){
 	
 	//--- set default transactions filters ---//

@@ -391,10 +391,7 @@ function xdtcheck(){
 }
 JS;
 
-
 UI::component('extras/datepicker', array('theme'=>'classic', 'onclose'=>$onclose));
 
 ?>
-<script type="text/javascript">
-	max_filesize = <?php echo $max_filesize; ?>;
-</script>
+<script type="text/javascript">max_filesize = <?php echo $max_filesize; ?>;</script>
