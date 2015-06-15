@@ -236,11 +236,11 @@ class UI{
 			self::msg('Could not set 500 header! Headers already sent.', self::MSG_ERROR);
 	}
 
-	public function header_redirect($url, $permament=false){
+	public function header_redirect($url, $permanent=false){
 
 		if( ! headers_sent() ){
 
-			if( $permament )
+			if( $permanent )
 				header( 'Location: ' . $url, true, 301 );
 			else
 				header( 'Location: ' . $url, true, 307);
@@ -312,7 +312,6 @@ class UI{
 		else
 			self::msg($message, self::MSG_SUCCESS);
 	}
-	
 	
 	public static function get_translated_strings($what='months'){
 			$months = array(

@@ -12,10 +12,12 @@ $columns  = Session::getFlashdata('import_cols');
 $defaults = OP::getHumanReadableArgsArray(true);
 $errors   = $notices = array();
 
+//TODO add support for excel import and other file types
+
 if( count($_POST) ){
 
 	$import = post('import');
-	$matched= post('columns');
+	$hinted  = post('columns');
 
 	if( ! empty($import) ){
 
@@ -23,15 +25,16 @@ if( count($_POST) ){
 
 		foreach($import as $index){
 			if( isset($columns[$index]) )
-				$columnsHints[$columns[$index]] = $matched[$index];
+				$columnsHints[$index] = $hinted[$index];
 		}
 
 
 		if( empty($columnsHints) )
 			$errors[] = __t('No columns matched. Please select the columns you want to match');
+		else
+			$matched = true;
 
 		Session::setFlashdata('import_col_hints', $columnsHints);
-		Session::setFlashdata('import_step', 3);
 
 	}
 	else
@@ -53,8 +56,8 @@ UI::show_notes($notices);
 
 	<div class="panel-body" style="padding-top: 0px;">
 
-		<?php if( ! $matched ): ?>
-			<form name="importColumnsMatchForm" id="importColumnsMatchForm" action="<?php UI::url('/tools/import/'); ?>" class="form form-horizontal" method="post">
+		<?php if( empty($matched) ): ?>
+			<form name="importColumnsMatchForm" id="importColumnsMatchForm" action="<?php UI::url('/tools/import/', array('step'=>2)); ?>" class="form form-horizontal" method="post">
 
 				<?php foreach ($columns as $k=>$name): $htmlId = ( 'import-field-' . ($k+1) );?>
 				<div class="form-group import-field-line default" id="<?php echo $htmlId; ?>">
@@ -68,23 +71,28 @@ UI::show_notes($notices);
 				</div>
 				<?php endforeach; ?>
 
-				<div class="form-group">
-					<div class=" col-lg-12 align-center">
-						<button class="btn btn-primary btn-submit" type="submit">
-							Preview <i class="fa fa-chevron-right"></i>
-						</button>
-					</div>
-				</div>
-
 			</form>
 		<?php else: ?>
-			<div class=" col-lg-12 align-center">
-				<a href="<?php UI::url('tools/import'); ?>" class="btn btn-primary btn-submit">
-					Next step <i class="fa fa-chevron-right"></i>
-				</a>
-			</div>
+			<script type="application/javascript">
+				window.location.href = '<?php UI::url('/tools/import', array('step'=>3)); ?>';
+			</script>
 		<?php endif; ?>
 
+	</div>
+
+	<div class="panel-footer">
+		<div class="row">
+			<div class=" col-lg-12 align-center">
+
+				<button class="btn btn-primary btn-submit" type="submit">
+					<i class="fa fa-chevron-left"></i> Previous step
+				</button>
+
+				<button class="btn btn-primary btn-submit" type="button" onclick="document.getElementById('importColumnsMatchForm').submit();">
+					Next step <i class="fa fa-chevron-right"></i>
+				</button>
+			</div>
+		</div>
 	</div>
 
 </div>

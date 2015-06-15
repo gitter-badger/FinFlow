@@ -142,7 +142,7 @@ class Tag{
 		$tag = self::setAttributes($tag, $attributes, false);
 
 
-		if( $innerhtml )
+		if( $innerhtml !== false )
 			$tag = self::inner($tag, $innerhtml);
 
 		return $tag;

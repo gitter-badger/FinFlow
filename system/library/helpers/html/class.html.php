@@ -15,6 +15,10 @@ class HTML extends Tag{
 		//TODO...
 	}
 
+	public static function __tag($name, $inner='', $attributes=array()){
+		return self::make($name, $attributes, $inner);
+	}
+
 	public static function doctype(){
 		return self::DOCTYPE;
 	}
@@ -130,8 +134,21 @@ class HTML extends Tag{
 
 	}
 
-	public static function table($attributes){
+	public static function tr($cells=array(), $celltype='td', $attributes=array()){
+
+		$cells      = parse_args($cells);
+		$celltype   = ( $celltype == 'th' ) ? $celltype : 'td';
+		$html  = '';
+
+		if( count($cells) ) foreach($cells as $index=>$data){
+			$html.= self::make($celltype, null, $data);
+		}
+
+		return self::make('tr', $attributes, $html);
 
 	}
 
+	public static function table($inner, $attributes=array()){
+		return self::make('table', $attributes, $inner);
+	}
 }

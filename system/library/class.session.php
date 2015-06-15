@@ -21,7 +21,14 @@ $Session = false;
  */
 class Session{
 
+	/**
+	 * Key used to store flash data
+	 */
 	const FLASHDATA_KEY       = 'flash';
+
+	/**
+	 * Auto-remove flash data on retrieval?
+	 */
 	const FLASHDATA_AUTOCLEAN = false; //TODO...
 
 	const DRIVER_PHP        = 'php';

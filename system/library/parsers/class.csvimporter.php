@@ -19,8 +19,9 @@ class CSVImporter extends AbstractImporter{
 	private $file  = NULL;
 	private $header= array();
 
-	protected $errors = array();
-	protected $columns= array();
+	protected $errors      = array();
+	protected $columns     = array();
+	protected $previewHTML = '';
 
 	protected $interpreter = null;
 	protected $lexer       = null;
@@ -176,27 +177,64 @@ class CSVImporter extends AbstractImporter{
 
 	}
 
-	public function preview($columnsHints=false, $columnsNames=array(), $override=array(), $output='table'){
+	/**
+	 * Outputs a preview of the import data
+	 * @param bool $columnsHints
+	 * @param array $override
+	 * @param string $output
+	 *
+	 * @return mixed|string
+	 * @throws \Exception
+	 */
+	public function preview($columnsHints=false, $override=array(), $humanReadableColumns=array(), $output='table', $attributes=array()){
 
-		$input_file = $this->getSample();
+		$tmp_file = $this->getSample();
 
-		if( ! $input_file )
-			throw new \Exception(__t('Could not save temporary sample file'));
+		if( ! $tmp_file )
+			throw new \Exception( __t('Could not save temporary sample file') );
 
 		switch($output){
 
-			case 'table':{
+			case 'table': {
 
-				$rows = array();
 
-				$this->import(function($fields) use($rows){
-					//TODO...
-				}, $input_file);
+				$headings = array_values($columnsHints);
+
+				if( count($humanReadableColumns) ){
+
+					$headings = array();
+
+					foreach($columnsHints as $hint)
+						$headings[] = ucwords( $humanReadableColumns[$hint] );
+
+				}
+
+				//generate table header
+				$table_header      = HTML::tr($headings, 'th');
+				$this->previewHTML = HTML::__tag('thead', $table_header);
+
+				$this->import(function($fields) use( $columnsHints, $override ){
+
+					$fields = parse_args($fields);
+					$cells  = array();
+
+					foreach ( $columnsHints as $index=>$hint ) { //TODO include overrides
+						//$cells[] = isset($fields[$index]) ? $fields[$index] : (isset($override[$hint]) ? );
+					}
+
+					$this->previewHTML.= HTML::tr($cells);
+
+				}, $tmp_file);
+
+				$attributes = array_merge(array('class'=>'table table-striped csv-preview-table'), $attributes);
+
+				return HTML::table($this->previewHTML, $attributes);
+
 			}
 
 		}
 
-		@unlink($input_file);
+		@unlink($tmp_file);
 
 	}
 

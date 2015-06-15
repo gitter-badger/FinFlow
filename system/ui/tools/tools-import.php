@@ -6,7 +6,7 @@ use FinFlow\UI;
 use FinFlow\Session;
 
 
-$step = Session::getFlashdata('import_step');
+$step = get('step');
 
 if( ! $step ){
 	UI::component('tools/import/import-step-1');

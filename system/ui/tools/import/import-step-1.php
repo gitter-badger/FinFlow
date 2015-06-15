@@ -25,11 +25,11 @@ if( post('import') ){
 
 			try{
 
-				$Importer = Import::getImporter($uploaded);
+				$Importer= Import::getImporter($uploaded);
 				$columns = $Importer->getColumns();
 
 				Session::setFlashdata('import_cols', $columns);
-				Session::setFlashdata('import_step', 2);
+				Session::setFlashdata('import_file', $uploaded);
 
 				$prepared = true;
 
@@ -48,7 +48,8 @@ if( post('import') ){
 
 }
 
-UI::show_errors($errors); UI::show_notes($notices);
+UI::show_errors($errors);
+UI::show_notes($notices);
 
 ?>
 
@@ -62,7 +63,7 @@ UI::show_errors($errors); UI::show_notes($notices);
 
 			<?php if( ! $prepared ): ?>
 
-			<form class="form form-horizontal" action="<?php UI::url('tools/import'); ?>" method="post" name="export-data-form" id="exportDataForm" enctype="multipart/form-data">
+			<form class="form form-horizontal" action="<?php UI::url('tools/import', array('step'=>1)); ?>" method="post" name="export-data-form" id="exportDataForm" enctype="multipart/form-data">
 
 				<?php if(empty($_POST)): ?>
 					<div class="alert alert-info">
@@ -90,7 +91,9 @@ UI::show_errors($errors); UI::show_notes($notices);
 			</form>
 
 		<?php else: ?>
-			<a href="<?php UI::url('tools/import'); ?>" class="btn btn-success btn-lg">Next step <i class="fa fa-chevron-right"></i> </a>
+			<a href="<?php UI::url('tools/import/?step=2'); ?>" class="btn btn-success btn-lg">
+				Next step <i class="fa fa-chevron-right"></i>
+			</a>
 		<?php endif; ?>
 
 	</div>
