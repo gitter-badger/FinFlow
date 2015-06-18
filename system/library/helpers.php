@@ -8,12 +8,44 @@
 use FinFlow\UI;
 use FinFlow\Util;
 
+/**
+ * Checks if the request is a usual web browser request
+ * @return bool
+ */
 function is_browser(){
 	return ( php_sapi_name() != 'cli' ) and strlen($_SERVER['REMOTE_ADDR']);
 }
 
-function is_cli(){
-	return ( php_sapi_name() == 'cli' ) and empty($_SERVER['REMOTE_ADDR']);
+if( ! function_exists('is_cli') ) {
+	/**
+	 * Checks if the request comes from CLI
+	 * @return bool
+	 */
+	function is_cli() {
+		return ( php_sapi_name() == 'cli' ) and empty( $_SERVER['REMOTE_ADDR'] );
+	}
+
+}
+
+if( ! function_exists('is_ajax') ) {
+
+	/**
+	 * Checks if the request is an ajax one
+	 * @return bool
+	 */
+	function is_ajax(){
+
+		if(
+			! empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+		    and
+			( strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' )
+		) {
+			return true;
+		}
+
+		return false;
+
+	}
 }
 
 /**

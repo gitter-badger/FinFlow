@@ -18,10 +18,9 @@ if( User::is_authenticated() ){
 }
 else{
 
-	//serve login page by default
-	$router->respond('/?', function(){
-		UI::start('public/login');
-	});
+	UI::header_400();
+
+	//AJAX::error('messsage', 400);
 
 }
 

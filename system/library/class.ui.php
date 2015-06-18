@@ -108,7 +108,7 @@ class UI{
 		<?php 
 	}
 
-	public static function fatal_error($msg, $die=TRUE, $html=TRUE, $msgtype="danger", $prefix="Error: ", $title="Error", $http_header=true){
+	public static function fatal_error($msg, $die=TRUE, $html=TRUE, $msgtype="danger", $prefix="Error: ", $title="Error", $http_header=500){
 
         if( defined('FN_BYPASS_UI_FATAL_ERRORS') and FN_BYPASS_UI_FATAL_ERRORS )
 	        return false;
@@ -220,6 +220,13 @@ class UI{
 			if( $legacy )
 				header( "Expires: Sat, 26 Jul 1997 05:00:00 GMT" );   // Date in the past
 		}
+	}
+
+	public static function header_400(){
+		if( ! headers_sent() )
+			header( $_SERVER['SERVER_PROTOCOL'] . " 400 Bad Request", true, 400);
+		else
+			self::msg('Could not set 404 header! Headers already sent.', self::MSG_ERROR);
 	}
 
 	public static function header_404(){

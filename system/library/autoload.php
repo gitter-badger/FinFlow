@@ -5,7 +5,13 @@
  * @version 1.0
  */
 
+include_once 'helpers.php';
+
 spl_autoload_register(function($className) {
+
+	//TODO update autoloader to load classes by name
+
+	$incpath = dirname(__FILE__);
 
 	$default_ns = 'FinFlow';
 	$className  = str_replace("\\" , DIRECTORY_SEPARATOR , $className);
@@ -23,7 +29,7 @@ spl_autoload_register(function($className) {
 		$relative_path = ( strtolower($namespace) . DIRECTORY_SEPARATOR . $className );
 	}
 
-	$classpath = ( FNPATH . '/system/library/' . $relative_path );
+	$classpath = ( $incpath. DIRECTORY_SEPARATOR . $relative_path );
 
 	if( file_exists($classpath) )
 		include_once ($classpath);

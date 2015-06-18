@@ -11,8 +11,27 @@ class HTML extends Tag{
 
 	const DOCTYPE = '<!DOCTYPE html>';
 
-	public static function __tidy($html){
-		//TODO...
+	/**
+	 * Tidies html
+	 * @param $html
+	 * @param array $config
+	 * @param $encoding
+	 * @throws \Exception
+	 * @return string
+	 */
+	public static function __tidy($html, $config=array('indent'=>true, 'vertical-space'=>'no', 'wrap'=>0, 'output-xhtml'=>false, 'show-body-only'=>true), $encoding='utf8'){
+		if( class_exists('tidy') ){
+
+			$tidy = new \tidy();
+			return $tidy->repairString($html, $config, $encoding);
+
+		}
+		else
+			throw new \Exception("Tidy operation requires PHP Tidy extension.");
+	}
+
+	public static function __pretty($html){
+		return self::__tidy($html, $config=array('indent'=>true, 'wrap'=>200, 'vertical-space'=>'yes', 'output-xhtml'=>false));
 	}
 
 	public static function __tag($name, $inner='', $attributes=array()){
@@ -24,27 +43,45 @@ class HTML extends Tag{
 	}
 
 	public static function title($s){
-		//TODO...
+		return self::make('title', array(), $s);
 	}
 
 	public static function meta($name, $contents=''){
-		//TODO...
+		return self::make('meta', array('name'=>$name, 'contents'=>$contents));
 	}
 
 	public static function head($inner){
-		//TODO...
+		return self::make('head', array(), $inner);
 	}
 
-	public static function script($src, $type='text/javascript', $async=true, $attributes=array()){
-		//TODO...
+	public static function script($src, $type='text/javascript', $inner='', $attributes=''){
+
+		$attributes = array_merge($attributes, array( 'type' => $type) );
+
+		if( ! empty($src) )
+			$attributes['src'] = $src;
+
+		return self::make('script', $attributes, $inner='');
+
 	}
 
-	public static function link($rel, $media='all', $attributes=array()){
-		//TODO...
+	public static function link($href, $rel='stylesheet', $media='all', $attributes=array()){
+
+		$attributes = array_merge(
+			$attributes,
+			array(
+				'rel'   => $rel,
+				'media' => $media,
+				'href'  => $href,
+			)
+		);
+
+		return self::make('link', $attributes);
+
 	}
 
-	public static function body($s){
-		//TODO...
+	public static function body($inner, $attributes=array()){
+		return self::make('body', $attributes, $inner);
 	}
 
 	public static function select($name, $options=array(), $selected='', $attributes=array()){

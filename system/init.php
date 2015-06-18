@@ -139,5 +139,15 @@ if( Util::is_production_environment() ){
 
 $_SERVER['REQUEST_URI'] = str_replace(Util::get_base_url(), '', UI::current_page_url());
 
-if( ! FN_IS_CRON )
-	include_once ( FNPATH . '/system/routes/web.php' );
+switch(true){
+
+	case is_cli() :
+		include_once ( FNPATH . '/system/routes/cli.php' );
+	break;
+
+	case is_ajax() :
+		include_once ( FNPATH . '/system/routes/ajax.php' );
+	break;
+
+	default: include_once ( FNPATH . '/system/routes/web.php' );
+}
